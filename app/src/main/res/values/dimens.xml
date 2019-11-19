@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <dimen name="text_headline">24sp</dimen>
+    <!--<dimen name="text_large_title">22sp</dimen>-->
+    <!--<dimen name="text_title">20sp</dimen>-->
+    <!--<dimen name="text_large_body">18sp</dimen>-->
+    <dimen name="text_body">16sp</dimen>
+    <!--<dimen name="text_small_body">14sp</dimen>-->
+
+    <!-- Default screen margins, per the Android Design guidelines. -->
+    <dimen name="tab_bar_height">64dp</dimen>
+    <dimen name="toolbar_height">50dp</dimen>
+    <dimen name="sub_toolbar_height">32dp</dimen>
+    <dimen name="tab_icon_size">32dp</dimen>
+    <dimen name="tab_icon_margin">11dp</dimen>
+
+    <dimen name="text_huge">45sp</dimen>
+    <dimen name="text_xlarge">34sp</dimen>
+    <dimen name="text_large">24sp</dimen>
+    <dimen name="text_big_medium">20sp</dimen>
+    <dimen name="text_title">20sp</dimen>
+    <dimen name="text_home_title">20sp</dimen>
+    <dimen name="text_medium">16sp</dimen>
+    <dimen name="text_small_medium">14sp</dimen>
+    <dimen name="text_small">14sp</dimen>
+    <dimen name="text_tiny">12sp</dimen>
+    <dimen name="text_xtiny">11sp</dimen>
+    <dimen name="text_shortcut">10sp</dimen>
+    <dimen name="text_xxtiny">9sp</dimen>
+
+    <dimen name="icon_large">46dp</dimen>
+    <dimen name="icon_medium">32dp</dimen>
+    <dimen name="icon_small_medium">28dp</dimen>
+    <dimen name="icon_small">24dp</dimen>
+    <dimen name="icon_filter">27dp</dimen>
+    <dimen name="icon_tiny">18dp</dimen>
+    <dimen name="icon_google">16dp</dimen>
+    <dimen name="icon_xtiny">12dp</dimen>
+    <dimen name="icon_toolbar">16dp</dimen>
+    <dimen name="icon_post">15dp</dimen>
+    <dimen name="icon_shortcut">26dp</dimen>
+
+    <dimen name="interval_big">32dp</dimen>
+    <dimen name="interval_medium">24dp</dimen>
+    <dimen name="interval_main">16dp</dimen>
+    <dimen name="interval_submain">12dp</dimen>
+    <dimen name="interval_content">8dp</dimen>
+    <dimen name="interval_small">4dp</dimen>
+    <dimen name="interval_xsmall">2dp</dimen>
+
+    <dimen name="padding_button">18dp</dimen>
+
+    <dimen name="input_field_padding">14dp</dimen>
+    <dimen name="input_field_2_padding_horizontal">14dp</dimen>
+    <dimen name="input_field_2_padding_vertical">16dp</dimen>
+
+    <dimen name="margin_more_list">8dp</dimen>
+    <dimen name="margin_more_line">12dp</dimen>
+
+
+    <dimen name="margin_common_list">12dp</dimen>
+    <dimen name="margin_common_line">12dp</dimen>
+
+
+    <dimen name="margin_myprofile_list">8dp</dimen>
+    <dimen name="margin_myprofile_line">16dp</dimen>
+
+    <dimen name="notif_pic_size">56dp</dimen>
+    <dimen name="home_card_padding">16sp</dimen>
+
+    <dimen name="padding_medium">22dp</dimen>
+    <dimen name="padding_big">32dp</dimen>
+    <dimen name="padding_main">16dp</dimen>
+    <dimen name="padding_submain">12dp</dimen>
+    <dimen name="padding_content">8dp</dimen>
+    <dimen name="padding_small">4dp</dimen>
+    <dimen name="padding_xsmall">2dp</dimen>
+
+    <dimen name="margin_splash">12dp</dimen>
+
+    <dimen name="main_explore_height">140dp</dimen>
+    <dimen name="main_explore_padding">12dp</dimen>
+    <dimen name="main_icon_width">116dp</dimen>
+    <dimen name="main_icon_height">113dp</dimen>
+
+    <dimen name="walkthrough_indicator_padding">6dp</dimen>
+    <dimen name="walkthrough_indicator_radius">4dp</dimen>
+    <dimen name="walkthrough_text">36dp</dimen>
+    <dimen name="walkthrough_text_sub">34dp</dimen>
+
+    <dimen name="more_padding_horizontal">24dp</dimen>
+    <dimen name="setting_push_margin">12dp</dimen>
+
+    <dimen name="fill_kyc_padding">32dp</dimen>
+
+    <dimen name="voucher_detail_heading_height">170dp</dimen>
+
+    <dimen name="trending_image_height">100dp</dimen>
+    <dimen name="trending_image_width">200dp</dimen>
+    <dimen name="voucher_text_container_height">57dp</dimen>
+    <dimen name="voucher_frame_height">210dp</dimen>
+
+</resources>

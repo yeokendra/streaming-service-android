@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <com.nontivi.nonton.widget.CustomViewPager
+        android:id="@+id/custom_viewpager"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/custom_tabbarview">
+    </com.nontivi.nonton.widget.CustomViewPager>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:layout_above="@id/custom_tabbarview"
+        android:background="@drawable/shape_drop_shadow_reverse"></View>
+
+    <com.nontivi.nonton.widget.CustomTabBarView
+        android:id="@id/custom_tabbarview"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/tab_bar_height"
+        android:layout_alignParentBottom="true">
+    </com.nontivi.nonton.widget.CustomTabBarView>
+
+</RelativeLayout>

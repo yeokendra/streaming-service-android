@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/rl_coupon"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="32dp"
+        android:layout_marginTop="@dimen/padding_content"
+        android:background="@drawable/shape_ripple_transparent"
+        android:paddingEnd="@dimen/interval_main"
+        android:paddingLeft="@dimen/interval_main"
+        android:paddingRight="@dimen/interval_main"
+        android:paddingStart="@dimen/interval_main">
+
+        <TextView
+            android:id="@+id/tv_category_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:tag="bold"
+            android:text="@string/trending_title"
+            android:textColor="@color/text_primary"
+            android:textSize="@dimen/text_big_medium" />
+
+    </RelativeLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_trending"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/interval_main">
+
+    </androidx.recyclerview.widget.RecyclerView>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginBottom="@dimen/interval_main"
+        android:layout_marginTop="@dimen/interval_main"
+        android:background="@color/lineColor"></View>
+
+
+</LinearLayout>

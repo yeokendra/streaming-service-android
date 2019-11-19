@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="primary">#6654FF</color>
+    <color name="primary_dark">#6654FF</color>
+    <!--<color name="primary_light">#FFCDD2</color>-->
+    <color name="accent">#FF5722</color>
+    <!--<color name="primary_text">#212121</color>-->
+    <!--<color name="secondary_text">#727272</color>-->
+    <!--<color name="icons">@color/white</color>-->
+    <color name="white">#FFFFFF</color>
+    <!--<color name="divider">#B6B6B6</color>-->
+
+    //color for background
+    <color name="background">@color/material_grey_ed</color>
+
+    //theme properties mentioned here
+    <color name="colorPrimary">@color/material_black_text_color</color>
+    <color name="colorPrimaryDark">@color/material_black_text_color</color>
+    <color name="colorAccent">#FFFFFF</color>
+    <color name="colorSecondaryDark">#FFF</color>
+
+    <color name="text_primary">#0A0A0A</color>
+    <color name="text_secondary">#808080</color>
+
+    <color name="text_primary_white">#FFFFFF</color>
+    <color name="text_secondary_white">#D4FFFFFF</color>
+
+    <color name="lineColor">#EBEBEB</color>
+
+    <color name="main_color">@color/material_orange_9f00</color>
+    <color name="toolbar_color">@color/material_grey_f2</color>
+
+    //my color
+    <color name="vex_orange">#FAA105</color>
+    <color name="vex_pink">#DB3069</color>
+
+    <color name="fb_blue">#4267B2</color>
+
+    //for pre-lollipop gradient color
+    <color name="pre_lollipop_shadow_color">#40000000</color>
+
+    <color name="transparent">#00FFFFFF</color>
+    <color name="primary_text">#555555</color>
+    <color name="secondary">@color/material_black_text_color</color>
+    <color name="tertiary">#929CFF</color>
+    <color name="tertiary_dark">#6A61E7</color>
+    <color name="tertiary_more_dark">#665cf5</color>
+    <color name="tertiary_light">#EEE2FF</color>
+    <color name="tertiary_light2">#E6F1FF</color>
+    <color name="point_color">#FF2D55</color>
+    <color name="point_light_color">#F03B44</color>
+
+    <color name="icons">#212121</color>
+    <color name="divider">#f2f2f2</color>
+    <color name="background_color">#E1E6EB</color>
+    <color name="item_color">#FAFAFA</color>
+    <color name="fab_color">#99ff8f00</color>
+
+    <color name="dimmed">#F2000000</color>
+    <color name="warning_red_text_color">#ff6f6f</color>
+    <color name="gray_text_color">#a9a9a9</color>
+
+    <color name="ct_icon_border_color">#1A000000</color>
+    <color name="main_tab_bar_unselected">#B3FFFFFF</color>
+
+    <color name="guide_background_color">#D6000000</color>
+    <color name="guide_bubble_color">#19AAE3</color>
+
+    <color name="material_black_55">#8c000000</color>
+    <color name="material_black_12">#26000000</color>
+    <color name="material_black_87">#D9000000</color>
+    <color name="ad_detail_desc_text_color">#D9555555</color>
+    <color name="material_black_20">#e1e1e1</color>
+    <color name="material_black">#000000</color>
+    <color name="material_black_10">#1Affffff</color>
+    <color name="material_black_a20">#33000000</color>
+    <color name="material_black_5555">#555555</color>
+    <color name="material_black_2828">#282828</color>
+    <color name="material_black_3d3d">#3d3d3d</color>
+    <color name="material_black_trans_b4">#b4000000</color>
+    <color name="material_black_trans_aa">#aa000000</color>
+    <color name="material_black_trans_dd">#E6000000</color>
+    <color name="material_black_text_color">#383D42</color>
+    <color name="material_black_sub_text_color">#7F7F80</color>
+    <color name="material_black_title_color">#2C2F3C</color>
+    <color name="material_tag_border_color">#B8BABF</color>
+
+    <color name="material_blue_gray_800">#37474f</color>
+    <color name="material_blue_gray_900">#263238</color>
+    <color name="material_blue_678b">#678BFF</color>
+    <color name="material_blue_665">#665CF5</color>
+    <color name="material_blue_2D7C">#2D7CFF</color>
+    <color name="material_blue">#19AAE3</color>
+    <color name="material_blue_3651">#3651D6</color>
+    <color name="material_deep_orange_a200">#ff6e40</color>
+    <color name="material_deep_purple_a700">#6200ea</color>
+    <color name="material_blue_3B59">#3B5998</color>
+    <color name="material_dark_blue">#213635</color>
+
+    <color name="material_green_a700">#12c700</color>
+    <color name="material_green_fbf7">#FBFFF7</color>
+    <color name="material_green_3422">#34BF22</color>
+    <color name="material_green_trans_3422">#AA34BF22</color>
+    <color name="material_green_trans_light">#24B5CE9E</color>
+    <color name="material_green_trans">#DDEB60</color>
+    <color name="material_green">#6DBF79</color>
+    <color name="material_grey_a2">#A2A2A2</color>
+    <color name="material_grey_300">#e0e0e0</color>
+    <color name="material_grey_400">#bdbdbd</color>
+    <color name="material_grey_50">#fafafa</color>
+    <color name="material_grey_600">#757575</color>
+    <color name="material_grey_800">#424242</color>
+    <color name="material_grey_900">#212121</color>
+    <color name="material_grey_a6">#a6a6a6</color>
+    <color name="material_grey_a5">#a5a5a5</color>
+    <color name="material_grey_dd">#dddddd</color>
+    <color name="material_grey_ed">#EDEDED</color>
+    <color name="material_grey_ee">#EEEEEE</color>
+    <color name="material_grey_d5">#c0c0c0</color>
+    <color name="material_grey_d6">#D6D6D6</color>
+    <color name="material_grey_d8">#D8D8D8</color>
+    <color name="material_grey_f2">#F2F2F2</color>
+    <color name="material_grey_fc">#fcfcfc</color>
+    <color name="material_grey_f5">#F5f5f5</color>
+    <color name="material_grey_f9">#F9f9f9</color>
+    <color name="material_grey_8080">#808080</color>
+    <color name="material_grey_8E8E">#268E8E8E</color>
+    <color name="material_grey_9393">#939393</color>
+    <color name="material_grey_EDEDF0">#EDEDF0</color>
+    <color name="material_grey_E8E8E8">#e8e8e8</color>
+
+    <color name="material_red_more_text">#F62F3E</color>
+    <color name="material_red_bf">#ffbfbf</color>
+    <color name="material_red_df">#ffdfdf</color>
+    <color name="material_red_80">#ff5050</color>
+    <color name="material_red_6242">#FF6242</color>
+    <color name="material_red_4F39">#E24F39</color>
+
+    <color name="material_purple_700">#7b1fa2</color>
+    <color name="material_purple_59e4">#6c59e4</color>
+    <color name="material_yellow">#ffc620</color>
+    <color name="material_yellow_e620">#ffe620</color>
+    <color name="material_yellow_ee00">#F7EE00</color>
+    <color name="material_white">#FFFFFF</color>
+    <color name="material_white_dd">#fdfdfd</color>
+    <color name="material_white_trans_ef">#EFFFFFFF</color>
+
+    <color name="material_white_trans_df">#DFFFFFFF</color>
+    <color name="material_yellow_E46A">#FEE46A</color>
+    <color name="material_yellow_EF71">#FEEF71</color>
+    <color name="material_yellow_FDD8">#FDD85C</color>
+    <color name="material_brown_b573">#B5733F</color>
+    <color name="material_dark_blue_3A50">#3A5069</color>
+
+    <color name="material_orange">#FF8540</color>
+    <color name="material_orange_9f00">#FF9F00</color>
+    <color name="material_orange_722b">#ED722B</color>
+
+    <color name="vexpoint_plus">#22B24C</color>
+    <color name="vexpoint_minus">#EF8484</color>
+
+    <color name="text_discount_color">#493DEE</color>
+
+    <color name="text_tab_active">#1F2833</color>
+    <color name="text_tab">#AAAAAA</color>
+</resources>

@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <com.google.android.material.appbar.AppBarLayout
+            android:id="@+id/app_bar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <androidx.appcompat.widget.Toolbar
+                xmlns:android="http://schemas.android.com/apk/res/android"
+                android:id="@+id/toolbar_main"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="0dp"
+                android:contentInsetEnd="0dp"
+                android:contentInsetLeft="0dp"
+                android:contentInsetRight="0dp"
+                android:contentInsetStart="0dp"
+                android:elevation="4dp"
+                android:padding="0dp"
+                app:contentInsetEnd="0dp"
+                app:contentInsetLeft="0dp"
+                app:contentInsetRight="0dp"
+                app:contentInsetStart="0dp"
+                app:elevation="4dp">
+
+                <include layout="@layout/content_toolbar" />
+
+            </androidx.appcompat.widget.Toolbar>
+
+<!--            <com.vexanium.vexgift.widget.IconTextTabBarView-->
+<!--                android:id="@+id/ittbv_tabview"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="@dimen/tab_bar_height">-->
+
+<!--            </com.vexanium.vexgift.widget.IconTextTabBarView>-->
+
+        </com.google.android.material.appbar.AppBarLayout>
+
+        <com.wang.avi.AVLoadingIndicatorView
+            android:id="@+id/avi"
+            style="@style/AVLoadingIndicatorView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:visibility="gone"
+            app:indicatorColor="@color/vex_orange"
+            app:indicatorName="TriangleSkewSpinIndicator" />
+
+        <com.nontivi.nonton.features.common.ErrorView
+            android:id="@+id/view_error"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+
+            android:visibility="gone" />
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/app_bar">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <RelativeLayout
+                    android:id="@+id/rl_search_bar"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingLeft="@dimen/padding_main"
+                    android:paddingRight="@dimen/padding_main"
+                    android:paddingTop="@dimen/padding_medium"
+                    android:paddingBottom="@dimen/padding_medium"
+                    android:focusable="true"
+                    android:focusableInTouchMode="true"
+                    android:descendantFocusability="beforeDescendants"
+                    >
+
+                    <EditText
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="Search"
+                        android:textSize="@dimen/text_small"
+                        android:drawableStart="@drawable/ic_search"
+                        android:drawablePadding="@dimen/padding_submain"
+                        android:singleLine="true"
+                        android:maxLines="1"
+                        android:background="@drawable/shape_gray_rounded_empty"
+                        android:nextFocusUp="@id/view_error"
+                        android:nextFocusLeft="@id/view_error"
+                        android:layout_centerInParent="true">
+
+                    </EditText>
+
+                </RelativeLayout>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/home_recyclerview"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                </androidx.recyclerview.widget.RecyclerView>
+
+            </LinearLayout>
+
+        </ScrollView>
+
+
+
+    </RelativeLayout>
+
+</FrameLayout>
