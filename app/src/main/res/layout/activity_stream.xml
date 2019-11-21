@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".features.streaming.StreamActivity"
+    android:background="@color/white">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/rl_player_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <com.google.android.exoplayer2.ui.PlayerView
+            android:id="@+id/player_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="200dp"
+            app:show_buffering="when_playing"
+            app:controller_layout_id="@layout/item_custom_exoplayer_controller"
+            android:background="@color/material_grey_8E8E"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"/>
+
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+
+    <ScrollView
+        android:id="@+id/sv_streaming"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/rl_player_container">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/tv_streaming_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:tag="bold"
+                android:textStyle="bold"
+                android:text="Manchester United vs Juventus - FIFA World Cup 2019 - Semi Final"
+                android:textColor="@color/text_primary"
+                android:textSize="@dimen/text_medium"
+                android:layout_marginTop="@dimen/padding_main"
+                android:paddingStart="@dimen/padding_main"
+                android:paddingEnd="@dimen/padding_main"/>
+
+            <TextView
+                android:id="@+id/tv_subscribe_count"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/tv_streaming_title"
+                android:text="0 subscribers"
+                android:textColor="@color/text_secondary"
+                android:textSize="@dimen/text_tiny"
+                android:paddingStart="@dimen/padding_main"
+                android:paddingEnd="@dimen/padding_main"/>
+
+            <RelativeLayout
+                android:id="@+id/rl_top_btn_container"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/tv_subscribe_count"
+                android:paddingTop="@dimen/padding_small"
+                android:paddingStart="@dimen/padding_main"
+                android:paddingEnd="@dimen/padding_main">
+
+                <Button
+                    android:id="@+id/btn_subscribe"
+                    android:layout_width="wrap_content"
+                    android:layout_height="36dp"
+                    android:background="#673AB7"
+                    android:text="Subscribe"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/text_small"
+                    android:textAllCaps="false"
+                    android:textAlignment="center"
+                    android:layout_alignParentStart="true"
+                    android:padding="@dimen/padding_content"
+                    android:layout_centerVertical="true"
+                    android:gravity="center"/>
+
+                <ImageButton
+                    android:id="@+id/ib_share"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:padding="6dp"
+                    android:src="@drawable/ic_share"
+                    android:background="@drawable/shape_ripple_transparent"
+                    android:layout_toStartOf="@id/ib_setting"
+                    android:layout_marginEnd="@dimen/padding_content"
+                    android:layout_centerVertical="true"/>
+
+                <ImageButton
+                    android:id="@+id/ib_setting"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:padding="6dp"
+                    android:src="@drawable/ic_three_dot"
+                    android:background="@drawable/shape_ripple_transparent"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"/>
+
+            </RelativeLayout>
+
+            <View
+                android:id="@+id/v_line1"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="@dimen/padding_main"
+                android:layout_marginBottom="@dimen/padding_main"
+                android:layout_marginEnd="@dimen/padding_main"
+                android:layout_marginStart="@dimen/padding_main"
+                android:background="@color/material_grey_E8E8E8"
+                android:layout_below="@id/rl_top_btn_container"/>
+
+            <com.ms.square.android.expandabletextview.ExpandableTextView
+                android:id="@+id/expand_text_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/v_line1"
+                app:maxCollapsedLines="2"
+                app:animDuration="200">
+                <TextView
+                    android:id="@id/expandable_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/padding_main"
+                    android:layout_marginRight="@dimen/padding_main"
+                    android:textSize="@dimen/text_medium"
+                    android:textColor="@color/text_secondary" />
+                <ImageButton
+                    android:id="@id/expand_collapse"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="@dimen/padding_main"
+                    android:layout_gravity="center"
+                    android:background="@android:color/transparent"/>
+            </com.ms.square.android.expandabletextview.ExpandableTextView>
+
+            <View
+                android:id="@+id/v_line2"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="@dimen/padding_main"
+                android:layout_marginBottom="@dimen/padding_main"
+                android:layout_marginEnd="@dimen/padding_main"
+                android:layout_marginStart="@dimen/padding_main"
+                android:background="@color/material_grey_E8E8E8"
+                android:layout_below="@id/expand_text_view"/>
+
+            <include
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                layout="@layout/item_banner_ads"
+                android:layout_below="@id/v_line2"/>
+
+            <TextView
+                android:id="@+id/tv_schedule_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:tag="bold"
+                android:textStyle="bold"
+                android:text="@string/title_schedule"
+                android:textColor="@color/text_primary"
+                android:textSize="@dimen/text_medium"
+                android:layout_marginTop="@dimen/padding_main"
+                android:layout_below="@id/rl_ads_container"
+                android:paddingStart="@dimen/padding_main"
+                android:paddingEnd="@dimen/padding_main"/>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv_schedule_day"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:paddingStart="@dimen/padding_content"
+                android:paddingEnd="@dimen/padding_content"
+                android:layout_marginTop="@dimen/padding_main"
+                android:clipToPadding="false"
+                android:layout_below="@id/tv_schedule_title"/>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv_schedule_detail"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/padding_content"
+                android:paddingStart="@dimen/padding_main"
+                android:paddingEnd="@dimen/padding_main"
+                android:layout_below="@id/rv_schedule_day"/>
+
+        </RelativeLayout>
+
+    </ScrollView>
+
+
+
+
+</RelativeLayout>

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/rl_schedule_day"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="@dimen/padding_content"
+    android:layout_marginEnd="@dimen/padding_content">
+
+    <Button
+        android:id="@+id/btn_schedule_day"
+        android:layout_width="wrap_content"
+        android:layout_height="28dp"
+        android:textSize="@dimen/text_tiny"
+        android:textStyle="bold"
+        android:textColor="@color/primary"
+        android:background="@drawable/shape_ripple_primary_rounded"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>

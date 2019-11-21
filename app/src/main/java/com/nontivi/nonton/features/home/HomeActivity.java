@@ -12,14 +12,15 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.google.android.gms.ads.MobileAds;
-import com.google.android.gms.ads.initialization.InitializationStatus;
-import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.nontivi.nonton.R;
+import com.nontivi.nonton.app.ConstantGroup;
 import com.nontivi.nonton.features.base.BaseActivity;
 import com.nontivi.nonton.features.common.ErrorView;
+import com.nontivi.nonton.features.home.bookmarkpage.BookmarkFragment;
 import com.nontivi.nonton.features.home.homepage.HomepageFragment;
-import com.nontivi.nonton.features.main.PokemonAdapter;
 import com.nontivi.nonton.injection.component.ActivityComponent;
+import com.nontivi.nonton.util.RxBus;
 import com.nontivi.nonton.widget.CustomTabBarView;
 import com.nontivi.nonton.widget.CustomViewPager;
 
@@ -28,6 +29,9 @@ import java.util.List;
 import javax.inject.Inject;
 
 import butterknife.BindView;
+import rx.Observable;
+import rx.functions.Action0;
+import rx.functions.Action1;
 import timber.log.Timber;
 
 public class HomeActivity extends BaseActivity implements HomeMvpView, ErrorView.ErrorListener {
@@ -39,16 +43,7 @@ public class HomeActivity extends BaseActivity implements HomeMvpView, ErrorView
     public static final int PAGE_COUNT = 3;
 
     @Inject
-    PokemonAdapter pokemonAdapter;
-    @Inject
     HomePresenter homePresenter;
-
-//    @BindView(R.id.view_error)
-//    ErrorView errorView;
-//
-//    @BindView(R.id.progress)
-//    ProgressBar progressBar;
-
 
     CustomTabBarView mCustomTabBarView;
 
@@ -57,20 +52,48 @@ public class HomeActivity extends BaseActivity implements HomeMvpView, ErrorView
 
     private MainScreenPagerAdapter mainScreenPagerAdapter;
     private HomepageFragment homepageFragment;
-    private HomepageFragment homepageFragment1;
+    private BookmarkFragment bookmarkFragment;
     private HomepageFragment homepageFragment2;
+
+    private FirebaseAnalytics mFirebaseAnalytics;
+
+    private Observable<Integer> mChannelClickedObservable;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        MobileAds.initialize(this, "ca-app-pub-3940256099942544~3347511713");
+        MobileAds.initialize(this, "ca-app-pub-1457023993566419~3956309691");
+
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
+
+        mChannelClickedObservable = RxBus.get().register(RxBus.KEY_CHANNEL_CLICKED, Integer.class);
+        mChannelClickedObservable.subscribe(new Action1<Integer>() {
+            @Override
+            public void call(Integer id) {
+                Log.v(ConstantGroup.LOG_TAG,"Channel "+id+" clicked");
+
+                Bundle bundle = new Bundle();
+                //bundle.putInt(FirebaseAnalytics.Param.ITEM_ID, id);
+                bundle.putInt("channel_id_clicked", id);
+                mFirebaseAnalytics.logEvent("channel_clicked",bundle);
+            }
+        });
 
         setToolbar();
         setCustomTabs();
         setPagerListener();
         //setSupportActionBar(toolbar);
 
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        if (mChannelClickedObservable != null) {
+            RxBus.get().unregister(RxBus.KEY_CHANNEL_CLICKED, mChannelClickedObservable);
+        }
     }
 
     @Override
@@ -138,9 +161,9 @@ public class HomeActivity extends BaseActivity implements HomeMvpView, ErrorView
             getSupportActionBar().setHomeButtonEnabled(false);
         }
 
-        mCustomTabBarView.addTabView(0, R.drawable.ic_home, R.drawable.ic_home_active,"Home");
-        mCustomTabBarView.addTabView(1, R.drawable.ic_search, R.drawable.ic_search_active,"Discover");
-        mCustomTabBarView.addTabView(2, R.drawable.ic_setting_dock, R.drawable.ic_setting_dock_active,"Setting");
+        mCustomTabBarView.addTabView(HOME_FRAGMENT, R.drawable.ic_home, R.drawable.ic_home_active,"Home");
+        mCustomTabBarView.addTabView(BOOKMARK_FRAGMENT, R.drawable.ic_search, R.drawable.ic_search_active,"Discover");
+        mCustomTabBarView.addTabView(SETTING_FRAGMENT, R.drawable.ic_setting_dock, R.drawable.ic_setting_dock_active,"Setting");
 
         setFragmentToolbar(0);
 
@@ -247,10 +270,10 @@ public class HomeActivity extends BaseActivity implements HomeMvpView, ErrorView
                     }
                     return homepageFragment;
                 case BOOKMARK_FRAGMENT:
-                    if (homepageFragment1 == null) {
-                        homepageFragment1 = HomepageFragment.newInstance();
+                    if (bookmarkFragment == null) {
+                        bookmarkFragment = BookmarkFragment.newInstance();
                     }
-                    return homepageFragment1;
+                    return bookmarkFragment;
                 case SETTING_FRAGMENT:
                     if (homepageFragment2 == null) {
                         homepageFragment2 = HomepageFragment.newInstance();

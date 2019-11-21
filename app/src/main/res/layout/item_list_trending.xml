@@ -4,10 +4,8 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:layout_marginBottom="@dimen/interval_content"
-    android:layout_marginEnd="@dimen/interval_main"
-    android:layout_marginLeft="@dimen/interval_main"
-    android:layout_marginRight="@dimen/interval_main"
-    android:layout_marginStart="@dimen/interval_main"
+    android:layout_marginEnd="@dimen/interval_content"
+    android:layout_marginStart="@dimen/interval_content"
     android:layout_marginTop="@dimen/interval_content"
     android:padding="@dimen/padding_content">
 
@@ -52,8 +50,7 @@
             android:textSize="@dimen/text_shortcut"
             android:textColor="@color/material_grey_400"
             android:text="TVOne"
-            android:layout_below="@id/tv_title"
-            android:layout_marginTop="@dimen/padding_small">
+            android:layout_below="@id/tv_title">
 
         </TextView>
 

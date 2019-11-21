@@ -51,24 +51,6 @@
 
     <dimen name="padding_button">18dp</dimen>
 
-    <dimen name="input_field_padding">14dp</dimen>
-    <dimen name="input_field_2_padding_horizontal">14dp</dimen>
-    <dimen name="input_field_2_padding_vertical">16dp</dimen>
-
-    <dimen name="margin_more_list">8dp</dimen>
-    <dimen name="margin_more_line">12dp</dimen>
-
-
-    <dimen name="margin_common_list">12dp</dimen>
-    <dimen name="margin_common_line">12dp</dimen>
-
-
-    <dimen name="margin_myprofile_list">8dp</dimen>
-    <dimen name="margin_myprofile_line">16dp</dimen>
-
-    <dimen name="notif_pic_size">56dp</dimen>
-    <dimen name="home_card_padding">16sp</dimen>
-
     <dimen name="padding_medium">22dp</dimen>
     <dimen name="padding_big">32dp</dimen>
     <dimen name="padding_main">16dp</dimen>
@@ -77,28 +59,13 @@
     <dimen name="padding_small">4dp</dimen>
     <dimen name="padding_xsmall">2dp</dimen>
 
-    <dimen name="margin_splash">12dp</dimen>
-
-    <dimen name="main_explore_height">140dp</dimen>
-    <dimen name="main_explore_padding">12dp</dimen>
-    <dimen name="main_icon_width">116dp</dimen>
-    <dimen name="main_icon_height">113dp</dimen>
-
-    <dimen name="walkthrough_indicator_padding">6dp</dimen>
-    <dimen name="walkthrough_indicator_radius">4dp</dimen>
-    <dimen name="walkthrough_text">36dp</dimen>
-    <dimen name="walkthrough_text_sub">34dp</dimen>
-
-    <dimen name="more_padding_horizontal">24dp</dimen>
-    <dimen name="setting_push_margin">12dp</dimen>
-
-    <dimen name="fill_kyc_padding">32dp</dimen>
-
-    <dimen name="voucher_detail_heading_height">170dp</dimen>
+    <dimen name="input_field_padding">18dp</dimen>
 
     <dimen name="trending_image_height">100dp</dimen>
     <dimen name="trending_image_width">200dp</dimen>
-    <dimen name="voucher_text_container_height">57dp</dimen>
-    <dimen name="voucher_frame_height">210dp</dimen>
+
+    <dimen name="genre_image_size">80dp</dimen>
+
+
 
 </resources>

@@ -5,6 +5,6 @@ package com.nontivi.nonton.app;
  */
 
 public class ConstantGroup {
-    public static final String LOG_TAG ="NontiviLog";
+    public static final String LOG_TAG ="StreamingAjaLog";
     static final int ID_LOCAL_PUSH = 412;
 }

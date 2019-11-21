@@ -36,13 +36,6 @@
 
             </androidx.appcompat.widget.Toolbar>
 
-<!--            <com.vexanium.vexgift.widget.IconTextTabBarView-->
-<!--                android:id="@+id/ittbv_tabview"-->
-<!--                android:layout_width="match_parent"-->
-<!--                android:layout_height="@dimen/tab_bar_height">-->
-
-<!--            </com.vexanium.vexgift.widget.IconTextTabBarView>-->
-
         </com.google.android.material.appbar.AppBarLayout>
 
         <com.wang.avi.AVLoadingIndicatorView
@@ -59,7 +52,6 @@
             android:id="@+id/view_error"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-
             android:visibility="gone" />
 
         <ScrollView
@@ -104,7 +96,7 @@
                 </RelativeLayout>
 
                 <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/rv_home"
+                    android:id="@+id/rv_bookmark"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
 

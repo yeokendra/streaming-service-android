@@ -39,6 +39,8 @@ import java.util.concurrent.TimeUnit;
 public class StaticGroup {
     public static final int HOME_TRENDING = 1;
     public static final int HOME_ADS1 = 2;
+    public static final int HOME_GENRE = 3;
+    public static final int HOME_CHANNEL_LIST = 4;
 
 
     public static String os = Build.VERSION.RELEASE;

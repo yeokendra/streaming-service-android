@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Nontivi</string>
+    <string name="app_name">Streaming Aja</string>
 
     <string name="dialog_action_ok">OK</string>
     <!--<string name="dialog_action_cancel">Cancel</string>-->
@@ -19,5 +19,12 @@
 
     <string name="image_content_description">image</string>
 
-    <string name="trending_title">Trending!</string>
+    <string name="title_trending">Trending!</string>
+    <string name="title_genre">Genre</string>
+    <string name="title_channel_list">Channel List</string>
+
+    <string name="title_bookmark">Bookmark</string>
+    <string name="title_schedule">Schedule</string>
+
+
 </resources>
