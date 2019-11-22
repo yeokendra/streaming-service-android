@@ -10,7 +10,8 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/rl_player_container"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:background="@color/material_black_2828">
 
         <com.google.android.exoplayer2.ui.PlayerView
             android:id="@+id/player_view"
@@ -19,7 +20,6 @@
             android:minHeight="200dp"
             app:show_buffering="when_playing"
             app:controller_layout_id="@layout/item_custom_exoplayer_controller"
-            android:background="@color/material_grey_8E8E"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent"

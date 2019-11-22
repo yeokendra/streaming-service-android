@@ -1,14 +1,19 @@
 package com.nontivi.nonton.features.streaming;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.pm.ActivityInfo;
+import android.content.res.Configuration;
+import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -44,6 +49,7 @@ import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
 import com.ms.square.android.expandabletextview.ExpandableTextView;
+import com.nontivi.nonton.BuildConfig;
 import com.nontivi.nonton.R;
 import com.nontivi.nonton.data.model.Channel;
 import com.nontivi.nonton.data.model.Schedule;
@@ -83,6 +89,9 @@ public class StreamActivity extends BaseActivity implements StreamMvpView {
     @BindView(R.id.rv_schedule_detail)
     RecyclerView rvScheduleDetailList;
 
+    @BindView(R.id.ib_fullscreen)
+    ImageButton btnFullscreen;
+
     private SimpleExoPlayer player;
     private int currentWindow = 0;
     private long playbackPosition = 0;
@@ -95,7 +104,7 @@ public class StreamActivity extends BaseActivity implements StreamMvpView {
     private ArrayList<Schedule> scheduleDayList;
 
     private int lastSelectedItem = 0;
-
+    private AdView mAdView;
 
 
     @Override
@@ -118,6 +127,28 @@ public class StreamActivity extends BaseActivity implements StreamMvpView {
         initScheduleDayList();
         initScheduleDetailList();
 
+        btnFullscreen.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                int orientation = getResources().getConfiguration().orientation;
+                if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                    setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+                    //if(Build.VERSION.SDK_INT >= 26) {
+
+                    //}
+                }
+
+                if (orientation == Configuration.ORIENTATION_PORTRAIT) {
+                    setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+                    //if(Build.VERSION.SDK_INT >= 26) {
+
+                    //}
+                }
+            }
+        });
+
+
+
     }
 
     @Override
@@ -127,7 +158,28 @@ public class StreamActivity extends BaseActivity implements StreamMvpView {
     }
 
     @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        if(newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE){
+            hideSystemUI();
+        }else{
+            showSystemUI();
+        }
+
+    }
+
+    @Override
+    public void onBackPressed() {
+        if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE){
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        }else {
+            super.onBackPressed();
+        }
+    }
+
+    @Override
     protected void onResume() {
+        Toast.makeText(context, "resumed", Toast.LENGTH_SHORT).show();
         super.onResume();
         initializePlayer();
     }
@@ -161,9 +213,10 @@ public class StreamActivity extends BaseActivity implements StreamMvpView {
         GridLayoutManager layoutManager = new GridLayoutManager(this, 1, GridLayoutManager.HORIZONTAL, false);
         layoutManager.setItemPrefetchEnabled(false);
         mSCheduleDayAdapter = new BaseRecyclerAdapter<Schedule>(this, scheduleDayList, layoutManager) {
+
             @Override
             public int getItemViewType(int position) {
-                return position;
+                return mData.get(position).getId();
             }
 
             @Override
@@ -187,11 +240,12 @@ public class StreamActivity extends BaseActivity implements StreamMvpView {
                     @Override
                     public void onClick(View view) {
                         if(!item.isSelected()){
-//                            scheduleDayList.get(lastSelectedItem).setSelected(false);
-//                            notifyItemChanged(lastSelectedItem);
-//                            lastSelectedItem = position;
-//                            scheduleDayList.get(lastSelectedItem).setSelected(true);
-//                            notifyItemChanged(lastSelectedItem);
+                            mData.get(lastSelectedItem).setSelected(false);
+                            //notifyItemChanged(lastSelectedItem);
+                            lastSelectedItem = position;
+                            mData.get(lastSelectedItem).setSelected(true);
+                            //notifyItemChanged(lastSelectedItem);
+                            notifyDataSetChanged();
                         }
                     }
                 });
@@ -268,55 +322,57 @@ public class StreamActivity extends BaseActivity implements StreamMvpView {
     }
 
     private void init1stBannerAds(){
-        AdView mAdView = new AdView(this);
-        AdRequest adRequest = new AdRequest.Builder().build();
-        mAdView.setAdSize(AdSize.BANNER);
-        mAdView.setAdUnitId("ca-app-pub-1457023993566419/3344001375");
-        RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE);
-        mAdView.setLayoutParams(layoutParams);
-        RelativeLayout rlAdsContainer = (RelativeLayout) findViewById(R.id.rl_ads_container);
-        rlAdsContainer.addView(mAdView);
-        mAdView.setAdListener(new AdListener() {
-            @Override
-            public void onAdLoaded() {
-                // Code to be executed when an ad finishes loading.
-                Toast.makeText(StreamActivity.this, "ad loaded", Toast.LENGTH_SHORT).show();
-            }
+        if(mAdView == null) {
+            mAdView = new AdView(this);
+            AdRequest adRequest = new AdRequest.Builder().build();
+            mAdView.setAdSize(AdSize.BANNER);
+            mAdView.setAdUnitId("ca-app-pub-1457023993566419/3344001375");
+            RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE);
+            mAdView.setLayoutParams(layoutParams);
+            RelativeLayout rlAdsContainer = (RelativeLayout) findViewById(R.id.rl_ads_container);
+            rlAdsContainer.addView(mAdView);
+            mAdView.setAdListener(new AdListener() {
+                @Override
+                public void onAdLoaded() {
+                    // Code to be executed when an ad finishes loading.
+                    Toast.makeText(StreamActivity.this, "ad loaded", Toast.LENGTH_SHORT).show();
+                }
 
-            @Override
-            public void onAdFailedToLoad(int errorCode) {
-                // Code to be executed when an ad request fails.
-                Toast.makeText(StreamActivity.this, "ad failed to load "+errorCode, Toast.LENGTH_SHORT).show();
-            }
+                @Override
+                public void onAdFailedToLoad(int errorCode) {
+                    // Code to be executed when an ad request fails.
+                    //Toast.makeText(StreamActivity.this, "ad failed to load " + errorCode, Toast.LENGTH_SHORT).show();
+                }
 
-            @Override
-            public void onAdOpened() {
-                // Code to be executed when an ad opens an overlay that
-                // covers the screen.
-                Toast.makeText(StreamActivity.this, "ad opened", Toast.LENGTH_SHORT).show();
-            }
+                @Override
+                public void onAdOpened() {
+                    // Code to be executed when an ad opens an overlay that
+                    // covers the screen.
+                    Toast.makeText(StreamActivity.this, "ad opened", Toast.LENGTH_SHORT).show();
+                }
 
-            @Override
-            public void onAdClicked() {
-                // Code to be executed when the user clicks on an ad.
-                Toast.makeText(StreamActivity.this, "ad clicked", Toast.LENGTH_SHORT).show();
-            }
+                @Override
+                public void onAdClicked() {
+                    // Code to be executed when the user clicks on an ad.
+                    Toast.makeText(StreamActivity.this, "ad clicked", Toast.LENGTH_SHORT).show();
+                }
 
-            @Override
-            public void onAdLeftApplication() {
-                // Code to be executed when the user has left the app.
-                Toast.makeText(StreamActivity.this, "ad left app", Toast.LENGTH_SHORT).show();
-            }
+                @Override
+                public void onAdLeftApplication() {
+                    // Code to be executed when the user has left the app.
+                    Toast.makeText(StreamActivity.this, "ad left app", Toast.LENGTH_SHORT).show();
+                }
 
-            @Override
-            public void onAdClosed() {
-                // Code to be executed when the user is about to return
-                // to the app after tapping on an ad.
-                Toast.makeText(StreamActivity.this, "ad closed", Toast.LENGTH_SHORT).show();
-            }
-        });
-        mAdView.loadAd(adRequest);
+                @Override
+                public void onAdClosed() {
+                    // Code to be executed when the user is about to return
+                    // to the app after tapping on an ad.
+                    Toast.makeText(StreamActivity.this, "ad closed", Toast.LENGTH_SHORT).show();
+                }
+            });
+            mAdView.loadAd(adRequest);
+        }
     }
 
 
@@ -365,6 +421,33 @@ public class StreamActivity extends BaseActivity implements StreamMvpView {
             player.release();
             player = null;
         }
+    }
+
+    private void hideSystemUI() {
+        // Enables regular immersive mode.
+        // For "lean back" mode, remove SYSTEM_UI_FLAG_IMMERSIVE.
+        // Or for "sticky immersive," replace it with SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+        View decorView = getWindow().getDecorView();
+        decorView.setSystemUiVisibility(
+            // Set the content to appear under the system bars so that the
+            // content doesn't resize when the system bars hide and show.
+            View.SYSTEM_UI_FLAG_IMMERSIVE
+            | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+            | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+            | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+            // Hide the nav bar and status bar
+            | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+            | View.SYSTEM_UI_FLAG_FULLSCREEN);
+    }
+
+    // Shows the system bars by removing all the flags
+    // except for the ones that make the content appear under the system bars.
+    private void showSystemUI() {
+        View decorView = getWindow().getDecorView();
+        decorView.setSystemUiVisibility(
+                View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                        | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
     }
 
 

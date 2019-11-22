@@ -34,7 +34,8 @@
 
         <activity
             android:name="com.nontivi.nonton.features.streaming.StreamActivity"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/AppTheme.NoActionBar"
+            android:configChanges="keyboardHidden|orientation|screenSize"/>
 
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
