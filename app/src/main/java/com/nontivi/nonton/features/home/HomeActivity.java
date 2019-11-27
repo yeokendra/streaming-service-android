@@ -19,6 +19,7 @@ import com.nontivi.nonton.features.base.BaseActivity;
 import com.nontivi.nonton.features.common.ErrorView;
 import com.nontivi.nonton.features.home.bookmarkpage.BookmarkFragment;
 import com.nontivi.nonton.features.home.homepage.HomepageFragment;
+import com.nontivi.nonton.features.home.settingpage.SettingFragment;
 import com.nontivi.nonton.injection.component.ActivityComponent;
 import com.nontivi.nonton.util.RxBus;
 import com.nontivi.nonton.widget.CustomTabBarView;
@@ -53,7 +54,7 @@ public class HomeActivity extends BaseActivity implements HomeMvpView, ErrorView
     private MainScreenPagerAdapter mainScreenPagerAdapter;
     private HomepageFragment homepageFragment;
     private BookmarkFragment bookmarkFragment;
-    private HomepageFragment homepageFragment2;
+    private SettingFragment settingFragment;
 
     private FirebaseAnalytics mFirebaseAnalytics;
 
@@ -222,7 +223,7 @@ public class HomeActivity extends BaseActivity implements HomeMvpView, ErrorView
         mCustomViewPager.setAdapter(mainScreenPagerAdapter);
         mCustomTabBarView.setViewPager(mCustomViewPager);
         mCustomViewPager.setOffscreenPageLimit(PAGE_COUNT);
-        mCustomViewPager.setPagingEnabled(true);
+        mCustomViewPager.setPagingEnabled(false);
         mCustomViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int i, float v, int i1) {
@@ -231,13 +232,6 @@ public class HomeActivity extends BaseActivity implements HomeMvpView, ErrorView
 
             @Override
             public void onPageSelected(int i) {
-                Toast.makeText(HomeActivity.this, "page = "+ i, Toast.LENGTH_SHORT).show();
-//                if (i == BOX_FRAGMENT) {
-//                    boolean isAlreadyGuideMyBox = TpUtil.getInstance(App.getContext()).getBoolean(TpUtil.KEY_IS_ALREADY_GUIDE_MYBOX, false);
-//                    if (!isAlreadyGuideMyBox && boxFragmentView != null) {
-//                        openGuidanceMyBox1();
-//                    }
-//                }
             }
 
             @Override
@@ -275,10 +269,10 @@ public class HomeActivity extends BaseActivity implements HomeMvpView, ErrorView
                     }
                     return bookmarkFragment;
                 case SETTING_FRAGMENT:
-                    if (homepageFragment2 == null) {
-                        homepageFragment2 = HomepageFragment.newInstance();
+                    if (settingFragment == null) {
+                        settingFragment = SettingFragment.newInstance();
                     }
-                    return homepageFragment2;
+                    return settingFragment;
 
                 default:
                     return null;

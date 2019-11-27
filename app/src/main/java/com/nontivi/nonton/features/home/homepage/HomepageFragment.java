@@ -10,10 +10,15 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
+import android.widget.EditText;
 import android.widget.RelativeLayout;
+import android.widget.ScrollView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.ads.AdListener;
@@ -24,11 +29,15 @@ import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.ads.initialization.InitializationStatus;
 import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
 import com.nontivi.nonton.R;
+import com.nontivi.nonton.app.ConstantGroup;
 import com.nontivi.nonton.data.model.Channel;
+import com.nontivi.nonton.data.model.Genre;
 import com.nontivi.nonton.data.response.HomeFeedResponse;
 import com.nontivi.nonton.features.base.BaseFragment;
 import com.nontivi.nonton.features.base.BaseRecyclerAdapter;
 import com.nontivi.nonton.features.base.BaseRecyclerViewHolder;
+import com.nontivi.nonton.features.genre.GenreActivity;
+import com.nontivi.nonton.features.search.SearchActivity;
 import com.nontivi.nonton.features.streaming.StreamActivity;
 import com.nontivi.nonton.injection.component.FragmentComponent;
 import com.nontivi.nonton.util.RxBus;
@@ -37,6 +46,9 @@ import java.util.ArrayList;
 
 import butterknife.BindView;
 
+import static com.nontivi.nonton.app.ConstantGroup.KEY_FROM;
+import static com.nontivi.nonton.app.ConstantGroup.KEY_GENRE;
+import static com.nontivi.nonton.app.ConstantGroup.KEY_SEARCH_STRING;
 import static com.nontivi.nonton.app.StaticGroup.HOME_ADS1;
 import static com.nontivi.nonton.app.StaticGroup.HOME_CHANNEL_LIST;
 import static com.nontivi.nonton.app.StaticGroup.HOME_GENRE;
@@ -47,6 +59,12 @@ public class HomepageFragment extends BaseFragment {
 
     @BindView(R.id.rv_home)
     RecyclerView mRvHome;
+
+    @BindView(R.id.et_search)
+    EditText mEtSearch;
+
+    @BindView(R.id.scrollview)
+    ScrollView mScrollview;
 
     private GridLayoutManager layoutListManager;
     private BaseRecyclerAdapter<HomeFeedResponse> mAdapter;
@@ -61,7 +79,7 @@ public class HomepageFragment extends BaseFragment {
     @Override
     public void onResume() {
         super.onResume();
-//        RxBus.get().post(RxBus.KEY_MY_BOX_GUIDANCE, view);
+        mScrollview.scrollTo(0,0);
 
     }
 
@@ -78,13 +96,33 @@ public class HomepageFragment extends BaseFragment {
 
         getActivity().findViewById(R.id.rl_search_bar).requestFocus();
 
-
-
         layoutListManager = new GridLayoutManager(this.getActivity(), 1, GridLayoutManager.VERTICAL, false);
         layoutListManager.setItemPrefetchEnabled(false);
 
         loadData();
         initHomeList();
+
+        mEtSearch.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            public boolean onEditorAction(TextView v, int actionId,
+                                          KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                        if(mEtSearch.getText() == null || mEtSearch.getText().toString().equals("")){
+                            return false;
+                        }else {
+                            Intent myIntent1 = new Intent(getActivity(), SearchActivity.class);
+                            myIntent1.putExtra(KEY_SEARCH_STRING,mEtSearch.getText().toString());
+                            myIntent1.putExtra(KEY_FROM,0);
+                            try {
+                                getActivity().startActivity(myIntent1);
+                            }catch (NullPointerException e){
+                                return false;
+                            }
+                            return true;
+                        }
+                }
+                return false;
+            }
+        });
     }
 
     private void loadData(){
@@ -105,14 +143,14 @@ public class HomepageFragment extends BaseFragment {
         data.add(new HomeFeedResponse(HOME_TRENDING,trendingList));
         data.add(new HomeFeedResponse(HOME_ADS1));
 
-        ArrayList<String> genreList = new ArrayList<>();
-        genreList.add("Comedy");
-        genreList.add("Drama");
-        genreList.add("Horror");
-        genreList.add("Documentary");
-        genreList.add("Sci-Fi");
-        genreList.add("Historical");
-        genreList.add("Reality Show");
+        ArrayList<Genre> genreList = new ArrayList<>();
+        genreList.add(new Genre(1,"Comedy"));
+        genreList.add(new Genre(2,"Drama"));
+        genreList.add(new Genre(3,"Horror"));
+        genreList.add(new Genre(4,"Documentary"));
+        genreList.add(new Genre(5,"Sci-Fi"));
+        genreList.add(new Genre(6,"Historical"));
+        genreList.add(new Genre(7,"Reality Show"));
 
         data.add(new HomeFeedResponse(HOME_GENRE,genreList));
         data.add(new HomeFeedResponse(HOME_CHANNEL_LIST,trendingList));
@@ -213,7 +251,7 @@ public class HomepageFragment extends BaseFragment {
                         break;
                     case HOME_GENRE:
                         if(item.object instanceof ArrayList<?>) {
-                            setGenreSection(holder, (ArrayList<String>) item.object);
+                            setGenreSection(holder, (ArrayList<Genre>) item.object);
                         }
                         break;
                     case HOME_CHANNEL_LIST:
@@ -288,11 +326,11 @@ public class HomepageFragment extends BaseFragment {
         rvTrending.setAdapter(trendingAdapter);
     }
 
-    public void setGenreSection(BaseRecyclerViewHolder holder, ArrayList<String> channels){
+    public void setGenreSection(BaseRecyclerViewHolder holder, ArrayList<Genre> genres){
         RecyclerView rvGenre = holder.getRecyclerView(R.id.rv_genre);
         GridLayoutManager layoutManager = new GridLayoutManager(this.getActivity(), 1, GridLayoutManager.HORIZONTAL, false);
         layoutManager.setItemPrefetchEnabled(false);
-        BaseRecyclerAdapter<String> genreAdapter = new BaseRecyclerAdapter<String>(getActivity(), channels, layoutManager) {
+        BaseRecyclerAdapter<Genre> genreAdapter = new BaseRecyclerAdapter<Genre>(getActivity(), genres, layoutManager) {
             @Override
             public int getItemViewType(int position) {
                 return position;
@@ -304,8 +342,16 @@ public class HomepageFragment extends BaseFragment {
             }
 
             @Override
-            public void bindData(final BaseRecyclerViewHolder holder, int position, final String item) {
-                holder.setText(R.id.tv_title,item);
+            public void bindData(final BaseRecyclerViewHolder holder, int position, final Genre item) {
+                holder.setText(R.id.tv_title,item.getName());
+                holder.setOnClickListener(R.id.rl_genre, new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Intent myIntent1 = new Intent(getActivity(), GenreActivity.class);
+                        myIntent1.putExtra(KEY_GENRE,item);
+                        getActivity().startActivity(myIntent1);
+                    }
+                });
 
             }
         };

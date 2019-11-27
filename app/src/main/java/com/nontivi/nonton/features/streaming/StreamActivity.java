@@ -179,7 +179,6 @@ public class StreamActivity extends BaseActivity implements StreamMvpView {
 
     @Override
     protected void onResume() {
-        Toast.makeText(context, "resumed", Toast.LENGTH_SHORT).show();
         super.onResume();
         initializePlayer();
     }

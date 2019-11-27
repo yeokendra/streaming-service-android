@@ -55,6 +55,7 @@
             android:visibility="gone" />
 
         <ScrollView
+            android:id="@+id/scrollview"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/app_bar">
@@ -78,6 +79,7 @@
                     >
 
                     <EditText
+                        android:id="@+id/et_search"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:hint="Search"
@@ -86,6 +88,7 @@
                         android:drawablePadding="@dimen/padding_submain"
                         android:singleLine="true"
                         android:maxLines="1"
+                        android:imeOptions="actionSearch"
                         android:background="@drawable/shape_gray_rounded_empty"
                         android:nextFocusUp="@id/view_error"
                         android:nextFocusLeft="@id/view_error"

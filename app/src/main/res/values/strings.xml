@@ -25,6 +25,7 @@
 
     <string name="title_bookmark">Bookmark</string>
     <string name="title_schedule">Schedule</string>
-
+    <string name="title_search">Search</string>
+    <string name="title_setting">Setting</string>
 
 </resources>

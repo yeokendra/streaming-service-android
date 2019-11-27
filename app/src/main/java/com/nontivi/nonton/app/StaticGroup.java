@@ -42,7 +42,6 @@ public class StaticGroup {
     public static final int HOME_GENRE = 3;
     public static final int HOME_CHANNEL_LIST = 4;
 
-
     public static String os = Build.VERSION.RELEASE;
     public static String VERSION = null;
     public static long VERSION_CODE = 0;

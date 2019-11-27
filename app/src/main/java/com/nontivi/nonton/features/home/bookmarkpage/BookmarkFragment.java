@@ -2,9 +2,13 @@ package com.nontivi.nonton.features.home.bookmarkpage;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
+import android.widget.EditText;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -27,6 +31,7 @@ import com.nontivi.nonton.data.response.HomeFeedResponse;
 import com.nontivi.nonton.features.base.BaseFragment;
 import com.nontivi.nonton.features.base.BaseRecyclerAdapter;
 import com.nontivi.nonton.features.base.BaseRecyclerViewHolder;
+import com.nontivi.nonton.features.search.SearchActivity;
 import com.nontivi.nonton.features.streaming.StreamActivity;
 import com.nontivi.nonton.injection.component.FragmentComponent;
 
@@ -34,6 +39,8 @@ import java.util.ArrayList;
 
 import butterknife.BindView;
 
+import static com.nontivi.nonton.app.ConstantGroup.KEY_FROM;
+import static com.nontivi.nonton.app.ConstantGroup.KEY_SEARCH_STRING;
 import static com.nontivi.nonton.app.StaticGroup.HOME_ADS1;
 import static com.nontivi.nonton.app.StaticGroup.HOME_CHANNEL_LIST;
 import static com.nontivi.nonton.app.StaticGroup.HOME_GENRE;
@@ -48,6 +55,12 @@ public class BookmarkFragment extends BaseFragment {
     @BindView(R.id.tv_box_title)
     TextView mTvTitle;
 
+    @BindView(R.id.et_search)
+    EditText mEtSearch;
+
+    @BindView(R.id.scrollview)
+    ScrollView mScrollview;
+
     private GridLayoutManager layoutListManager;
     private BaseRecyclerAdapter<Channel> mAdapter;
     private ArrayList<Channel> data;
@@ -61,8 +74,7 @@ public class BookmarkFragment extends BaseFragment {
     @Override
     public void onResume() {
         super.onResume();
-//        RxBus.get().post(RxBus.KEY_MY_BOX_GUIDANCE, view);
-
+        mScrollview.scrollTo(0,0);
     }
 
     @Override
@@ -84,6 +96,28 @@ public class BookmarkFragment extends BaseFragment {
 
         loadData();
         initBookmarkList();
+
+        mEtSearch.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            public boolean onEditorAction(TextView v, int actionId,
+                                          KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                    if(mEtSearch.getText() == null || mEtSearch.getText().toString().equals("")){
+                        return false;
+                    }else {
+                        Intent myIntent1 = new Intent(getActivity(), SearchActivity.class);
+                        myIntent1.putExtra(KEY_SEARCH_STRING,mEtSearch.getText().toString());
+                        myIntent1.putExtra(KEY_FROM,0);
+                        try {
+                            getActivity().startActivity(myIntent1);
+                        }catch (NullPointerException e){
+                            return false;
+                        }
+                        return true;
+                    }
+                }
+                return false;
+            }
+        });
     }
 
     private void loadData(){
