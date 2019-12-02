@@ -635,7 +635,7 @@ public class StaticGroup {
 //    }
 //
 //    public static void showCommonErrorDialog(Context context, String title, String message, final CommonErrorDialogListener listener) {
-//        new VexDialog.Builder(context)
+//        new CustomDialog.Builder(context)
 //                .optionType(DialogOptionType.OK)
 //                .title(title)
 //                .content(message)

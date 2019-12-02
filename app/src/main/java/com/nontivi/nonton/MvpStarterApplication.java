@@ -15,6 +15,9 @@ import com.nontivi.nonton.injection.component.AppComponent;
 import com.nontivi.nonton.injection.component.DaggerAppComponent;
 import com.nontivi.nonton.injection.module.AppModule;
 import com.nontivi.nonton.injection.module.NetworkModule;
+
+import io.realm.Realm;
+import io.realm.RealmConfiguration;
 import timber.log.Timber;
 
 public class MvpStarterApplication extends Application {
@@ -43,6 +46,12 @@ public class MvpStarterApplication extends Application {
         mApplicationContext = this;
 
         StaticGroup.initialize(this);
+        Realm.init(this);
+        RealmConfiguration configuration = new RealmConfiguration.Builder()
+                .name("streamingaja.db")
+                .schemaVersion(0)
+                .build();
+        Realm.setDefaultConfiguration(configuration);
 
         if (BuildConfig.DEBUG) {
             Timber.plant(new Timber.DebugTree());

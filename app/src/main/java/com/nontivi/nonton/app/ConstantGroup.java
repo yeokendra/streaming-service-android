@@ -10,7 +10,6 @@ public class ConstantGroup {
 
     public static final String KEY_SEARCH_STRING = "key_search_string";
     public static final String KEY_FROM = "key_from";
-
     public static final String KEY_GENRE = "key_genre";
 
 }

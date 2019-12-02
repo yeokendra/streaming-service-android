@@ -14,18 +14,23 @@
     <string name="error_title">Oops</string>
     <string name="error_message">There was a problem loading the pokemon, please try again!</string>
     <string name="error_reload">Reload</string>
-    <string name="title_activity_maps_sample">Map</string>
+    <string name="title_activity_maps_sample" translatable="false">Map</string>
     <string name="error_something_bad_happened">Something bad happened. Please try again.</string>
 
-    <string name="image_content_description">image</string>
+    <string name="image_content_description" translatable="false">image</string>
 
     <string name="title_trending">Trending!</string>
     <string name="title_genre">Genre</string>
     <string name="title_channel_list">Channel List</string>
 
-    <string name="title_bookmark">Bookmark</string>
+    <string name="title_home">Home</string>
+    <string name="title_bookmark">Favourites</string>
     <string name="title_schedule">Schedule</string>
     <string name="title_search">Search</string>
     <string name="title_setting">Setting</string>
+
+    <string name="setting_version">Version</string>
+    <string name="setting_change_lang">Change Language</string>
+    <string name="setting_mobile_data_warning">Mobile Data Warning</string>
 
 </resources>

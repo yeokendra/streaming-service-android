@@ -14,5 +14,6 @@ public class DbManager {
 
     @Inject
     public DbManager() {
+
     }
 }

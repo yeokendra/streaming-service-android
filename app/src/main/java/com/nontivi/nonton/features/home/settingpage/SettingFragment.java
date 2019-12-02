@@ -1,9 +1,14 @@
 package com.nontivi.nonton.features.home.settingpage;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -17,15 +22,26 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.nontivi.nonton.BuildConfig;
 import com.nontivi.nonton.R;
+import com.nontivi.nonton.data.model.Appdata;
 import com.nontivi.nonton.data.model.Setting;
 import com.nontivi.nonton.features.base.BaseFragment;
 import com.nontivi.nonton.features.base.BaseRecyclerAdapter;
 import com.nontivi.nonton.features.base.BaseRecyclerViewHolder;
 import com.nontivi.nonton.injection.component.FragmentComponent;
+import com.nontivi.nonton.util.ClickUtil;
+import com.nontivi.nonton.util.LocaleUtil;
+import com.nontivi.nonton.util.ViewUtil;
+import com.nontivi.nonton.widget.dialog.CustomDialog;
+import com.nontivi.nonton.widget.dialog.DialogAction;
+import com.nontivi.nonton.widget.dialog.DialogOptionType;
 
 import java.util.ArrayList;
 
 import butterknife.BindView;
+import io.realm.Realm;
+import io.realm.RealmResults;
+
+import static com.nontivi.nonton.app.ConstantGroup.LOG_TAG;
 
 
 public class SettingFragment extends BaseFragment {
@@ -48,6 +64,8 @@ public class SettingFragment extends BaseFragment {
     private BaseRecyclerAdapter<Setting> mAdapter;
     private ArrayList<Setting> data;
 
+    private Realm mRealm;
+
 
     public static SettingFragment newInstance() {
         return new SettingFragment();
@@ -58,12 +76,15 @@ public class SettingFragment extends BaseFragment {
     public void onResume() {
         super.onResume();
         mScrollview.scrollTo(0,0);
+        mAdapter.notifyDataSetChanged();
+
     }
 
     @Override
     public View onCreateView(final LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return super.onCreateView(inflater, container, savedInstanceState);
+        mRealm = Realm.getDefaultInstance();
 
+        return super.onCreateView(inflater, container, savedInstanceState);
     }
 
     @Override
@@ -71,7 +92,6 @@ public class SettingFragment extends BaseFragment {
         super.onViewCreated(view, savedInstanceState);
 
         mTvTitle.setText(getString(R.string.title_setting));
-
 
         layoutListManager = new GridLayoutManager(this.getActivity(), 1, GridLayoutManager.VERTICAL, false);
         layoutListManager.setItemPrefetchEnabled(false);
@@ -84,11 +104,9 @@ public class SettingFragment extends BaseFragment {
 
         data = new ArrayList<>();
 
-        data.add(new Setting(ID_CHANGE_LANGUAGE,"Change Language"));
-        data.add(new Setting(ID_MOBILE_DATA_WARNING,"Mobile Data Warning"));
-        data.add(new Setting(ID_VERSION,"Version"));
-
-
+        data.add(new Setting(ID_CHANGE_LANGUAGE,getString(R.string.setting_change_lang)));
+        data.add(new Setting(ID_MOBILE_DATA_WARNING,getString(R.string.setting_mobile_data_warning)));
+        data.add(new Setting(ID_VERSION,getString(R.string.setting_version)));
 
     }
 
@@ -96,7 +114,7 @@ public class SettingFragment extends BaseFragment {
         mAdapter = new BaseRecyclerAdapter<Setting>(getActivity(), data, layoutListManager) {
             @Override
             public int getItemViewType(int position) {
-                return position;
+                return mData.get(position).getId();
             }
 
             @Override
@@ -109,26 +127,72 @@ public class SettingFragment extends BaseFragment {
                 holder.setText(R.id.tv_title, item.getName());
                 switch (item.getId()){
                     case ID_VERSION:
-                        String title = "App Version " + BuildConfig.VERSION_CODE;
+                        String title = getString(R.string.setting_version) + " " + BuildConfig.VERSION_CODE;
                         holder.setText(R.id.tv_title, title);
                         break;
                     case ID_MOBILE_DATA_WARNING:
                         Switch switchSetting = (Switch)holder.getView(R.id.switch_setting);
                         switchSetting.setVisibility(View.VISIBLE);
-                        holder.setOnClickListener(R.id.rl_setting, new View.OnClickListener() {
+                        mRealm.executeTransaction(new Realm.Transaction() {
                             @Override
-                            public void onClick(View v) {
-
-                                if(switchSetting.isChecked()) {
-                                    switchSetting.setChecked(false);
-                                }else {
-                                    switchSetting.setChecked(true);
+                            public void execute(Realm realm) {
+                                Appdata appdata = realm.where(Appdata.class).equalTo("id", Appdata.ID_DATA_WARNING).findFirst();
+                                if (appdata != null) {
+                                    Log.e(LOG_TAG,"not null");
+                                    if (appdata.getValue() == 0) {
+                                        switchSetting.setChecked(false);
+                                    } else {
+                                        switchSetting.setChecked(true);
+                                    }
+                                }else{
+                                    Log.e(LOG_TAG,"null");
+                                    appdata = mRealm.createObject(Appdata.class);
+                                    appdata.setId(Appdata.ID_DATA_WARNING);
+                                    appdata.setValue(0);
                                 }
                             }
                         });
+
+                        holder.setOnClickListener(R.id.rl_setting, new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                onMobileDataWarningChanged(switchSetting);
+                            }
+                        });
+
+                        switchSetting.setOnTouchListener(new View.OnTouchListener() {
+                            @Override
+                            public boolean onTouch(View view, MotionEvent motionEvent) {
+                                if(motionEvent.getAction() == MotionEvent.ACTION_UP) {
+                                    onMobileDataWarningChanged(switchSetting);
+                                }
+                                return true;
+                            }
+                        });
+
                         break;
                     case ID_CHANGE_LANGUAGE:
+                        holder.setOnClickListener(R.id.rl_setting, new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                View viewLang = View.inflate(getActivity(), R.layout.include_choose_language, null);
+                                final CustomDialog customDialog = new CustomDialog.Builder(getActivity())
+                                        .optionType(DialogOptionType.NONE)
+                                        .title(R.string.setting_change_lang)
+                                        .onPositive(new CustomDialog.MaterialDialogButtonCallback() {
+                                            @Override
+                                            public void onClick(@NonNull CustomDialog dialog, @NonNull DialogAction which) {
+                                                dialog.dismiss();
+                                            }
+                                        })
+                                        .addCustomView(viewLang)
+                                        .autoDismiss(false)
+                                        .canceledOnTouchOutside(true).build();
 
+                                initLanguageDialog(customDialog, viewLang);
+                                customDialog.show();
+                            }
+                        });
                         break;
                 }
 
@@ -143,6 +207,72 @@ public class SettingFragment extends BaseFragment {
         mRvSetting.setItemViewCacheSize(30);
         mRvSetting.setNestedScrollingEnabled(false);
         mRvSetting.setAdapter(mAdapter);
+    }
+
+    private void onMobileDataWarningChanged(Switch switchSetting){
+        mRealm.executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                Appdata appdata = realm.where(Appdata.class).equalTo("id", Appdata.ID_DATA_WARNING).findFirst();
+                if (switchSetting.isChecked()) {
+                    appdata.setValue(0);
+                    switchSetting.setChecked(false);
+                } else {
+                    appdata.setValue(1);
+                    switchSetting.setChecked(true);
+                }
+            }
+        });
+
+    }
+
+    private void initLanguageDialog(final CustomDialog customDialog, View view) {
+        String lang = LocaleUtil.getLanguage(getContext());
+
+        switch (lang) {
+            case "id":
+                view.findViewById(R.id.ivSelected_id).setVisibility(View.VISIBLE);
+                view.findViewById(R.id.ivSelected_en).setVisibility(View.GONE);
+                break;
+            case "en":
+            default:
+                view.findViewById(R.id.ivSelected_en).setVisibility(View.VISIBLE);
+                view.findViewById(R.id.ivSelected_id).setVisibility(View.GONE);
+                break;
+        }
+
+        view.findViewById(R.id.rl_id).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (ClickUtil.isFastDoubleClick()) return;
+                LocaleUtil.setLocale(getActivity(), "id");
+                customDialog.dismiss();
+                getActivity().recreate();
+            }
+        });
+        view.findViewById(R.id.rl_en).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (ClickUtil.isFastDoubleClick()) return;
+                LocaleUtil.setLocale(getActivity(), "en");
+                customDialog.dismiss();
+                getActivity().recreate();
+
+            }
+        });
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if(mRealm != null && !mRealm.isClosed()){
+            mRealm.close();
+        }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
     }
 
     @Override

@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/md_background"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:id="@+id/md_dialog_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_marginEnd="@dimen/interval_big"
+            android:layout_marginLeft="@dimen/interval_big"
+            android:layout_marginRight="@dimen/interval_big"
+            android:layout_marginStart="@dimen/interval_big"
+            android:background="@drawable/shape_dialog_bg"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:paddingBottom="@dimen/interval_big"
+            android:paddingTop="@dimen/interval_big">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="20dp"
+                    android:orientation="vertical"
+                    android:paddingLeft="@dimen/padding_main"
+                    android:paddingRight="@dimen/padding_main">
+
+                    <TextView
+                        android:id="@+id/md_title"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:tag="bold"
+                        android:textAlignment="center"
+                        android:textColor="@color/material_black_text_color"
+                        android:textSize="20sp" />
+
+                    <TextView
+                        android:id="@+id/md_content"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="16dp"
+                        android:layout_marginRight="16dp"
+                        android:layout_marginTop="@dimen/interval_main"
+                        android:textAlignment="center"
+                        android:textColor="@color/material_black_text_color"
+                        android:textSize="14sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/md_custom_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                </LinearLayout>
+
+                <RelativeLayout
+                    android:id="@+id/ll_button_container"
+                    android:layout_width="match_parent"
+                    android:layout_height="55dp">
+
+                    <com.google.android.flexbox.FlexboxLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:paddingLeft="@dimen/interval_main"
+                        android:paddingRight="@dimen/interval_main"
+                        android:paddingStart="@dimen/interval_main"
+                        app:alignContent="flex_start"
+                        app:alignItems="flex_start"
+                        app:flexWrap="nowrap"
+                        app:justifyContent="space_between"
+                        app:showDivider="middle">
+
+                        <RelativeLayout
+                            android:id="@+id/negative_button"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            app:layout_flexGrow="1">
+
+                            <RelativeLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_margin="5dp"
+                                android:background="@drawable/shape_ripple_black_rounded">
+
+                                <TextView
+                                    android:id="@+id/negative_button_txt"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_centerInParent="true"
+                                    android:tag="bold"
+                                    android:textAlignment="center"
+                                    android:textColor="@color/material_black_sub_text_color"
+                                    android:textSize="12sp" />
+                            </RelativeLayout>
+                        </RelativeLayout>
+
+                        <RelativeLayout
+                            android:id="@+id/positive_button"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            app:layout_flexGrow="1">
+
+                            <RelativeLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_margin="5dp"
+                                android:background="@drawable/shape_ripple_primary_fill_rounded">
+
+                                <TextView
+                                    android:id="@+id/positive_button_txt"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_centerInParent="true"
+                                    android:tag="bold"
+                                    android:textAlignment="center"
+                                    android:textColor="@color/material_white"
+                                    android:textSize="12sp" />
+                            </RelativeLayout>
+                        </RelativeLayout>
+
+                    </com.google.android.flexbox.FlexboxLayout>
+                </RelativeLayout>
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </RelativeLayout>
+</RelativeLayout>

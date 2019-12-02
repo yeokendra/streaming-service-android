@@ -2,6 +2,7 @@ package com.nontivi.nonton.features.streaming;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
@@ -51,6 +52,8 @@ import com.google.android.gms.ads.AdView;
 import com.ms.square.android.expandabletextview.ExpandableTextView;
 import com.nontivi.nonton.BuildConfig;
 import com.nontivi.nonton.R;
+import com.nontivi.nonton.data.local.PreferencesHelper;
+import com.nontivi.nonton.data.model.Appdata;
 import com.nontivi.nonton.data.model.Channel;
 import com.nontivi.nonton.data.model.Schedule;
 import com.nontivi.nonton.features.base.BaseActivity;
@@ -69,6 +72,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 import butterknife.BindView;
+import io.realm.Realm;
 
 public class StreamActivity extends BaseActivity implements StreamMvpView {
 
@@ -92,6 +96,9 @@ public class StreamActivity extends BaseActivity implements StreamMvpView {
     @BindView(R.id.ib_fullscreen)
     ImageButton btnFullscreen;
 
+    @BindView(R.id.rl_data_warning)
+    RelativeLayout rlDataWarning;
+
     private SimpleExoPlayer player;
     private int currentWindow = 0;
     private long playbackPosition = 0;
@@ -106,6 +113,7 @@ public class StreamActivity extends BaseActivity implements StreamMvpView {
     private int lastSelectedItem = 0;
     private AdView mAdView;
 
+    private Realm mRealm;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -114,6 +122,49 @@ public class StreamActivity extends BaseActivity implements StreamMvpView {
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
         super.onCreate(savedInstanceState);
+
+
+        mRealm = Realm.getDefaultInstance();
+        mRealm.executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                Appdata appdata = realm.where(Appdata.class).equalTo("id", Appdata.ID_DATA_WARNING)
+                        .findFirst();
+                if(appdata!=null){
+                    switch (appdata.getValue()){
+                        case 0:
+                            rlDataWarning.setVisibility(View.GONE);
+                            break;
+                        case 1:
+                            rlDataWarning.setVisibility(View.VISIBLE);
+                            break;
+                    }
+                }
+            }
+        });
+
+        findViewById(R.id.tv_data_warning).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mRealm.executeTransaction(new Realm.Transaction() {
+                    @Override
+                    public void execute(Realm realm) {
+                        Appdata appdata = realm.where(Appdata.class).equalTo("id", Appdata.ID_DATA_WARNING)
+                                .findFirst();
+                        appdata.setValue(0);
+                        rlDataWarning.setVisibility(View.GONE);
+                    }
+                });
+
+            }
+        });
+
+        findViewById(R.id.tv_data_warning_close).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                rlDataWarning.setVisibility(View.GONE);
+            }
+        });
 
         tvDesc.setText("NET. Televisi Masa Kini merupakan salah satu alternatif tontonan hiburan layar kaca. NET. hadir dengan format dan konten program yang berbeda dengan stasiun TV lain. Sesuai perkembangan teknologi informasi, NET. didirikan dengan semangat bahwa konten hiburan dan informasi di masa mendatang akan semakin terhubung, lebih memasyarakat, lebih mendalam, lebih pribadi, dan lebih mudah diakses. Karena itulah, sejak awal, NET. muncul dengan konsep multiplatform, sehingga pemirsanya bisa mengakses tayangan NET. secara tidak terbatas, kapan pun, dan di mana pun.");
         tvDesc.setOnExpandStateChangeListener(new ExpandableTextView.OnExpandStateChangeListener() {
@@ -192,6 +243,7 @@ public class StreamActivity extends BaseActivity implements StreamMvpView {
     @Override
     protected void onDestroy() {
         releasePlayer();
+        mRealm.close();
         super.onDestroy();
     }
 

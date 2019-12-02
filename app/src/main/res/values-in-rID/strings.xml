@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Streaming Aja</string>
+    <string name="dialog_action_ok">OK</string>
+    <string name="dialog_error_title">Mohon Maaf</string>
+    <string name="error_message">There was a problem loading the pokemon, please try again!</string>
+    <string name="error_reload">Muat ulang</string>
+    <string name="error_something_bad_happened">Terjadi kesalahan. Silahkan dicoba lagi.</string>
+    <string name="error_title">Oops</string>
+    <string name="title_bookmark">Favorit</string>
+    <string name="title_channel_list">Daftar Saluran</string>
+    <string name="title_genre">Genre</string>
+    <string name="title_schedule">Jadwal Tayang</string>
+    <string name="title_search">Pencarian</string>
+    <string name="title_setting">Pengaturan</string>
+    <string name="title_trending">Sedang Tren!</string>
+    <string name="setting_change_lang">Ubah Bahasa</string>
+    <string name="setting_mobile_data_warning">Peringatan Data Seluler</string>
+    <string name="setting_version">Versi</string>
+    <string name="title_home">Utama</string>
+</resources>

@@ -21,6 +21,7 @@ import com.nontivi.nonton.features.home.bookmarkpage.BookmarkFragment;
 import com.nontivi.nonton.features.home.homepage.HomepageFragment;
 import com.nontivi.nonton.features.home.settingpage.SettingFragment;
 import com.nontivi.nonton.injection.component.ActivityComponent;
+import com.nontivi.nonton.util.LocaleUtil;
 import com.nontivi.nonton.util.RxBus;
 import com.nontivi.nonton.widget.CustomTabBarView;
 import com.nontivi.nonton.widget.CustomViewPager;
@@ -67,6 +68,7 @@ public class HomeActivity extends BaseActivity implements HomeMvpView, ErrorView
         MobileAds.initialize(this, "ca-app-pub-1457023993566419~3956309691");
 
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
+        LocaleUtil.onAttach(this);
 
         mChannelClickedObservable = RxBus.get().register(RxBus.KEY_CHANNEL_CLICKED, Integer.class);
         mChannelClickedObservable.subscribe(new Action1<Integer>() {
@@ -149,7 +151,7 @@ public class HomeActivity extends BaseActivity implements HomeMvpView, ErrorView
 //        pokemonRecycler.setVisibility(View.GONE);
 //        swipeRefreshLayout.setVisibility(View.GONE);
 //        errorView.setVisibility(View.VISIBLE);
-        Timber.e(error, "There was an error retrieving the pokemon");
+//        Timber.e(error, "There was an error retrieving the pokemon");
     }
 
     public void setToolbar() {
@@ -162,9 +164,9 @@ public class HomeActivity extends BaseActivity implements HomeMvpView, ErrorView
             getSupportActionBar().setHomeButtonEnabled(false);
         }
 
-        mCustomTabBarView.addTabView(HOME_FRAGMENT, R.drawable.ic_home, R.drawable.ic_home_active,"Home");
-        mCustomTabBarView.addTabView(BOOKMARK_FRAGMENT, R.drawable.ic_search, R.drawable.ic_search_active,"Discover");
-        mCustomTabBarView.addTabView(SETTING_FRAGMENT, R.drawable.ic_setting_dock, R.drawable.ic_setting_dock_active,"Setting");
+        mCustomTabBarView.addTabView(HOME_FRAGMENT, R.drawable.ic_home, R.drawable.ic_home_active,getString(R.string.title_home));
+        mCustomTabBarView.addTabView(BOOKMARK_FRAGMENT, R.drawable.ic_star, R.drawable.ic_star_active,getString(R.string.title_bookmark));
+        mCustomTabBarView.addTabView(SETTING_FRAGMENT, R.drawable.ic_setting_dock, R.drawable.ic_setting_dock_active,getString(R.string.title_setting));
 
         setFragmentToolbar(0);
 
