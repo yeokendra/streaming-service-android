@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,10 +30,13 @@ import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.ads.initialization.InitializationStatus;
 import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
 import com.nontivi.nonton.R;
-import com.nontivi.nonton.app.ConstantGroup;
+import com.nontivi.nonton.data.model.Appdata;
 import com.nontivi.nonton.data.model.Channel;
 import com.nontivi.nonton.data.model.Genre;
+import com.nontivi.nonton.data.response.ChannelListResponse;
+import com.nontivi.nonton.data.response.GenreListResponse;
 import com.nontivi.nonton.data.response.HomeFeedResponse;
+import com.nontivi.nonton.data.response.HttpResponse;
 import com.nontivi.nonton.features.base.BaseFragment;
 import com.nontivi.nonton.features.base.BaseRecyclerAdapter;
 import com.nontivi.nonton.features.base.BaseRecyclerViewHolder;
@@ -40,22 +44,28 @@ import com.nontivi.nonton.features.genre.GenreActivity;
 import com.nontivi.nonton.features.search.SearchActivity;
 import com.nontivi.nonton.features.streaming.StreamActivity;
 import com.nontivi.nonton.injection.component.FragmentComponent;
+import com.nontivi.nonton.util.NetworkUtil;
 import com.nontivi.nonton.util.RxBus;
 
 import java.util.ArrayList;
 
+import javax.inject.Inject;
+
 import butterknife.BindView;
+import io.realm.Realm;
+import io.realm.RealmResults;
 
 import static com.nontivi.nonton.app.ConstantGroup.KEY_FROM;
 import static com.nontivi.nonton.app.ConstantGroup.KEY_GENRE;
 import static com.nontivi.nonton.app.ConstantGroup.KEY_SEARCH_STRING;
+import static com.nontivi.nonton.app.ConstantGroup.LOG_TAG;
 import static com.nontivi.nonton.app.StaticGroup.HOME_ADS1;
 import static com.nontivi.nonton.app.StaticGroup.HOME_CHANNEL_LIST;
 import static com.nontivi.nonton.app.StaticGroup.HOME_GENRE;
 import static com.nontivi.nonton.app.StaticGroup.HOME_TRENDING;
 
 
-public class HomepageFragment extends BaseFragment {
+public class HomepageFragment extends BaseFragment implements HomePageMvpView{
 
     @BindView(R.id.rv_home)
     RecyclerView mRvHome;
@@ -70,6 +80,14 @@ public class HomepageFragment extends BaseFragment {
     private BaseRecyclerAdapter<HomeFeedResponse> mAdapter;
     private ArrayList<HomeFeedResponse> data;
 
+    private ArrayList<Channel> channelList;
+    private ArrayList<Channel> trendingList;
+    private ArrayList<Genre> genreList;
+
+    @Inject
+    HomePagePresenter homePagePresenter;
+
+    private Realm mRealm;
 
     public static HomepageFragment newInstance() {
         return new HomepageFragment();
@@ -80,6 +98,15 @@ public class HomepageFragment extends BaseFragment {
     public void onResume() {
         super.onResume();
         mScrollview.scrollTo(0,0);
+        mEtSearch.getText().clear();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if(mRealm != null && !mRealm.isClosed()){
+            mRealm.close();
+        }
 
     }
 
@@ -99,9 +126,33 @@ public class HomepageFragment extends BaseFragment {
         layoutListManager = new GridLayoutManager(this.getActivity(), 1, GridLayoutManager.VERTICAL, false);
         layoutListManager.setItemPrefetchEnabled(false);
 
-        loadData();
-        initHomeList();
+        trendingList = new ArrayList<>();
+        channelList = new ArrayList<>();
+        genreList = new ArrayList<>();
 
+        mRealm = Realm.getDefaultInstance();
+        if(!NetworkUtil.isNetworkConnected(getActivity())) {
+            mRealm.executeTransaction(new Realm.Transaction() {
+                @Override
+                public void execute(Realm realm) {
+                    RealmResults<Channel> trendings = realm.where(Channel.class).equalTo("isTrending", true).findAll();
+                    if (trendings != null && trendings.size() > 0) {
+                        trendingList.addAll(trendings);
+                    }
+                    RealmResults<Channel> channels = realm.where(Channel.class).findAll();
+                    if (channels != null && channels.size() > 0) {
+                        channelList.addAll(channels);
+                    }
+                    RealmResults<Genre> genres = realm.where(Genre.class).findAll();
+                    if (genres != null && genres.size() > 0) {
+                        genreList.addAll(genres);
+                    }
+                }
+            });
+            loadData();
+        }else {
+            homePagePresenter.getChannels();
+        }
         mEtSearch.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             public boolean onEditorAction(TextView v, int actionId,
                                           KeyEvent event) {
@@ -126,158 +177,140 @@ public class HomepageFragment extends BaseFragment {
     }
 
     private void loadData(){
-        data = new ArrayList<>();
-
-        ArrayList<Channel> trendingList = new ArrayList<>();
-        String imageUrl = "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fb/Cnn_logo_red_background.png/300px-Cnn_logo_red_background.png";
-
-        trendingList.add(new Channel(1,"CNN ASIA",imageUrl));
-        trendingList.add(new Channel(2,"CNN ASIA",imageUrl));
-        trendingList.add(new Channel(3,"CNN ASIA",imageUrl));
-        trendingList.add(new Channel(4,"CNN ASIA",imageUrl));
-        trendingList.add(new Channel(5,"CNN ASIA",imageUrl));
-        trendingList.add(new Channel(6,"CNN ASIA",imageUrl));
-        trendingList.add(new Channel(7,"CNN ASIA",imageUrl));
-        trendingList.add(new Channel(8,"CNN ASIA",imageUrl));
-
-        data.add(new HomeFeedResponse(HOME_TRENDING,trendingList));
-        data.add(new HomeFeedResponse(HOME_ADS1));
-
-        ArrayList<Genre> genreList = new ArrayList<>();
-        genreList.add(new Genre(1,"Comedy"));
-        genreList.add(new Genre(2,"Drama"));
-        genreList.add(new Genre(3,"Horror"));
-        genreList.add(new Genre(4,"Documentary"));
-        genreList.add(new Genre(5,"Sci-Fi"));
-        genreList.add(new Genre(6,"Historical"));
-        genreList.add(new Genre(7,"Reality Show"));
-
-        data.add(new HomeFeedResponse(HOME_GENRE,genreList));
-        data.add(new HomeFeedResponse(HOME_CHANNEL_LIST,trendingList));
-
-
+        if(data == null) {
+            data = new ArrayList<>();
+            if(trendingList.size() > 0) {
+                data.add(new HomeFeedResponse(HOME_TRENDING, trendingList));
+            }
+            data.add(new HomeFeedResponse(HOME_ADS1));
+            if(genreList.size() > 0) {
+                data.add(new HomeFeedResponse(HOME_GENRE, genreList));
+            }
+            if(channelList.size() > 0) {
+                data.add(new HomeFeedResponse(HOME_CHANNEL_LIST, channelList));
+            }
+        }
+        initHomeList();
     }
 
     private void initHomeList() {
-        mAdapter = new BaseRecyclerAdapter<HomeFeedResponse>(getActivity(), data, layoutListManager) {
-            @Override
-            public int getItemViewType(int position) {
-                if (data != null && data.size() > 0) {
-                    return data.get(position).type;
+        if(mAdapter == null) {
+            mAdapter = new BaseRecyclerAdapter<HomeFeedResponse>(getActivity(), data, layoutListManager) {
+                @Override
+                public int getItemViewType(int position) {
+                    if (data != null && data.size() > 0) {
+                        return data.get(position).type;
+                    }
+                    return 0;
                 }
-                return 0;
-            }
 
-            @Override
-            public int getItemLayoutId(int viewType) {
-                switch (viewType) {
-                    case HOME_TRENDING:
-                        return R.layout.item_home_trending;
-                    case HOME_ADS1:
-                        return R.layout.item_banner_ads;
-                    case HOME_GENRE:
-                        return R.layout.item_home_genre;
-                    case HOME_CHANNEL_LIST:
-                        return R.layout.item_home_channel_all;
-                    default:
-                        return R.layout.item_home_trending;
+                @Override
+                public int getItemLayoutId(int viewType) {
+                    switch (viewType) {
+                        case HOME_TRENDING:
+                            return R.layout.item_home_trending;
+                        case HOME_ADS1:
+                            return R.layout.item_banner_ads;
+                        case HOME_GENRE:
+                            return R.layout.item_home_genre;
+                        case HOME_CHANNEL_LIST:
+                            return R.layout.item_home_channel_all;
+                        default:
+                            return R.layout.item_home_trending;
+                    }
                 }
-            }
 
-            @Override
-            public void bindData(BaseRecyclerViewHolder holder, int position, final HomeFeedResponse item) {
-                switch (getItemViewType(position)) {
-                    case HOME_TRENDING:
-                        if(item.object instanceof ArrayList<?>){
-                            setTrendingSection(holder, (ArrayList<Channel>) item.object);
-                        }
-
-                        break;
-                    case HOME_ADS1:
-                        MobileAds.initialize(getActivity(), new OnInitializationCompleteListener() {
-                            @Override
-                            public void onInitializationComplete(InitializationStatus initializationStatus) {
-                            }
-                        });
-                        AdView mAdView = new AdView(getActivity());
-                        AdRequest adRequest = new AdRequest.Builder().build();
-                        mAdView.setAdSize(AdSize.BANNER);
-                        mAdView.setAdUnitId("ca-app-pub-1457023993566419/3318015448");
-                        RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-                        layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE);
-                        RelativeLayout rlAdsContainer = (RelativeLayout) holder.getView(R.id.rl_ads_container);
-                        rlAdsContainer.addView(mAdView);
-
-                        mAdView.setAdListener(new AdListener() {
-                            @Override
-                            public void onAdLoaded() {
-                                // Code to be executed when an ad finishes loading.
-                                Toast.makeText(mContext, "ad loaded", Toast.LENGTH_SHORT).show();
+                @Override
+                public void bindData(BaseRecyclerViewHolder holder, int position, final HomeFeedResponse item) {
+                    switch (getItemViewType(position)) {
+                        case HOME_TRENDING:
+                            if (item.object instanceof ArrayList<?>) {
+                                setTrendingSection(holder, (ArrayList<Channel>) item.object);
                             }
 
-                            @Override
-                            public void onAdFailedToLoad(int errorCode) {
-                                // Code to be executed when an ad request fails.
-                                Toast.makeText(mContext, "ad failed to load "+errorCode, Toast.LENGTH_SHORT).show();
-                            }
+                            break;
+                        case HOME_ADS1:
+                            MobileAds.initialize(getActivity(), new OnInitializationCompleteListener() {
+                                @Override
+                                public void onInitializationComplete(InitializationStatus initializationStatus) {
+                                }
+                            });
+                            AdView mAdView = new AdView(getActivity());
+                            AdRequest adRequest = new AdRequest.Builder().build();
+                            mAdView.setAdSize(AdSize.BANNER);
+                            mAdView.setAdUnitId("ca-app-pub-1457023993566419/3318015448");
+                            RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                            layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE);
+                            RelativeLayout rlAdsContainer = (RelativeLayout) holder.getView(R.id.rl_ads_container);
+                            rlAdsContainer.addView(mAdView);
 
-                            @Override
-                            public void onAdOpened() {
-                                // Code to be executed when an ad opens an overlay that
-                                // covers the screen.
-                                Toast.makeText(mContext, "ad opened", Toast.LENGTH_SHORT).show();
-                            }
+                            mAdView.setAdListener(new AdListener() {
+                                @Override
+                                public void onAdLoaded() {
+                                    // Code to be executed when an ad finishes loading.
+                                }
 
-                            @Override
-                            public void onAdClicked() {
-                                // Code to be executed when the user clicks on an ad.
-                                Toast.makeText(mContext, "ad clicked", Toast.LENGTH_SHORT).show();
-                            }
+                                @Override
+                                public void onAdFailedToLoad(int errorCode) {
+                                    // Code to be executed when an ad request fails.
+                                }
 
-                            @Override
-                            public void onAdLeftApplication() {
-                                // Code to be executed when the user has left the app.
-                                Toast.makeText(mContext, "ad left app", Toast.LENGTH_SHORT).show();
-                            }
+                                @Override
+                                public void onAdOpened() {
+                                    // Code to be executed when an ad opens an overlay that
+                                    // covers the screen.
+                                }
 
-                            @Override
-                            public void onAdClosed() {
-                                // Code to be executed when the user is about to return
-                                // to the app after tapping on an ad.
-                                Toast.makeText(mContext, "ad closed", Toast.LENGTH_SHORT).show();
-                            }
-                        });
-                        mAdView.loadAd(adRequest);
-                        break;
-                    case HOME_GENRE:
-                        if(item.object instanceof ArrayList<?>) {
-                            setGenreSection(holder, (ArrayList<Genre>) item.object);
-                        }
-                        break;
-                    case HOME_CHANNEL_LIST:
-                        if(item.object instanceof ArrayList<?>) {
-                            setAllChannelSection(holder, (ArrayList<Channel>) item.object);
-                        }
-                        break;
+                                @Override
+                                public void onAdClicked() {
+                                    // Code to be executed when the user clicks on an ad.
+                                }
 
+                                @Override
+                                public void onAdLeftApplication() {
+                                    // Code to be executed when the user has left the app.
+                                }
+
+                                @Override
+                                public void onAdClosed() {
+                                    // Code to be executed when the user is about to return
+                                    // to the app after tapping on an ad.
+                                }
+                            });
+                            mAdView.loadAd(adRequest);
+                            break;
+                        case HOME_GENRE:
+                            if (item.object instanceof ArrayList<?>) {
+                                setGenreSection(holder, (ArrayList<Genre>) item.object);
+                            }
+                            break;
+                        case HOME_CHANNEL_LIST:
+                            if (item.object instanceof ArrayList<?>) {
+                                setAllChannelSection(holder, (ArrayList<Channel>) item.object);
+                            }
+                            break;
+
+                    }
                 }
-            }
-        };
-        mAdapter.setHasStableIds(true);
-        mRvHome.setLayoutManager(layoutListManager);
-        //if (this.getActivity() != null)
+            };
+            mAdapter.setHasStableIds(true);
+            mRvHome.setLayoutManager(layoutListManager);
+            //if (this.getActivity() != null)
             //mRvHome.addItemDecoration(new BaseSpacesItemDecoration(MeasureUtil.dip2px(this.getActivity(), 16)));
-        mRvHome.addItemDecoration(new DividerItemDecoration(getActivity(), 0));
+            mRvHome.addItemDecoration(new DividerItemDecoration(getActivity(), 0));
 //        mRvHome.setItemAnimator(new DefaultItemAnimator());
 //        if (mRvHome.getItemAnimator() != null)
 //            mRvHome.getItemAnimator().setAddDuration(250);
 //        mRvHome.getItemAnimator().setMoveDuration(250);
 //        mRvHome.getItemAnimator().setChangeDuration(250);
 //        mRvHome.getItemAnimator().setRemoveDuration(250);
-        mRvHome.setOverScrollMode(View.OVER_SCROLL_NEVER);
-        mRvHome.setItemViewCacheSize(30);
-        mRvHome.setNestedScrollingEnabled(false);
-        mRvHome.setAdapter(mAdapter);
+            mRvHome.setOverScrollMode(View.OVER_SCROLL_NEVER);
+            mRvHome.setItemViewCacheSize(30);
+            mRvHome.setNestedScrollingEnabled(false);
+            mRvHome.setAdapter(mAdapter);
+        }else{
+            mAdapter.notifyDataSetChanged();
+        }
     }
 
     public void setTrendingSection(BaseRecyclerViewHolder holder, ArrayList<Channel> channels){
@@ -298,8 +331,8 @@ public class HomepageFragment extends BaseFragment {
             @Override
             public void bindData(final BaseRecyclerViewHolder holder, int position, final Channel item) {
                 holder.setText(R.id.tv_title,item.getTitle());
-                holder.setText(R.id.tv_subtitle,"0 viewer");
-                holder.setImageUrl(R.id.iv_preview, item.getImage_url(), R.drawable.ic_home);
+                holder.setText(R.id.tv_subtitle,item.getCurrentViewer()+ " Viewer(s)");
+                holder.setImageUrl(R.id.iv_preview, item.getImageUrl(), R.drawable.ic_home);
 
                 holder.setOnClickListener(R.id.rl_trending, new View.OnClickListener() {
                     @Override
@@ -387,8 +420,8 @@ public class HomepageFragment extends BaseFragment {
             @Override
             public void bindData(final BaseRecyclerViewHolder holder, int position, final Channel item) {
                 holder.setText(R.id.tv_title,item.getTitle());
-                holder.setText(R.id.tv_subtitle,"0 viewer");
-                holder.setImageUrl(R.id.iv_preview, item.getImage_url(), R.drawable.ic_home);
+                holder.setText(R.id.tv_subtitle,item.getCurrentViewer()+ " Viewer(s)");
+                holder.setImageUrl(R.id.iv_preview, item.getImageUrl(), R.drawable.ic_home);
 
                 holder.setOnClickListener(R.id.rl_trending, new View.OnClickListener() {
                     @Override
@@ -420,18 +453,76 @@ public class HomepageFragment extends BaseFragment {
 
     @Override
     protected void inject(FragmentComponent fragmentComponent) {
-
+        fragmentComponent.inject(this);
     }
 
     @Override
     protected void attachView() {
-
+        homePagePresenter.attachView(this);
     }
 
     @Override
     protected void detachPresenter() {
-
+        homePagePresenter.detachView();
     }
 
 
+    @Override
+    public void showChannelList(HttpResponse<ChannelListResponse> channels) {
+        channelList = new ArrayList<>();
+
+        if(channels.getMeta().getData() != null){
+            channelList.addAll(channels.getMeta().getData().channels);
+            Log.v(LOG_TAG,"channel size = "+channelList.size());
+
+            mRealm.executeTransaction(new Realm.Transaction() {
+                @Override
+                public void execute(Realm realm) {
+                    RealmResults<Channel> channels = realm.where(Channel.class).findAll();
+                    channels.deleteAllFromRealm();
+
+                    realm.insert(channelList);
+                }
+            });
+
+            trendingList = new ArrayList<>();
+
+            for(Channel channel : channelList){
+                if(channel.isTrending()){
+                    trendingList.add(channel);
+                }
+            }
+        }
+
+        homePagePresenter.getGenres();
+    }
+
+    @Override
+    public void showGenreList(HttpResponse<GenreListResponse> genres) {
+        genreList = new ArrayList<>();
+        if(genres.getMeta().getData() != null){
+            genreList.addAll(genres.getMeta().getData().genres);
+            mRealm.executeTransaction(new Realm.Transaction() {
+                @Override
+                public void execute(Realm realm) {
+                    RealmResults<Genre> genres = realm.where(Genre.class).findAll();
+                    genres.deleteAllFromRealm();
+
+                    realm.insert(genreList);
+                }
+            });
+        }
+
+        loadData();
+    }
+
+    @Override
+    public void showProgress(boolean show) {
+
+    }
+
+    @Override
+    public void showError(Throwable error) {
+        Toast.makeText(getActivity(), error.getMessage().toString(), Toast.LENGTH_SHORT).show();
+    }
 }

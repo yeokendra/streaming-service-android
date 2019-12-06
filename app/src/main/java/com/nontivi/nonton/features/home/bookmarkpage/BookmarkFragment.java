@@ -10,24 +10,15 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.ScrollView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.DefaultItemAnimator;
-import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.gms.ads.AdListener;
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.AdView;
-import com.google.android.gms.ads.MobileAds;
-import com.google.android.gms.ads.initialization.InitializationStatus;
-import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
 import com.nontivi.nonton.R;
 import com.nontivi.nonton.data.model.Channel;
-import com.nontivi.nonton.data.response.HomeFeedResponse;
 import com.nontivi.nonton.features.base.BaseFragment;
 import com.nontivi.nonton.features.base.BaseRecyclerAdapter;
 import com.nontivi.nonton.features.base.BaseRecyclerViewHolder;
@@ -41,10 +32,6 @@ import butterknife.BindView;
 
 import static com.nontivi.nonton.app.ConstantGroup.KEY_FROM;
 import static com.nontivi.nonton.app.ConstantGroup.KEY_SEARCH_STRING;
-import static com.nontivi.nonton.app.StaticGroup.HOME_ADS1;
-import static com.nontivi.nonton.app.StaticGroup.HOME_CHANNEL_LIST;
-import static com.nontivi.nonton.app.StaticGroup.HOME_GENRE;
-import static com.nontivi.nonton.app.StaticGroup.HOME_TRENDING;
 
 
 public class BookmarkFragment extends BaseFragment {
@@ -75,6 +62,7 @@ public class BookmarkFragment extends BaseFragment {
     public void onResume() {
         super.onResume();
         mScrollview.scrollTo(0,0);
+        mEtSearch.getText().clear();
     }
 
     @Override
@@ -123,16 +111,16 @@ public class BookmarkFragment extends BaseFragment {
     private void loadData(){
 
         data = new ArrayList<>();
-        String imageUrl = "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fb/Cnn_logo_red_background.png/300px-Cnn_logo_red_background.png";
-
-        data.add(new Channel(1,"CNN ASIA",imageUrl));
-        data.add(new Channel(2,"CNN ASIA",imageUrl));
-        data.add(new Channel(3,"CNN ASIA",imageUrl));
-        data.add(new Channel(4,"CNN ASIA",imageUrl));
-        data.add(new Channel(5,"CNN ASIA",imageUrl));
-        data.add(new Channel(6,"CNN ASIA",imageUrl));
-        data.add(new Channel(7,"CNN ASIA",imageUrl));
-        data.add(new Channel(8,"CNN ASIA",imageUrl));
+//        String imageUrl = "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fb/Cnn_logo_red_background.png/300px-Cnn_logo_red_background.png";
+//
+//        data.add(new Channel(1,"CNN ASIA",imageUrl));
+//        data.add(new Channel(2,"CNN ASIA",imageUrl));
+//        data.add(new Channel(3,"CNN ASIA",imageUrl));
+//        data.add(new Channel(4,"CNN ASIA",imageUrl));
+//        data.add(new Channel(5,"CNN ASIA",imageUrl));
+//        data.add(new Channel(6,"CNN ASIA",imageUrl));
+//        data.add(new Channel(7,"CNN ASIA",imageUrl));
+//        data.add(new Channel(8,"CNN ASIA",imageUrl));
 
     }
 
@@ -152,7 +140,7 @@ public class BookmarkFragment extends BaseFragment {
             public void bindData(BaseRecyclerViewHolder holder, int position, final Channel item) {
                 holder.setText(R.id.tv_title,item.getTitle());
                 holder.setText(R.id.tv_subtitle,"0 viewer");
-                holder.setImageUrl(R.id.iv_preview, item.getImage_url(), R.drawable.ic_home);
+                holder.setImageUrl(R.id.iv_preview, item.getImageUrl(), R.drawable.ic_home);
 
                 holder.setOnClickListener(R.id.rl_trending, new View.OnClickListener() {
                     @Override

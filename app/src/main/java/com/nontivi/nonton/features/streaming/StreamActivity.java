@@ -9,6 +9,7 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -56,6 +57,9 @@ import com.nontivi.nonton.data.local.PreferencesHelper;
 import com.nontivi.nonton.data.model.Appdata;
 import com.nontivi.nonton.data.model.Channel;
 import com.nontivi.nonton.data.model.Schedule;
+import com.nontivi.nonton.data.model.ScheduleDay;
+import com.nontivi.nonton.data.response.HttpResponse;
+import com.nontivi.nonton.data.response.ScheduleListResponse;
 import com.nontivi.nonton.features.base.BaseActivity;
 import com.nontivi.nonton.features.base.BaseRecyclerAdapter;
 import com.nontivi.nonton.features.base.BaseRecyclerViewHolder;
@@ -66,13 +70,22 @@ import com.nontivi.nonton.features.main.MainPresenter;
 import com.nontivi.nonton.features.main.PokemonAdapter;
 import com.nontivi.nonton.injection.component.ActivityComponent;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
 import butterknife.BindView;
 import io.realm.Realm;
+
+import static com.nontivi.nonton.app.ConstantGroup.LOG_TAG;
 
 public class StreamActivity extends BaseActivity implements StreamMvpView {
 
@@ -106,9 +119,11 @@ public class StreamActivity extends BaseActivity implements StreamMvpView {
     private boolean playWhenReady = true;
 
     private BaseRecyclerAdapter<Schedule> mScheduleDetailAdapter;
-    private BaseRecyclerAdapter<Schedule> mSCheduleDayAdapter;
+    private BaseRecyclerAdapter<ScheduleDay> mSCheduleDayAdapter;
 
-    private ArrayList<Schedule> scheduleDayList;
+    private ArrayList<Schedule> scheduleList;
+    private ArrayList<ScheduleDay> scheduleDayList;
+    private ArrayList<String> days;
 
     private int lastSelectedItem = 0;
     private AdView mAdView;
@@ -175,8 +190,6 @@ public class StreamActivity extends BaseActivity implements StreamMvpView {
         });
 
         init1stBannerAds();
-        initScheduleDayList();
-        initScheduleDetailList();
 
         btnFullscreen.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -198,7 +211,7 @@ public class StreamActivity extends BaseActivity implements StreamMvpView {
             }
         });
 
-
+        streamPresenter.getScheduleList();
 
     }
 
@@ -250,20 +263,33 @@ public class StreamActivity extends BaseActivity implements StreamMvpView {
     private void initScheduleDayList(){
         scheduleDayList = new ArrayList<>();
 
+        for(Schedule schedule: scheduleList){
+            ScheduleDay day = getDayFromTimestamp(schedule.getTimestamp());
+            if(scheduleDayList.size() > 0) {
 
-        scheduleDayList.add(new Schedule(1,"Monday","",0));
-        scheduleDayList.add(new Schedule(2,"Tuesday","",0));
-        scheduleDayList.add(new Schedule(3,"Wednesday","",0));
-        scheduleDayList.add(new Schedule(4,"Thursday","",0));
-        scheduleDayList.add(new Schedule(5,"Friday","",0));
-        scheduleDayList.add(new Schedule(6,"Saturday","",0));
-        scheduleDayList.add(new Schedule(7,"Sunday","",0));
-
+                for (int i = 0; i < scheduleDayList.size(); i++) {
+                    if(scheduleDayList.get(i).getTitle().equals(day.getTitle())){
+                        scheduleDayList.get(i).addSchedule(schedule);
+                        break;
+                    }else{
+                        if( i == scheduleDayList.size()-1){
+                            day.addSchedule(schedule);
+                            scheduleDayList.add(day);
+                            break;
+                        }
+                    }
+                }
+            }else{
+                day.addSchedule(schedule);
+                scheduleDayList.add(day);
+            }
+        }
         scheduleDayList.get(lastSelectedItem).setSelected(true);
+        initScheduleDetailList(scheduleDayList.get(lastSelectedItem).getSchedules());
 
         GridLayoutManager layoutManager = new GridLayoutManager(this, 1, GridLayoutManager.HORIZONTAL, false);
         layoutManager.setItemPrefetchEnabled(false);
-        mSCheduleDayAdapter = new BaseRecyclerAdapter<Schedule>(this, scheduleDayList, layoutManager) {
+        mSCheduleDayAdapter = new BaseRecyclerAdapter<ScheduleDay>(this, scheduleDayList, layoutManager) {
 
             @Override
             public int getItemViewType(int position) {
@@ -276,7 +302,7 @@ public class StreamActivity extends BaseActivity implements StreamMvpView {
             }
 
             @Override
-            public void bindData(final BaseRecyclerViewHolder holder, int position, final Schedule item) {
+            public void bindData(final BaseRecyclerViewHolder holder, int position, final ScheduleDay item) {
                 Button btnScheduleDay = holder.getButton(R.id.btn_schedule_day);
 
                 if(item.isSelected()){
@@ -297,6 +323,7 @@ public class StreamActivity extends BaseActivity implements StreamMvpView {
                             mData.get(lastSelectedItem).setSelected(true);
                             //notifyItemChanged(lastSelectedItem);
                             notifyDataSetChanged();
+                            initScheduleDetailList(item.getSchedules());
                         }
                     }
                 });
@@ -318,58 +345,57 @@ public class StreamActivity extends BaseActivity implements StreamMvpView {
         rvScheduleDayList.setNestedScrollingEnabled(false);
     }
 
-    private void initScheduleDetailList(){
-        ArrayList<Schedule> scheduleDetailList = new ArrayList<>();
+    private void initScheduleDetailList(ArrayList<Schedule> schedules){
 
-        for(int i=0; i<10; i++) {
-            scheduleDetailList.add(new Schedule(i,"Selamat Pagi Indonesia","News",0));
+        if(mScheduleDetailAdapter==null) {
+            GridLayoutManager layoutManager = new GridLayoutManager(this, 1, GridLayoutManager.VERTICAL, false);
+            layoutManager.setItemPrefetchEnabled(false);
+            mScheduleDetailAdapter = new BaseRecyclerAdapter<Schedule>(this, schedules, layoutManager) {
+                @Override
+                public int getItemViewType(int position) {
+                    return position;
+                }
+
+                @Override
+                public int getItemLayoutId(int viewType) {
+                    return R.layout.item_list_schedule;
+                }
+
+                @Override
+                public void bindData(final BaseRecyclerViewHolder holder, int position, final Schedule item) {
+                    if (position != 0) {
+                        holder.getView(R.id.v_line_top).setVisibility(View.VISIBLE);
+                    } else {
+                        holder.getView(R.id.v_line_top).setVisibility(View.GONE);
+                    }
+
+                    if (position != mData.size() - 1) {
+                        holder.getView(R.id.v_line_bottom).setVisibility(View.VISIBLE);
+                    } else {
+                        holder.getView(R.id.v_line_bottom).setVisibility(View.GONE);
+                    }
+                    holder.setText(R.id.tv_schedule_show_title, item.getTitle());
+                    holder.setText(R.id.tv_schedule_show_subtitle, item.getSubtitle());
+                    holder.setText(R.id.tv_time, getHourByTimestamp(item.getTimestamp()));
+
+                }
+            };
+            mScheduleDetailAdapter.setHasStableIds(true);
+            rvScheduleDetailList.setLayoutManager(layoutManager);
+            rvScheduleDetailList.setItemAnimator(new DefaultItemAnimator());
+            if (rvScheduleDetailList.getItemAnimator() != null)
+                rvScheduleDetailList.getItemAnimator().setAddDuration(250);
+            rvScheduleDetailList.getItemAnimator().setMoveDuration(250);
+            rvScheduleDetailList.getItemAnimator().setChangeDuration(250);
+            rvScheduleDetailList.getItemAnimator().setRemoveDuration(250);
+            rvScheduleDetailList.setOverScrollMode(View.OVER_SCROLL_NEVER);
+            rvScheduleDetailList.setItemViewCacheSize(30);
+            rvScheduleDetailList.setAdapter(mScheduleDetailAdapter);
+            rvScheduleDetailList.setNestedScrollingEnabled(false);
+        }else{
+            mScheduleDetailAdapter.setData(schedules);
+            mScheduleDetailAdapter.notifyDataSetChanged();
         }
-
-        GridLayoutManager layoutManager = new GridLayoutManager(this, 1, GridLayoutManager.VERTICAL, false);
-        layoutManager.setItemPrefetchEnabled(false);
-        mScheduleDetailAdapter = new BaseRecyclerAdapter<Schedule>(this, scheduleDetailList, layoutManager) {
-            @Override
-            public int getItemViewType(int position) {
-                return position;
-            }
-
-            @Override
-            public int getItemLayoutId(int viewType) {
-                return R.layout.item_list_schedule;
-            }
-
-            @Override
-            public void bindData(final BaseRecyclerViewHolder holder, int position, final Schedule item) {
-                if(position != 0){
-                    holder.getView(R.id.v_line_top).setVisibility(View.VISIBLE);
-                }else{
-                    holder.getView(R.id.v_line_top).setVisibility(View.GONE);
-                }
-
-                if(position != scheduleDetailList.size()-1){
-                    holder.getView(R.id.v_line_bottom).setVisibility(View.VISIBLE);
-                }else{
-                    holder.getView(R.id.v_line_bottom).setVisibility(View.GONE);
-                }
-                holder.setText(R.id.tv_schedule_show_title,item.getTitle());
-                holder.setText(R.id.tv_schedule_show_subtitle, item.getSubtitle());
-                holder.setText(R.id.tv_time, "00:00");
-
-            }
-        };
-
-        mScheduleDetailAdapter.setHasStableIds(true);
-        rvScheduleDetailList.setLayoutManager(layoutManager);
-        rvScheduleDetailList.setItemAnimator(new DefaultItemAnimator());
-        if (rvScheduleDetailList.getItemAnimator() != null)
-            rvScheduleDetailList.getItemAnimator().setAddDuration(250);
-        rvScheduleDetailList.getItemAnimator().setMoveDuration(250);
-        rvScheduleDetailList.getItemAnimator().setChangeDuration(250);
-        rvScheduleDetailList.getItemAnimator().setRemoveDuration(250);
-        rvScheduleDetailList.setOverScrollMode(View.OVER_SCROLL_NEVER);
-        rvScheduleDetailList.setItemViewCacheSize(30);
-        rvScheduleDetailList.setAdapter(mScheduleDetailAdapter);
-        rvScheduleDetailList.setNestedScrollingEnabled(false);
     }
 
     private void init1stBannerAds(){
@@ -387,39 +413,33 @@ public class StreamActivity extends BaseActivity implements StreamMvpView {
                 @Override
                 public void onAdLoaded() {
                     // Code to be executed when an ad finishes loading.
-                    Toast.makeText(StreamActivity.this, "ad loaded", Toast.LENGTH_SHORT).show();
                 }
 
                 @Override
                 public void onAdFailedToLoad(int errorCode) {
                     // Code to be executed when an ad request fails.
-                    //Toast.makeText(StreamActivity.this, "ad failed to load " + errorCode, Toast.LENGTH_SHORT).show();
                 }
 
                 @Override
                 public void onAdOpened() {
                     // Code to be executed when an ad opens an overlay that
                     // covers the screen.
-                    Toast.makeText(StreamActivity.this, "ad opened", Toast.LENGTH_SHORT).show();
                 }
 
                 @Override
                 public void onAdClicked() {
                     // Code to be executed when the user clicks on an ad.
-                    Toast.makeText(StreamActivity.this, "ad clicked", Toast.LENGTH_SHORT).show();
                 }
 
                 @Override
                 public void onAdLeftApplication() {
                     // Code to be executed when the user has left the app.
-                    Toast.makeText(StreamActivity.this, "ad left app", Toast.LENGTH_SHORT).show();
                 }
 
                 @Override
                 public void onAdClosed() {
                     // Code to be executed when the user is about to return
                     // to the app after tapping on an ad.
-                    Toast.makeText(StreamActivity.this, "ad closed", Toast.LENGTH_SHORT).show();
                 }
             });
             mAdView.loadAd(adRequest);
@@ -523,6 +543,22 @@ public class StreamActivity extends BaseActivity implements StreamMvpView {
     }
 
     @Override
+    public void showScheduleList(HttpResponse<ScheduleListResponse> schedules) {
+        scheduleList = new ArrayList<>();
+        if(schedules.getMeta().getData() != null){
+            scheduleList.addAll(schedules.getMeta().getData().schedules);
+            Collections.sort(scheduleList, new Comparator<Schedule>() {
+                @Override
+                public int compare(Schedule schedule, Schedule t1) {
+                    int result = (int)(schedule.getTimestamp()-t1.getTimestamp());
+                    return result;
+                }
+            });
+        }
+        initScheduleDayList();
+    }
+
+    @Override
     public void showProgress(boolean show) {
 
     }
@@ -530,5 +566,30 @@ public class StreamActivity extends BaseActivity implements StreamMvpView {
     @Override
     public void showError(Throwable error) {
 
+    }
+
+    private ScheduleDay getDayFromTimestamp(long timestamp){
+        long l = TimeUnit.SECONDS.toMillis(timestamp);
+        Calendar c = Calendar.getInstance();
+        c.setTimeInMillis(l);
+
+        SimpleDateFormat dayFormat = new SimpleDateFormat("EEEE", Locale.getDefault());
+        String day = dayFormat.format(c.getTime());
+
+        ScheduleDay scheduleDay = new ScheduleDay();
+        scheduleDay.setId(c.get(Calendar.DAY_OF_WEEK));
+        scheduleDay.setTitle(day);
+
+        return scheduleDay;
+    }
+
+    private String getHourByTimestamp(long timestamp){
+        long l = TimeUnit.SECONDS.toMillis(timestamp);
+        Calendar c = Calendar.getInstance();
+        c.setTimeInMillis(l);
+
+        SimpleDateFormat dayFormat = new SimpleDateFormat("HH:mm", Locale.getDefault());
+        String hour = dayFormat.format(c.getTime());
+        return hour;
     }
 }

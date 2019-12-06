@@ -1,17 +1,85 @@
 package com.nontivi.nonton.data.model;
 
-import java.io.Serializable;
-import java.util.List;
+import com.google.gson.annotations.SerializedName;
 
-public class Channel implements Serializable {
+import java.io.Serializable;
+
+import io.realm.RealmModel;
+import io.realm.RealmObject;
+
+public class Channel extends RealmObject implements Serializable{
     private int id;
     private String title;
-    private String image_url;
+    private String description;
+    @SerializedName("image_url")
+    private String imageUrl;
+    @SerializedName("streaming_url")
+    private String streamingUrl;
+    @SerializedName("current_viewer")
+    private int currentViewer;
+    @SerializedName("is_trending")
+    private boolean isTrending;
+    @SerializedName("is_published")
+    private boolean isPublished;
+    @SerializedName("created_at")
+    private String createdAt;
+    @SerializedName("updated_at")
+    private String updatedAt;
 
-    public Channel(int id, String title, String image_url){
-        this.id = id;
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
         this.title = title;
-        this.image_url = image_url;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getStreamingUrl() {
+        return streamingUrl;
+    }
+
+    public void setStreamingUrl(String streamingUrl) {
+        this.streamingUrl = streamingUrl;
+    }
+
+    public int getCurrentViewer() {
+        return currentViewer;
+    }
+
+    public void setCurrentViewer(int currentViewer) {
+        this.currentViewer = currentViewer;
+    }
+
+    public boolean isTrending() {
+        return isTrending;
+    }
+
+    public void setTrending(boolean trending) {
+        isTrending = trending;
+    }
+
+    public boolean getIsPublished() {
+        return isPublished;
+    }
+
+    public void setIsPublished(boolean isPublished) {
+        this.isPublished = isPublished;
     }
 
     public int getId() {
@@ -22,19 +90,27 @@ public class Channel implements Serializable {
         this.id = id;
     }
 
-    public String getTitle() {
-        return title;
+    public boolean isPublished() {
+        return isPublished;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
+    public void setPublished(boolean published) {
+        isPublished = published;
     }
 
-    public String getImage_url() {
-        return image_url;
+    public String getCreatedAt() {
+        return createdAt;
     }
 
-    public void setImage_url(String image_url) {
-        this.image_url = image_url;
+    public void setCreatedAt(String createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public String getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(String updatedAt) {
+        this.updatedAt = updatedAt;
     }
 }

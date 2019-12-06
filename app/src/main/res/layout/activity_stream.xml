@@ -223,6 +223,7 @@
                 android:id="@+id/rv_schedule_detail"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:minHeight="80dp"
                 android:layout_marginTop="@dimen/padding_content"
                 android:paddingStart="@dimen/padding_main"
                 android:paddingEnd="@dimen/padding_main"

@@ -1,27 +1,35 @@
 package com.nontivi.nonton.data.model;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.io.Serializable;
 
-public class Schedule implements Serializable {
-    private int id;
+import io.realm.RealmModel;
+
+public class Schedule implements Serializable, RealmModel {
+
+    @SerializedName("channel_id")
+    private int channelId;
     private String title;
     private String subtitle;
+    @SerializedName("genre_id")
+    private String genreId;
     private long timestamp;
-    private boolean isSelected = false;
 
-    public Schedule(int id, String title, String subtitle, long timestamp){
-        this.id = id;
-        this.title = title;
-        this.subtitle = subtitle;
-        this.timestamp = timestamp;
+    public int getChannelId() {
+        return channelId;
     }
 
-    public int getId() {
-        return id;
+    public void setChannelId(int channelId) {
+        this.channelId = channelId;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public String getGenreId() {
+        return genreId;
+    }
+
+    public void setGenreId(String genreId) {
+        this.genreId = genreId;
     }
 
     public String getTitle() {
@@ -46,13 +54,5 @@ public class Schedule implements Serializable {
 
     public void setTimestamp(long timestamp) {
         this.timestamp = timestamp;
-    }
-
-    public boolean isSelected() {
-        return isSelected;
-    }
-
-    public void setSelected(boolean selected) {
-        isSelected = selected;
     }
 }

@@ -23,6 +23,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.nontivi.nonton.BuildConfig;
 import com.nontivi.nonton.R;
 import com.nontivi.nonton.data.model.Appdata;
+import com.nontivi.nonton.data.model.Option;
 import com.nontivi.nonton.data.model.Setting;
 import com.nontivi.nonton.features.base.BaseFragment;
 import com.nontivi.nonton.features.base.BaseRecyclerAdapter;
@@ -61,8 +62,8 @@ public class SettingFragment extends BaseFragment {
     ScrollView mScrollview;
 
     private GridLayoutManager layoutListManager;
-    private BaseRecyclerAdapter<Setting> mAdapter;
-    private ArrayList<Setting> data;
+    private BaseRecyclerAdapter<Option> mAdapter;
+    private ArrayList<Option> data;
 
     private Realm mRealm;
 
@@ -104,14 +105,14 @@ public class SettingFragment extends BaseFragment {
 
         data = new ArrayList<>();
 
-        data.add(new Setting(ID_CHANGE_LANGUAGE,getString(R.string.setting_change_lang)));
-        data.add(new Setting(ID_MOBILE_DATA_WARNING,getString(R.string.setting_mobile_data_warning)));
-        data.add(new Setting(ID_VERSION,getString(R.string.setting_version)));
+        data.add(new Option(ID_CHANGE_LANGUAGE,getString(R.string.setting_change_lang)));
+        data.add(new Option(ID_MOBILE_DATA_WARNING,getString(R.string.setting_mobile_data_warning)));
+        data.add(new Option(ID_VERSION,getString(R.string.setting_version)));
 
     }
 
     private void initSettingList() {
-        mAdapter = new BaseRecyclerAdapter<Setting>(getActivity(), data, layoutListManager) {
+        mAdapter = new BaseRecyclerAdapter<Option>(getActivity(), data, layoutListManager) {
             @Override
             public int getItemViewType(int position) {
                 return mData.get(position).getId();
@@ -123,11 +124,11 @@ public class SettingFragment extends BaseFragment {
             }
 
             @Override
-            public void bindData(BaseRecyclerViewHolder holder, int position, final Setting item) {
+            public void bindData(BaseRecyclerViewHolder holder, int position, final Option item) {
                 holder.setText(R.id.tv_title, item.getName());
                 switch (item.getId()){
                     case ID_VERSION:
-                        String title = getString(R.string.setting_version) + " " + BuildConfig.VERSION_CODE;
+                        String title = getString(R.string.setting_version) + " " + BuildConfig.VERSION_NAME;
                         holder.setText(R.id.tv_title, title);
                         break;
                     case ID_MOBILE_DATA_WARNING:

@@ -23,16 +23,16 @@ public class HomePresenter extends BasePresenter<HomeMvpView> {
         super.attachView(mvpView);
     }
 
-    public void getData(int limit) {
+    public void getData() {
         checkViewAttached();
         getView().showProgress(true);
         dataManager
-                .getPokemonList(limit)
+                .getSettingList()
                 .compose(SchedulerUtils.ioToMain())
                 .subscribe(
-                        pokemons -> {
+                        settings -> {
                             getView().showProgress(false);
-                            getView().showPokemon(pokemons);
+                            getView().showSetting(settings);
                         },
                         throwable -> {
                             getView().showProgress(false);

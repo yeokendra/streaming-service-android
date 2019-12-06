@@ -1,15 +1,18 @@
 package com.nontivi.nonton.data.model;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.io.Serializable;
 
-public class BaseType implements Serializable {
-    private int id;
-    private String name;
+import io.realm.RealmModel;
+import io.realm.RealmObject;
 
-    public BaseType(int id, String name){
-        this.id = id;
-        this.name = name;
-    }
+public class BaseType implements Serializable, RealmModel {
+    private int id;
+    @SerializedName("created_at")
+    private String createdAt;
+    @SerializedName("updated_at")
+    private String updatedAt;
 
     public int getId() {
         return id;
@@ -19,12 +22,19 @@ public class BaseType implements Serializable {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
+    public String getCreatedAt() {
+        return createdAt;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setCreatedAt(String createdAt) {
+        this.createdAt = createdAt;
     }
 
+    public String getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(String updatedAt) {
+        this.updatedAt = updatedAt;
+    }
 }

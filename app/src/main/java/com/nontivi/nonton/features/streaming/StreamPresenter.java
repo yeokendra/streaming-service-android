@@ -23,20 +23,20 @@ public class StreamPresenter extends BasePresenter<StreamMvpView> {
         super.attachView(mvpView);
     }
 
-    public void getData(int limit) {
+    public void getScheduleList() {
         checkViewAttached();
         getView().showProgress(true);
-//        dataManager
-//                .getPokemonList(limit)
-//                .compose(SchedulerUtils.ioToMain())
-//                .subscribe(
-//                        pokemons -> {
-//                            getView().showProgress(false);
-//                            getView().showPokemon(pokemons);
-//                        },
-//                        throwable -> {
-//                            getView().showProgress(false);
-//                            getView().showError(throwable);
-//                        });
+        dataManager
+                .getScheduleList()
+                .compose(SchedulerUtils.ioToMain())
+                .subscribe(
+                        schedulelist -> {
+                            getView().showProgress(false);
+                            getView().showScheduleList(schedulelist);
+                        },
+                        throwable -> {
+                            getView().showProgress(false);
+                            getView().showError(throwable);
+                        });
     }
 }

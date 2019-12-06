@@ -1,9 +1,11 @@
 package com.nontivi.nonton.data.response;
 
 import com.nontivi.nonton.data.model.NamedResource;
+import com.nontivi.nonton.data.model.Setting;
 
 import java.util.List;
 
-public class PokemonListResponse {
-    public List<NamedResource> results;
+public class SettingListResponse {
+
+    public List<Setting> settings;
 }

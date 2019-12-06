@@ -1,7 +1,8 @@
 package com.nontivi.nonton.data.remote;
 
 import com.nontivi.nonton.data.model.Pokemon;
-import com.nontivi.nonton.data.model.response.PokemonListResponse;
+import com.nontivi.nonton.data.response.PokemonListResponse;
+
 import io.reactivex.Single;
 import retrofit2.http.GET;
 import retrofit2.http.Path;
