@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
     android:id="@+id/rl_trending"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
@@ -7,14 +9,33 @@
     android:layout_marginEnd="@dimen/interval_content"
     android:layout_marginStart="@dimen/interval_content"
     android:layout_marginTop="@dimen/interval_content"
-    android:padding="@dimen/padding_content">
+    android:padding="@dimen/padding_content"
+    android:clipToPadding="false">
 
-        <ImageView
-            android:id="@+id/iv_preview"
-            android:layout_width="@dimen/trending_image_width"
-            android:layout_height="@dimen/trending_image_height"
-            android:contentDescription="@string/image_content_description"
-            android:scaleType="fitCenter" />
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cv_preview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            card_view:cardCornerRadius="8dp"
+            card_view:cardUseCompatPadding="true">
+
+                <FrameLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+
+                        <ImageView
+                            android:id="@+id/iv_preview"
+                            android:layout_width="wrap_content"
+                            android:layout_height="@dimen/trending_image_height"
+                            android:contentDescription="@string/image_content_description"
+                            android:scaleType="centerInside" />
+
+                </FrameLayout>
+
+
+
+
+        </androidx.cardview.widget.CardView>
 
 <!--        for duration-->
 <!--        <TextView-->
@@ -37,8 +58,7 @@
             android:layout_height="wrap_content"
             android:textSize="@dimen/text_small"
             android:textColor="@color/material_black_2828"
-            android:text="TVOne"
-            android:layout_below="@id/iv_preview"
+            android:layout_below="@id/cv_preview"
             android:layout_marginTop="@dimen/padding_content">
 
         </TextView>
@@ -49,7 +69,6 @@
             android:layout_height="wrap_content"
             android:textSize="@dimen/text_shortcut"
             android:textColor="@color/material_grey_400"
-            android:text="TVOne"
             android:layout_below="@id/tv_title">
 
         </TextView>

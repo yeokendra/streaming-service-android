@@ -15,6 +15,8 @@ import com.nontivi.nonton.data.response.HttpResponse;
 import com.nontivi.nonton.data.response.ScheduleListResponse;
 import com.nontivi.nonton.data.response.SettingListResponse;
 
+import org.json.JSONObject;
+
 import io.reactivex.Single;
 
 /**
@@ -56,7 +58,7 @@ public class DataManager {
         return apiService.getGenreList();
     }
 
-    public Single<HttpResponse<ScheduleListResponse>> getScheduleList(){
-        return apiService.getScheduleList();
+    public Single<HttpResponse<ScheduleListResponse>> getScheduleList(int id){
+        return apiService.getScheduleList(id);
     }
 }

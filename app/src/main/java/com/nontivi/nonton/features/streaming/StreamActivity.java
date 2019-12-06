@@ -1,59 +1,36 @@
 package com.nontivi.nonton.features.streaming;
 
-import android.app.Activity;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
-import android.graphics.Bitmap;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import com.google.android.exoplayer2.DefaultLoadControl;
-import com.google.android.exoplayer2.DefaultRenderersFactory;
 import com.google.android.exoplayer2.ExoPlayerFactory;
 import com.google.android.exoplayer2.SimpleExoPlayer;
-import com.google.android.exoplayer2.source.ExtractorMediaSource;
 import com.google.android.exoplayer2.source.MediaSource;
 import com.google.android.exoplayer2.ui.PlayerView;
 
-import com.google.android.exoplayer2.source.ProgressiveMediaSource;
-import com.google.android.exoplayer2.source.dash.DashMediaSource;
-import com.google.android.exoplayer2.source.dash.DefaultDashChunkSource;
 import com.google.android.exoplayer2.source.hls.HlsMediaSource;
-import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
-import com.google.android.exoplayer2.ui.PlayerView;
-import com.google.android.exoplayer2.upstream.DataSource;
-import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory;
-import com.google.android.exoplayer2.util.Util;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
 import com.ms.square.android.expandabletextview.ExpandableTextView;
-import com.nontivi.nonton.BuildConfig;
 import com.nontivi.nonton.R;
-import com.nontivi.nonton.data.local.PreferencesHelper;
 import com.nontivi.nonton.data.model.Appdata;
 import com.nontivi.nonton.data.model.Channel;
 import com.nontivi.nonton.data.model.Schedule;
@@ -63,20 +40,13 @@ import com.nontivi.nonton.data.response.ScheduleListResponse;
 import com.nontivi.nonton.features.base.BaseActivity;
 import com.nontivi.nonton.features.base.BaseRecyclerAdapter;
 import com.nontivi.nonton.features.base.BaseRecyclerViewHolder;
-import com.nontivi.nonton.features.common.ErrorView;
-import com.nontivi.nonton.features.detail.DetailActivity;
-import com.nontivi.nonton.features.main.MainMvpView;
-import com.nontivi.nonton.features.main.MainPresenter;
-import com.nontivi.nonton.features.main.PokemonAdapter;
 import com.nontivi.nonton.injection.component.ActivityComponent;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
@@ -85,7 +55,7 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import io.realm.Realm;
 
-import static com.nontivi.nonton.app.ConstantGroup.LOG_TAG;
+import static com.nontivi.nonton.app.ConstantGroup.KEY_CHANNEL;
 
 public class StreamActivity extends BaseActivity implements StreamMvpView {
 
@@ -97,8 +67,14 @@ public class StreamActivity extends BaseActivity implements StreamMvpView {
     @BindView(R.id.player_view)
     PlayerView playerView;
 
+    @BindView(R.id.tv_streaming_title)
+    TextView mTvTitle;
+
+    @BindView(R.id.tv_viewer)
+    TextView mTvViewer;
+
     @BindView(R.id.expand_text_view)
-    ExpandableTextView tvDesc;
+    ExpandableTextView mTvDesc;
 
     @BindView(R.id.rv_schedule_day)
     RecyclerView rvScheduleDayList;
@@ -181,14 +157,23 @@ public class StreamActivity extends BaseActivity implements StreamMvpView {
             }
         });
 
-        tvDesc.setText("NET. Televisi Masa Kini merupakan salah satu alternatif tontonan hiburan layar kaca. NET. hadir dengan format dan konten program yang berbeda dengan stasiun TV lain. Sesuai perkembangan teknologi informasi, NET. didirikan dengan semangat bahwa konten hiburan dan informasi di masa mendatang akan semakin terhubung, lebih memasyarakat, lebih mendalam, lebih pribadi, dan lebih mudah diakses. Karena itulah, sejak awal, NET. muncul dengan konsep multiplatform, sehingga pemirsanya bisa mengakses tayangan NET. secara tidak terbatas, kapan pun, dan di mana pun.");
-        tvDesc.setOnExpandStateChangeListener(new ExpandableTextView.OnExpandStateChangeListener() {
+        Channel channel = (Channel)getIntent().getSerializableExtra(KEY_CHANNEL);
+
+        if(channel!=null){
+            mTvTitle.setText(channel.getTitle());
+            mTvViewer.setText(channel.getCurrentViewer()+" Viewer(s)");
+            mTvDesc.setText(channel.getDescription());
+            streamPresenter.getScheduleList(channel.getId());
+        }else{
+            mTvTitle.setText("Null");
+            mTvDesc.setText("Null");
+        }
+        mTvDesc.setOnExpandStateChangeListener(new ExpandableTextView.OnExpandStateChangeListener() {
             @Override
             public void onExpandStateChanged(TextView textView, boolean isExpanded) {
 
             }
         });
-
         init1stBannerAds();
 
         btnFullscreen.setOnClickListener(new View.OnClickListener() {
@@ -211,7 +196,7 @@ public class StreamActivity extends BaseActivity implements StreamMvpView {
             }
         });
 
-        streamPresenter.getScheduleList();
+
 
     }
 

@@ -16,8 +16,10 @@ import com.nontivi.nonton.injection.component.DaggerAppComponent;
 import com.nontivi.nonton.injection.module.AppModule;
 import com.nontivi.nonton.injection.module.NetworkModule;
 
+import io.realm.DynamicRealm;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
+import io.realm.RealmMigration;
 import timber.log.Timber;
 
 public class MvpStarterApplication extends Application {
@@ -50,6 +52,7 @@ public class MvpStarterApplication extends Application {
         RealmConfiguration configuration = new RealmConfiguration.Builder()
                 .name("streamingaja.db")
                 .schemaVersion(0)
+                .deleteRealmIfMigrationNeeded()
                 .build();
         Realm.setDefaultConfiguration(configuration);
 

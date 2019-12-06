@@ -23,11 +23,11 @@ public class StreamPresenter extends BasePresenter<StreamMvpView> {
         super.attachView(mvpView);
     }
 
-    public void getScheduleList() {
+    public void getScheduleList(int id) {
         checkViewAttached();
         getView().showProgress(true);
         dataManager
-                .getScheduleList()
+                .getScheduleList(id)
                 .compose(SchedulerUtils.ioToMain())
                 .subscribe(
                         schedulelist -> {
