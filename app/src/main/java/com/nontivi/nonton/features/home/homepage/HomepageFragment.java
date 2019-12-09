@@ -57,6 +57,7 @@ import io.realm.RealmList;
 import io.realm.RealmResults;
 
 import static com.nontivi.nonton.app.ConstantGroup.KEY_CHANNEL;
+import static com.nontivi.nonton.app.ConstantGroup.KEY_CHANNEL_ID;
 import static com.nontivi.nonton.app.ConstantGroup.KEY_FROM;
 import static com.nontivi.nonton.app.ConstantGroup.KEY_GENRE;
 import static com.nontivi.nonton.app.ConstantGroup.KEY_SEARCH_STRING;
@@ -346,7 +347,7 @@ public class HomepageFragment extends BaseFragment implements HomePageMvpView{
                     public void onClick(View v) {
                         RxBus.get().post(RxBus.KEY_CHANNEL_CLICKED, item.getId());
                         Intent myIntent1 = new Intent(getActivity(), StreamActivity.class);
-                        myIntent1.putExtra(KEY_CHANNEL,item);
+                        myIntent1.putExtra(KEY_CHANNEL_ID,item.getId());
                         getActivity().startActivity(myIntent1);
                     }
                 });
@@ -436,7 +437,7 @@ public class HomepageFragment extends BaseFragment implements HomePageMvpView{
                     public void onClick(View v) {
                         RxBus.get().post(RxBus.KEY_CHANNEL_CLICKED, item.getId());
                         Intent myIntent1 = new Intent(getActivity(), StreamActivity.class);
-                        myIntent1.putExtra(KEY_CHANNEL,item);
+                        myIntent1.putExtra(KEY_CHANNEL_ID,item.getId());
                         getActivity().startActivity(myIntent1);
                     }
                 });

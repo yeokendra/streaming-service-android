@@ -44,6 +44,7 @@ import io.realm.Realm;
 import io.realm.RealmResults;
 import timber.log.Timber;
 
+import static com.nontivi.nonton.app.ConstantGroup.KEY_CHANNEL_ID;
 import static com.nontivi.nonton.app.ConstantGroup.KEY_SEARCH_STRING;
 import static com.nontivi.nonton.data.model.ChannelContainer.ID_CHANNEL_ALL;
 
@@ -129,6 +130,7 @@ public class SearchActivity extends BaseActivity implements SearchMvpView, Error
                     public void onClick(View v) {
                         RxBus.get().post(RxBus.KEY_CHANNEL_CLICKED, item.getId());
                         Intent myIntent1 = new Intent(SearchActivity.this, StreamActivity.class);
+                        myIntent1.putExtra(KEY_CHANNEL_ID,item.getId());
                         startActivity(myIntent1);
                     }
                 });

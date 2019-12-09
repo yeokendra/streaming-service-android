@@ -4,6 +4,7 @@ import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
 
+import io.realm.RealmList;
 import io.realm.RealmModel;
 import io.realm.RealmObject;
 import io.realm.RealmResults;
@@ -26,6 +27,8 @@ public class Channel extends RealmObject implements Serializable{
     private boolean isTrending;
     @SerializedName("is_published")
     private boolean isPublished;
+    @SerializedName("genre_id")
+    private RealmList<Integer> genreId;
     @SerializedName("created_at")
     private String createdAt;
     @SerializedName("updated_at")
@@ -134,4 +137,13 @@ public class Channel extends RealmObject implements Serializable{
     public void setUpdatedAt(String updatedAt) {
         this.updatedAt = updatedAt;
     }
+
+    public RealmList<Integer> getGenreId() {
+        return genreId;
+    }
+
+    public void setGenreId(RealmList<Integer> genreId) {
+        this.genreId = genreId;
+    }
+
 }
