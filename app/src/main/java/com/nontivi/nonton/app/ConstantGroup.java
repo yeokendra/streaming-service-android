@@ -13,6 +13,7 @@ public class ConstantGroup {
     public static final String KEY_GENRE = "key_genre";
 
     public static final String KEY_CHANNEL = "key_channel";
+    public static final String KEY_CHANNEL_ID = "key_channel_id";
 
     public static final String MIN_VERSION = "min_version";
     public static final String LATEST_VERSION = "latest_version";

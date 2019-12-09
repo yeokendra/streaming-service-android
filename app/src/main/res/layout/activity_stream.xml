@@ -104,11 +104,11 @@
                 android:paddingEnd="@dimen/padding_main">
 
                 <Button
-                    android:id="@+id/btn_subscribe"
+                    android:id="@+id/btn_fav"
                     android:layout_width="wrap_content"
                     android:layout_height="36dp"
-                    android:background="#673AB7"
-                    android:text="Subscribe"
+                    android:background="@color/primary"
+                    android:text="Save as Favorite"
                     android:textColor="@color/white"
                     android:textSize="@dimen/text_small"
                     android:textAllCaps="false"

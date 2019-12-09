@@ -39,11 +39,13 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import io.reactivex.disposables.Disposable;
+import io.realm.Case;
 import io.realm.Realm;
 import io.realm.RealmResults;
 import timber.log.Timber;
 
 import static com.nontivi.nonton.app.ConstantGroup.KEY_SEARCH_STRING;
+import static com.nontivi.nonton.data.model.ChannelContainer.ID_CHANNEL_ALL;
 
 public class SearchActivity extends BaseActivity implements SearchMvpView, ErrorView.ErrorListener {
 
@@ -96,7 +98,7 @@ public class SearchActivity extends BaseActivity implements SearchMvpView, Error
         mRealm.executeTransaction(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
-                RealmResults<Channel> channels = realm.where(Channel.class).contains("title",search).findAll();
+                RealmResults<Channel> channels = realm.where(Channel.class).equalTo("channelContainer.id", ID_CHANNEL_ALL).contains("title",search, Case.INSENSITIVE).findAll();
                 channelList.addAll(channels);
                 loadData();
             }

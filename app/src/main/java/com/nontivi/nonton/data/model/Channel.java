@@ -6,8 +6,13 @@ import java.io.Serializable;
 
 import io.realm.RealmModel;
 import io.realm.RealmObject;
+import io.realm.RealmResults;
+import io.realm.annotations.LinkingObjects;
+import io.realm.annotations.PrimaryKey;
 
 public class Channel extends RealmObject implements Serializable{
+
+    @PrimaryKey
     private int id;
     private String title;
     private String description;
@@ -25,6 +30,22 @@ public class Channel extends RealmObject implements Serializable{
     private String createdAt;
     @SerializedName("updated_at")
     private String updatedAt;
+
+    @LinkingObjects("channels")
+    private final RealmResults<ChannelContainer> channelContainer = null;
+
+    public Channel(){
+        id = -1;
+        title = "";
+        description = "";
+        imageUrl = "";
+        streamingUrl = "";
+        currentViewer = -1;
+        isTrending = false;
+        isPublished = false;
+        createdAt = "";
+        updatedAt = "";
+    }
 
     public String getTitle() {
         return title;

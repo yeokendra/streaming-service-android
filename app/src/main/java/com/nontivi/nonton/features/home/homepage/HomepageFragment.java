@@ -30,8 +30,8 @@ import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.ads.initialization.InitializationStatus;
 import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
 import com.nontivi.nonton.R;
-import com.nontivi.nonton.data.model.Appdata;
 import com.nontivi.nonton.data.model.Channel;
+import com.nontivi.nonton.data.model.ChannelContainer;
 import com.nontivi.nonton.data.model.Genre;
 import com.nontivi.nonton.data.response.ChannelListResponse;
 import com.nontivi.nonton.data.response.GenreListResponse;
@@ -53,6 +53,7 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import io.realm.Realm;
+import io.realm.RealmList;
 import io.realm.RealmResults;
 
 import static com.nontivi.nonton.app.ConstantGroup.KEY_CHANNEL;
@@ -64,6 +65,7 @@ import static com.nontivi.nonton.app.StaticGroup.HOME_ADS1;
 import static com.nontivi.nonton.app.StaticGroup.HOME_CHANNEL_LIST;
 import static com.nontivi.nonton.app.StaticGroup.HOME_GENRE;
 import static com.nontivi.nonton.app.StaticGroup.HOME_TRENDING;
+import static com.nontivi.nonton.data.model.ChannelContainer.ID_CHANNEL_ALL;
 
 
 public class HomepageFragment extends BaseFragment implements HomePageMvpView{
@@ -132,15 +134,19 @@ public class HomepageFragment extends BaseFragment implements HomePageMvpView{
         genreList = new ArrayList<>();
 
         mRealm = Realm.getDefaultInstance();
+
         if(!NetworkUtil.isNetworkConnected(getActivity())) {
+            //RealmResults<ChannelContainer> channelContainer = mRealm.where(ChannelContainer.class).equalTo("id",ID_CHANNEL_ALL).findAll();
             mRealm.executeTransaction(new Realm.Transaction() {
                 @Override
                 public void execute(Realm realm) {
-                    RealmResults<Channel> trendings = realm.where(Channel.class).equalTo("isTrending", true).findAll();
-                    if (trendings != null && trendings.size() > 0) {
-                        trendingList.addAll(trendings);
-                    }
-                    RealmResults<Channel> channels = realm.where(Channel.class).findAll();
+                    //if(channelContainer!=null) {
+                        RealmResults<Channel> trendings = realm.where(Channel.class).equalTo("channelContainer.id", ID_CHANNEL_ALL).equalTo("isTrending",true).findAll();
+                        if (trendings != null && trendings.size() > 0) {
+                            trendingList.addAll(trendings);
+                        }
+                    //}
+                    RealmResults<Channel> channels = realm.where(Channel.class).equalTo("channelContainer.id", ID_CHANNEL_ALL).findAll();
                     if (channels != null && channels.size() > 0) {
                         channelList.addAll(channels);
                     }
@@ -478,15 +484,17 @@ public class HomepageFragment extends BaseFragment implements HomePageMvpView{
 
         if(channels.getMeta().getData() != null){
             channelList.addAll(channels.getMeta().getData().channels);
-            Log.v(LOG_TAG,"channel size = "+channelList.size());
-
             mRealm.executeTransaction(new Realm.Transaction() {
                 @Override
                 public void execute(Realm realm) {
-                    RealmResults<Channel> channels = realm.where(Channel.class).findAll();
-                    channels.deleteAllFromRealm();
-
-                    realm.insert(channelList);
+                    ChannelContainer channelContainer = realm.where(ChannelContainer.class).equalTo("id",ID_CHANNEL_ALL).findFirst();
+                    if(channelContainer!=null) {
+                        channelContainer.setChannels(channelList);
+                    }else {
+                        channelContainer = realm.createObject(ChannelContainer.class);
+                        channelContainer.setId(ID_CHANNEL_ALL);
+                        channelContainer.setChannels(channelList);
+                    }
                 }
             });
 

@@ -33,6 +33,7 @@ import com.ms.square.android.expandabletextview.ExpandableTextView;
 import com.nontivi.nonton.R;
 import com.nontivi.nonton.data.model.Appdata;
 import com.nontivi.nonton.data.model.Channel;
+import com.nontivi.nonton.data.model.ChannelContainer;
 import com.nontivi.nonton.data.model.Schedule;
 import com.nontivi.nonton.data.model.ScheduleDay;
 import com.nontivi.nonton.data.response.HttpResponse;
@@ -56,10 +57,12 @@ import butterknife.BindView;
 import io.realm.Realm;
 
 import static com.nontivi.nonton.app.ConstantGroup.KEY_CHANNEL;
+import static com.nontivi.nonton.app.ConstantGroup.KEY_CHANNEL_ID;
+import static com.nontivi.nonton.data.model.ChannelContainer.ID_CHANNEL_FAVORITES;
 
 public class StreamActivity extends BaseActivity implements StreamMvpView {
 
-    private final String STREAM_1 = "http://45.126.83.51/session/7b78becc-fbb2-11e9-b358-9e05a09d9a91/dr9445/h/h02/01.m3u8";
+//    private final String STREAM_1 = "http://45.126.83.51/session/7b78becc-fbb2-11e9-b358-9e05a09d9a91/dr9445/h/h02/01.m3u8";
 
     @Inject
     StreamPresenter streamPresenter;
@@ -88,6 +91,9 @@ public class StreamActivity extends BaseActivity implements StreamMvpView {
     @BindView(R.id.rl_data_warning)
     RelativeLayout rlDataWarning;
 
+    @BindView(R.id.btn_fav)
+    Button btnFav;
+
     private SimpleExoPlayer player;
     private int currentWindow = 0;
     private long playbackPosition = 0;
@@ -105,6 +111,9 @@ public class StreamActivity extends BaseActivity implements StreamMvpView {
     private AdView mAdView;
 
     private Realm mRealm;
+    private Channel mChannel;
+
+    private boolean isSavedAsFav = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -113,9 +122,28 @@ public class StreamActivity extends BaseActivity implements StreamMvpView {
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
         super.onCreate(savedInstanceState);
-
-
         mRealm = Realm.getDefaultInstance();
+        setIsChannelFavorite(false);
+
+        mChannel = (Channel)getIntent().getSerializableExtra(KEY_CHANNEL);
+
+        if(mChannel !=null){
+            mTvTitle.setText(mChannel.getTitle());
+            mTvViewer.setText(mChannel.getCurrentViewer()+" Viewer(s)");
+            mTvDesc.setText(mChannel.getDescription());
+            streamPresenter.getScheduleList(mChannel.getId());
+        }else{
+            int channelId = getIntent().getIntExtra(KEY_CHANNEL_ID,-1);
+            if(channelId != -1){
+                mChannel = mRealm.where(Channel.class).equalTo("id",channelId).findFirst();
+                if(mChannel!=null){
+                    mTvTitle.setText(mChannel.getTitle());
+                    mTvViewer.setText(mChannel.getCurrentViewer()+" Viewer(s)");
+                    mTvDesc.setText(mChannel.getDescription());
+                    streamPresenter.getScheduleList(mChannel.getId());
+                }
+            }
+        }
         mRealm.executeTransaction(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
@@ -129,6 +157,20 @@ public class StreamActivity extends BaseActivity implements StreamMvpView {
                         case 1:
                             rlDataWarning.setVisibility(View.VISIBLE);
                             break;
+                    }
+                }
+
+                ChannelContainer fav = realm.where(ChannelContainer.class).equalTo("id",ID_CHANNEL_FAVORITES).findFirst();
+                if(fav!=null){
+                    if(fav.getChannels()!=null && fav.getChannels().size() > 0){
+                        for(Channel channel : fav.getChannels()){
+                            if(channel!=null) {
+                                if (mChannel.getId() == channel.getId()) {
+                                    setIsChannelFavorite(true);
+                                    break;
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -157,17 +199,59 @@ public class StreamActivity extends BaseActivity implements StreamMvpView {
             }
         });
 
-        Channel channel = (Channel)getIntent().getSerializableExtra(KEY_CHANNEL);
+        btnFav.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
 
-        if(channel!=null){
-            mTvTitle.setText(channel.getTitle());
-            mTvViewer.setText(channel.getCurrentViewer()+" Viewer(s)");
-            mTvDesc.setText(channel.getDescription());
-            streamPresenter.getScheduleList(channel.getId());
-        }else{
-            mTvTitle.setText("Null");
-            mTvDesc.setText("Null");
-        }
+                ChannelContainer fav = mRealm.where(ChannelContainer.class).equalTo("id",ID_CHANNEL_FAVORITES).findFirst();
+                if(!isSavedAsFav){
+                    if(fav!=null){
+                        if(fav.getChannels()!=null){
+                            boolean isAlreadySaved = false;
+                            for(Channel channel : fav.getChannels()){
+                                if(mChannel.getId() == channel.getId()){
+                                    isAlreadySaved = true;
+                                    break;
+                                }
+                            }
+                            if(!isAlreadySaved){
+                                mRealm.beginTransaction();
+                                fav.addChannel(mChannel);
+                                mRealm.insertOrUpdate(fav);
+                                setIsChannelFavorite(true);
+                                mRealm.commitTransaction();
+                            }
+                        }
+                    }else{
+                        mRealm.beginTransaction();
+                        fav = mRealm.createObject(ChannelContainer.class);
+                        fav.setId(ID_CHANNEL_FAVORITES);
+                        fav.addChannel(mChannel);
+                        setIsChannelFavorite(true);
+                        mRealm.commitTransaction();
+                    }
+                }else{
+                    if(fav!=null){
+                        if(fav.getChannels()!=null && fav.getChannels().size() > 0){
+                            for(int i = 0; i < fav.getChannels().size(); i++){
+                                if(mChannel.getId() == fav.getChannels().get(i).getId()){
+                                    mRealm.beginTransaction();
+                                    fav.removeChannelByPosition(i);
+                                    setIsChannelFavorite(false);
+                                    mRealm.commitTransaction();
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+
+
+
+            }
+        });
+
+
         mTvDesc.setOnExpandStateChangeListener(new ExpandableTextView.OnExpandStateChangeListener() {
             @Override
             public void onExpandStateChanged(TextView textView, boolean isExpanded) {
@@ -203,7 +287,9 @@ public class StreamActivity extends BaseActivity implements StreamMvpView {
     @Override
     protected void onStart() {
         super.onStart();
-        initializePlayer();
+        if(mChannel !=null) {
+            initializePlayer(mChannel.getStreamingUrl());
+        }
     }
 
     @Override
@@ -229,7 +315,9 @@ public class StreamActivity extends BaseActivity implements StreamMvpView {
     @Override
     protected void onResume() {
         super.onResume();
-        initializePlayer();
+        if(mChannel !=null) {
+            initializePlayer(mChannel.getStreamingUrl());
+        }
     }
 
     @Override
@@ -241,7 +329,9 @@ public class StreamActivity extends BaseActivity implements StreamMvpView {
     @Override
     protected void onDestroy() {
         releasePlayer();
-        mRealm.close();
+        if(mRealm != null && !mRealm.isClosed()) {
+            mRealm.close();
+        }
         super.onDestroy();
     }
 
@@ -269,8 +359,11 @@ public class StreamActivity extends BaseActivity implements StreamMvpView {
                 scheduleDayList.add(day);
             }
         }
-        scheduleDayList.get(lastSelectedItem).setSelected(true);
-        initScheduleDetailList(scheduleDayList.get(lastSelectedItem).getSchedules());
+
+        if (scheduleDayList.size() > 0) {
+            scheduleDayList.get(lastSelectedItem).setSelected(true);
+            initScheduleDetailList(scheduleDayList.get(lastSelectedItem).getSchedules());
+        }
 
         GridLayoutManager layoutManager = new GridLayoutManager(this, 1, GridLayoutManager.HORIZONTAL, false);
         layoutManager.setItemPrefetchEnabled(false);
@@ -432,7 +525,7 @@ public class StreamActivity extends BaseActivity implements StreamMvpView {
     }
 
 
-    private void initializePlayer() {
+    private void initializePlayer(String url) {
         if (player == null) {
             player = ExoPlayerFactory.newSimpleInstance(context);
             playerView.setPlayer(player);
@@ -447,7 +540,7 @@ public class StreamActivity extends BaseActivity implements StreamMvpView {
 //        Util.getUserAgent(context, "Streaming Aja"));
 
         MediaSource videoSource = new HlsMediaSource.Factory(new DefaultHttpDataSourceFactory("Streaming Aja"))
-                    .createMediaSource(Uri.parse(STREAM_1));
+                    .createMediaSource(Uri.parse(url));
 // Prepare the player with the source.
         player.prepare(videoSource, true, false);
     }
@@ -551,6 +644,17 @@ public class StreamActivity extends BaseActivity implements StreamMvpView {
     @Override
     public void showError(Throwable error) {
 
+    }
+
+    private void setIsChannelFavorite(boolean isFav){
+        isSavedAsFav = isFav;
+        if(isFav){
+            btnFav.setBackgroundColor(getResources().getColor(R.color.material_grey_8080));
+            btnFav.setText(R.string.channel_remove_fav);
+        }else{
+            btnFav.setBackgroundColor(getResources().getColor(R.color.primary));
+            btnFav.setText(R.string.channel_save_as_fav);
+        }
     }
 
     private ScheduleDay getDayFromTimestamp(long timestamp){

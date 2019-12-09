@@ -18,4 +18,6 @@
     <string name="setting_mobile_data_warning">Peringatan Data Seluler</string>
     <string name="setting_version">Versi</string>
     <string name="title_home">Utama</string>
+    <string name="channel_remove_fav">Tersimpan</string>
+    <string name="channel_save_as_fav">Simpan sebagai Favorite</string>
 </resources>

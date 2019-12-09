@@ -51,8 +51,13 @@ public class MvpStarterApplication extends Application {
         Realm.init(this);
         RealmConfiguration configuration = new RealmConfiguration.Builder()
                 .name("streamingaja.db")
-                .schemaVersion(0)
-                .deleteRealmIfMigrationNeeded()
+                .schemaVersion(10)
+                .migration(new RealmMigration() {
+                    @Override
+                    public void migrate(DynamicRealm realm, long oldVersion, long newVersion) {
+
+                    }
+                })
                 .build();
         Realm.setDefaultConfiguration(configuration);
 

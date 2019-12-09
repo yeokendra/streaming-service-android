@@ -9,9 +9,10 @@
     <RelativeLayout
         android:id="@+id/rl_en"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="36dp"
         android:gravity="center_vertical"
-        android:padding="@dimen/padding_content">
+        android:paddingBottom="@dimen/padding_content"
+        android:paddingTop="@dimen/padding_content">
 
 
         <TextView
@@ -31,6 +32,7 @@
             android:layout_marginEnd="@dimen/interval_main"
             android:layout_marginRight="@dimen/interval_main"
             android:src="@drawable/ic_check"
+            android:scaleType="fitCenter"
             android:visibility="gone" />
 
     </RelativeLayout>
@@ -44,9 +46,10 @@
     <RelativeLayout
         android:id="@+id/rl_id"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="36dp"
         android:gravity="center_vertical"
-        android:padding="@dimen/padding_content">
+        android:paddingBottom="@dimen/padding_content"
+        android:paddingTop="@dimen/padding_content">
 
         <TextView
             android:layout_width="wrap_content"
@@ -65,6 +68,7 @@
             android:layout_marginEnd="@dimen/interval_main"
             android:layout_marginRight="@dimen/interval_main"
             android:src="@drawable/ic_check"
+            android:scaleType="fitCenter"
             android:visibility="gone" />
 
     </RelativeLayout>

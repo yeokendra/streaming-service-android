@@ -15,7 +15,7 @@ import com.google.android.gms.ads.MobileAds;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.nontivi.nonton.BuildConfig;
 import com.nontivi.nonton.R;
-import com.nontivi.nonton.app.ConstantGroup;
+import com.nontivi.nonton.data.model.ChannelContainer;
 import com.nontivi.nonton.data.model.Setting;
 import com.nontivi.nonton.data.response.HttpResponse;
 import com.nontivi.nonton.data.response.SettingListResponse;
@@ -29,18 +29,15 @@ import com.nontivi.nonton.util.LocaleUtil;
 import com.nontivi.nonton.util.RxBus;
 import com.nontivi.nonton.widget.CustomTabBarView;
 import com.nontivi.nonton.widget.CustomViewPager;
-import com.nontivi.nonton.widget.dialog.CustomDialog;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import javax.inject.Inject;
 
 import butterknife.BindView;
+import io.realm.Realm;
 import rx.Observable;
-import rx.functions.Action0;
 import rx.functions.Action1;
-import timber.log.Timber;
 
 import static com.nontivi.nonton.app.ConstantGroup.LATEST_VERSION;
 import static com.nontivi.nonton.app.ConstantGroup.LOG_TAG;
@@ -73,6 +70,8 @@ public class HomeActivity extends BaseActivity implements HomeMvpView, ErrorView
 
     private ArrayList<Setting> mSettings;
 
+    private Realm mRealm;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -80,6 +79,8 @@ public class HomeActivity extends BaseActivity implements HomeMvpView, ErrorView
 
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
         LocaleUtil.onAttach(this);
+
+        mRealm = Realm.getDefaultInstance();
 
         mChannelClickedObservable = RxBus.get().register(RxBus.KEY_CHANNEL_CLICKED, Integer.class);
         mChannelClickedObservable.subscribe(new Action1<Integer>() {
@@ -99,6 +100,11 @@ public class HomeActivity extends BaseActivity implements HomeMvpView, ErrorView
         setPagerListener();
         //setSupportActionBar(toolbar);
 
+        ChannelContainer channelContainer = mRealm.where(ChannelContainer.class).findFirst();
+        if(channelContainer !=null){
+            Log.e(LOG_TAG,"oncreate channelContainer = "+ channelContainer.getChannels().size());
+        }
+
         homePresenter.getData();
     }
 
@@ -108,6 +114,15 @@ public class HomeActivity extends BaseActivity implements HomeMvpView, ErrorView
 
         if (mChannelClickedObservable != null) {
             RxBus.get().unregister(RxBus.KEY_CHANNEL_CLICKED, mChannelClickedObservable);
+        }
+
+        ChannelContainer channelContainer = mRealm.where(ChannelContainer.class).findFirst();
+        if(channelContainer !=null){
+            Log.e(LOG_TAG,"ondestroy channelContainer = "+ channelContainer.getChannels().size());
+        }
+
+        if(mRealm!=null){
+            mRealm.close();
         }
     }
 
