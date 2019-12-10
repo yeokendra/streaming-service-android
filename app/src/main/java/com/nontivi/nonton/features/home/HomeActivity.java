@@ -1,6 +1,9 @@
 package com.nontivi.nonton.features.home;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
+
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentStatePagerAdapter;
@@ -8,14 +11,17 @@ import androidx.viewpager.widget.ViewPager;
 import androidx.appcompat.app.ActionBar;
 import android.util.Log;
 import android.util.SparseArray;
+import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.ads.MobileAds;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.nontivi.nonton.BuildConfig;
 import com.nontivi.nonton.R;
-import com.nontivi.nonton.data.model.ChannelContainer;
+import com.nontivi.nonton.app.StaticGroup;
 import com.nontivi.nonton.data.model.Setting;
 import com.nontivi.nonton.data.response.HttpResponse;
 import com.nontivi.nonton.data.response.SettingListResponse;
@@ -25,10 +31,14 @@ import com.nontivi.nonton.features.home.bookmarkpage.BookmarkFragment;
 import com.nontivi.nonton.features.home.homepage.HomepageFragment;
 import com.nontivi.nonton.features.home.settingpage.SettingFragment;
 import com.nontivi.nonton.injection.component.ActivityComponent;
+import com.nontivi.nonton.util.ClickUtil;
 import com.nontivi.nonton.util.LocaleUtil;
 import com.nontivi.nonton.util.RxBus;
 import com.nontivi.nonton.widget.CustomTabBarView;
 import com.nontivi.nonton.widget.CustomViewPager;
+import com.nontivi.nonton.widget.dialog.CustomDialog;
+import com.nontivi.nonton.widget.dialog.DialogAction;
+import com.nontivi.nonton.widget.dialog.DialogOptionType;
 
 import java.util.ArrayList;
 
@@ -39,9 +49,11 @@ import io.realm.Realm;
 import rx.Observable;
 import rx.functions.Action1;
 
+import static com.nontivi.nonton.app.ConstantGroup.IS_MAINTENANCE;
 import static com.nontivi.nonton.app.ConstantGroup.LATEST_VERSION;
 import static com.nontivi.nonton.app.ConstantGroup.LOG_TAG;
 import static com.nontivi.nonton.app.ConstantGroup.MIN_VERSION;
+import static com.nontivi.nonton.app.ConstantGroup.SUPPORT_EMAIL;
 
 public class HomeActivity extends BaseActivity implements HomeMvpView, ErrorView.ErrorListener {
 
@@ -71,6 +83,9 @@ public class HomeActivity extends BaseActivity implements HomeMvpView, ErrorView
     private ArrayList<Setting> mSettings;
 
     private Realm mRealm;
+
+    private boolean isMaintenance = false;
+    private boolean isMinVersion = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -137,9 +152,6 @@ public class HomeActivity extends BaseActivity implements HomeMvpView, ErrorView
 
     @Override
     public void showSetting(HttpResponse<SettingListResponse> settings) {
-        //pokemonAdapter.setPokemon(pokemon);
-        //pokemonRecycler.setVisibility(View.VISIBLE);
-        //swipeRefreshLayout.setVisibility(View.VISIBLE);
 
         if(settings.getMeta().getData() != null){
             mSettings = new ArrayList<>();
@@ -147,15 +159,108 @@ public class HomeActivity extends BaseActivity implements HomeMvpView, ErrorView
         }
 
         for(Setting setting : mSettings){
-            switch (setting.getValue()){
+            switch (setting.getName()){
+                case IS_MAINTENANCE:
+                    if(1 == Integer.valueOf(setting.getValue())){
+                        isMaintenance = true;
+                        View viewMaintenance = View.inflate(HomeActivity.this, R.layout.include_maintainance, null);
+                        TextView btnContact = viewMaintenance.findViewById(R.id.tv_contact);
+                        LinearLayout btnClose = viewMaintenance.findViewById(R.id.btn_close);
+                        btnContact.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                if (ClickUtil.isFastDoubleClick()) return;
+                                String subject = "[URGENT]";
+                                String message = "Hello Support!\nI have a problem with...";
+                                StaticGroup.shareWithEmail(HomeActivity.this,SUPPORT_EMAIL,subject,message);
+
+                            }
+                        });
+                        btnClose.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                System.exit(0);
+                            }
+                        });
+                        final CustomDialog customDialog = new CustomDialog.Builder(HomeActivity.this)
+                                .optionType(DialogOptionType.NONE)
+                                .title(R.string.appversion_need_update_title)
+                                .addCustomView(viewMaintenance)
+                                .autoDismiss(false)
+                                .cancelable(false)
+                                .canceledOnTouchOutside(false).build();
+                        customDialog.show();
+                    }
                 case MIN_VERSION:
                     if(BuildConfig.VERSION_CODE < Integer.valueOf(setting.getValue())){
-                        Toast.makeText(this, "lower than min", Toast.LENGTH_SHORT).show();
+                        isMinVersion = false;
+                        if(!isMaintenance) {
+                            View viewUpdate = View.inflate(HomeActivity.this, R.layout.include_need_update, null);
+                            TextView tvCurrVersion = viewUpdate.findViewById(R.id.tv_version);
+                            TextView tvLatestVersion = viewUpdate.findViewById(R.id.tv_version_new);
+                            LinearLayout btnUpdate = viewUpdate.findViewById(R.id.btn_update);
+
+                            tvCurrVersion.setText(String.format(getString(R.string.appversion_need_update_version_current), BuildConfig.VERSION_NAME));
+                            if (setting.getText() != null) {
+                                tvLatestVersion.setText(String.format(getString(R.string.appversion_need_update_version_new), setting.getText()));
+                            } else {
+                                tvLatestVersion.setText(String.format(getString(R.string.appversion_need_update_version_new), setting.getValue()));
+                            }
+                            btnUpdate.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    if (ClickUtil.isFastDoubleClick()) return;
+                                    StaticGroup.openGooglePlay(HomeActivity.this);
+
+                                }
+                            });
+                            final CustomDialog customDialog = new CustomDialog.Builder(HomeActivity.this)
+                                    .optionType(DialogOptionType.NONE)
+                                    .title(R.string.appversion_need_update_title)
+                                    .addCustomView(viewUpdate)
+                                    .autoDismiss(false)
+                                    .cancelable(false)
+                                    .canceledOnTouchOutside(false).build();
+
+                            customDialog.show();
+                        }
                     }
                     break;
                 case LATEST_VERSION:
-                    if(BuildConfig.VERSION_CODE < Integer.valueOf(setting.getValue())){
-                        Toast.makeText(this, "lower than latest", Toast.LENGTH_SHORT).show();
+                    if(BuildConfig.VERSION_CODE < Integer.valueOf(setting.getValue())) {
+                        if (!isMaintenance && isMinVersion) {
+                            View viewLatest = View.inflate(HomeActivity.this, R.layout.include_newer_version, null);
+                            TextView tvCurrVersion = viewLatest.findViewById(R.id.tv_version);
+                            TextView tvLatestVersion = viewLatest.findViewById(R.id.tv_version_new);
+                            tvCurrVersion.setText(String.format(getString(R.string.appversion_need_update_version_current), BuildConfig.VERSION_NAME));
+                            if (setting.getText() != null) {
+                                tvLatestVersion.setText(String.format(getString(R.string.appversion_need_update_version_new), setting.getText()));
+                            } else {
+                                tvLatestVersion.setText(String.format(getString(R.string.appversion_need_update_version_new), setting.getValue()));
+                            }
+                            final CustomDialog customDialog = new CustomDialog.Builder(HomeActivity.this)
+                                    .optionType(DialogOptionType.YES_NO)
+                                    .title(R.string.appversion_newer_title)
+                                    .addCustomView(viewLatest)
+                                    .autoDismiss(true)
+                                    .canceledOnTouchOutside(true)
+                                    .negativeText(R.string.warning_close)
+                                    .onNegative(new CustomDialog.MaterialDialogButtonCallback(){
+                                        @Override
+                                        public void onClick(@NonNull CustomDialog dialog, @NonNull DialogAction which) {
+                                            dialog.dismiss();
+                                        }
+                                    })
+                                    .positiveText(R.string.appversion_newer_download)
+                                    .onPositive(new CustomDialog.MaterialDialogButtonCallback(){
+                                        @Override
+                                        public void onClick(@NonNull CustomDialog dialog, @NonNull DialogAction which) {
+                                            StaticGroup.openGooglePlay(HomeActivity.this);
+                                            dialog.dismiss();
+                                        }
+                                    }).build();
+                            customDialog.show();
+                        }
                     }
                     break;
             }
@@ -165,30 +270,10 @@ public class HomeActivity extends BaseActivity implements HomeMvpView, ErrorView
 
     @Override
     public void showProgress(boolean show) {
-//        if (show) {
-//            if (pokemonRecycler.getVisibility() == View.VISIBLE
-//                    && pokemonAdapter.getItemCount() > 0) {
-//                swipeRefreshLayout.setRefreshing(true);
-//            } else {
-//                progressBar.setVisibility(View.VISIBLE);
-//
-//                pokemonRecycler.setVisibility(View.GONE);
-//                swipeRefreshLayout.setVisibility(View.GONE);
-//            }
-//
-//            errorView.setVisibility(View.GONE);
-//        } else {
-//            swipeRefreshLayout.setRefreshing(false);
-//            progressBar.setVisibility(View.GONE);
-//        }
     }
 
     @Override
     public void showError(Throwable error) {
-//        pokemonRecycler.setVisibility(View.GONE);
-//        swipeRefreshLayout.setVisibility(View.GONE);
-//        errorView.setVisibility(View.VISIBLE);
-//        Timber.e(error, "There was an error retrieving the pokemon");
         Toast.makeText(this, "error", Toast.LENGTH_SHORT).show();
     }
 

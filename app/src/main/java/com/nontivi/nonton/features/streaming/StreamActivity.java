@@ -16,6 +16,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.DefaultItemAnimator;
@@ -41,6 +42,7 @@ import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
 import com.ms.square.android.expandabletextview.ExpandableTextView;
 import com.nontivi.nonton.R;
+import com.nontivi.nonton.app.StaticGroup;
 import com.nontivi.nonton.data.model.Appdata;
 import com.nontivi.nonton.data.model.Channel;
 import com.nontivi.nonton.data.model.ChannelContainer;
@@ -51,8 +53,13 @@ import com.nontivi.nonton.data.response.ScheduleListResponse;
 import com.nontivi.nonton.features.base.BaseActivity;
 import com.nontivi.nonton.features.base.BaseRecyclerAdapter;
 import com.nontivi.nonton.features.base.BaseRecyclerViewHolder;
+import com.nontivi.nonton.features.home.HomeActivity;
 import com.nontivi.nonton.injection.component.ActivityComponent;
+import com.nontivi.nonton.util.ClickUtil;
 import com.nontivi.nonton.util.NetworkUtil;
+import com.nontivi.nonton.widget.dialog.CustomDialog;
+import com.nontivi.nonton.widget.dialog.DialogAction;
+import com.nontivi.nonton.widget.dialog.DialogOptionType;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -70,6 +77,7 @@ import io.realm.Realm;
 import static com.nontivi.nonton.app.ConstantGroup.KEY_CHANNEL;
 import static com.nontivi.nonton.app.ConstantGroup.KEY_CHANNEL_ID;
 import static com.nontivi.nonton.app.ConstantGroup.LOG_TAG;
+import static com.nontivi.nonton.app.ConstantGroup.SUPPORT_EMAIL;
 import static com.nontivi.nonton.data.model.ChannelContainer.ID_CHANNEL_FAVORITES;
 
 public class StreamActivity extends BaseActivity implements StreamMvpView {
@@ -268,6 +276,46 @@ public class StreamActivity extends BaseActivity implements StreamMvpView {
             }
         });
 
+        findViewById(R.id.ib_share).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String deepUrl;
+                String storeUrl = "https://play.google.com/";
+                deepUrl = "Hi! I've found a new way to watch TV show!\nClick the link below to download!\n"+storeUrl;
+                StaticGroup.shareWithShareDialog(StreamActivity.this, deepUrl, "Streaming Aja");
+            }
+        });
+
+        findViewById(R.id.ib_setting).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                View viewSetting = View.inflate(StreamActivity.this, R.layout.include_streaming_menu, null);
+                RelativeLayout btnReport = viewSetting.findViewById(R.id.rl_report);
+                btnReport.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        if (ClickUtil.isFastDoubleClick()) return;
+                        String subject = "[REPORT]";
+                        String message = String.format("Hello Support!\nI have to report %s beacuse...",mChannel.getTitle());
+                        StaticGroup.shareWithEmail(StreamActivity.this,SUPPORT_EMAIL,subject,message);
+                    }
+                });
+                final CustomDialog customDialog = new CustomDialog.Builder(StreamActivity.this)
+                        .optionType(DialogOptionType.NONE)
+                        //.title(R.string.setting_change_lang)
+                        .onPositive(new CustomDialog.MaterialDialogButtonCallback() {
+                            @Override
+                            public void onClick(@NonNull CustomDialog dialog, @NonNull DialogAction which) {
+                                dialog.dismiss();
+                            }
+                        })
+                        .addCustomView(viewSetting)
+                        .autoDismiss(false)
+                        .canceledOnTouchOutside(true).build();
+
+                customDialog.show();
+            }
+        });
 
         mTvDesc.setOnExpandStateChangeListener(new ExpandableTextView.OnExpandStateChangeListener() {
             @Override

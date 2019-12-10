@@ -63,6 +63,7 @@ public class CustomDialog extends BaseDialog implements View.OnClickListener {
 
     protected boolean cancelOnTouchOutside = true;
     protected boolean autoDismiss = true;
+    protected boolean enableOnBackPressed = true;
     View lastPressedView;
     private String defaultPositiveText = "Yes";
     private String defaultNegativeText = "No";
@@ -135,6 +136,11 @@ public class CustomDialog extends BaseDialog implements View.OnClickListener {
         });
 
         scaleUp.start();
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
     }
 
     @Override

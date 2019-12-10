@@ -23,4 +23,16 @@
     <string name="warning_is_using_mobile_data">Anda sedang menggunakan data seluler. Klik disini untuk berhenti menampilkan peringatan ini.</string>
     <string name="warning_close">Tutup</string>
     <string name="error_player">Tidak bisa memutar video. Coba sesaat lagi.</string>
+    <string name="appversion_need_update_title">Perbarui Aplikasi</string>
+    <string name="appversion_need_update_desc">Kami telah memperbaiki masalah &amp; menambahkan fitur baru! Kami jamin versi yang terbaru lebih baik \:\)</string>
+    <string name="appversion_need_update_button">Perbarui Sekarang</string>
+    <string name="appversion_need_update_version_current">Versi aplikasi %s</string>
+    <string name="appversion_need_update_version_new">Versi terbaru %s</string>
+    <string name="maintenance_title">Sedang dalam Perbaikan</string>
+    <string name="maintenance_desc">Kami sedang mengerjakan sesuatu dan akan kembali sesaat lagi!</string>
+    <string name="maintenance_urgent">Untuk masalah mendesak, </string>
+    <string name="maintenance_urgent_contact">Hubungi Kami</string>
+    <string name="appversion_newer_title">Versi Baru Tersedia</string>
+    <string name="appversion_newer_desc">Kami menyarankan untuk mengunduh versi terbaru untuk mendapatkan Experience yang maksimal!</string>
+    <string name="appversion_newer_download">Unduh</string>
 </resources>

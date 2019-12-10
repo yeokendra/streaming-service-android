@@ -31,9 +31,11 @@
                 android:orientation="vertical">
 
                 <LinearLayout
+                    android:id="@+id/ll_text_container"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="@dimen/padding_content"
+                    android:layout_marginTop="@dimen/padding_content"
                     android:orientation="vertical"
                     android:paddingLeft="@dimen/padding_main"
                     android:paddingRight="@dimen/padding_main">
@@ -43,6 +45,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:tag="bold"
+                        android:textStyle="bold"
                         android:textAlignment="center"
                         android:textColor="@color/material_black_text_color"
                         android:textSize="20sp" />

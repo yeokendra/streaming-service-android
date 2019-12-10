@@ -41,4 +41,19 @@
 
     <string name="error_player">Can\'t play video. Please try again later.</string>
 
+    <string name="appversion_need_update_title">Update Required</string>
+    <string name="appversion_need_update_desc">We have fixed something &amp; added stuff! We assure you the newer version is better \:\)</string>
+    <string name="appversion_need_update_button">Update now</string>
+    <string name="appversion_need_update_version_current">Current version %s</string>
+    <string name="appversion_need_update_version_new">Latest version %s</string>
+
+    <string name="maintenance_title">Maintenance in Progress</string>
+    <string name="maintenance_desc">We are currently working on something and we\'ll be back in a short time!</string>
+    <string name="maintenance_urgent">For anything urgent, </string>
+    <string name="maintenance_urgent_contact">Contact Us</string>
+
+    <string name="appversion_newer_title">Newer Version Available</string>
+    <string name="appversion_newer_desc">We recommend you to download the newer version to enjoy this app with the best experience!</string>
+    <string name="appversion_newer_download">Download</string>
+
 </resources>

@@ -1,9 +1,29 @@
 package com.nontivi.nonton.data.model;
 
-public class Setting extends BaseType{
+import io.realm.RealmObject;
 
+public class Setting extends RealmObject {
+
+    private int id;
+    private String name;
     private String value;
     private String text;
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
 
     public String getValue() {
         return value;

@@ -179,7 +179,7 @@ public class SettingFragment extends BaseFragment {
                                 View viewLang = View.inflate(getActivity(), R.layout.include_choose_language, null);
                                 final CustomDialog customDialog = new CustomDialog.Builder(getActivity())
                                         .optionType(DialogOptionType.NONE)
-                                        .title(R.string.setting_change_lang)
+                                        //.title(R.string.setting_change_lang)
                                         .onPositive(new CustomDialog.MaterialDialogButtonCallback() {
                                             @Override
                                             public void onClick(@NonNull CustomDialog dialog, @NonNull DialogAction which) {

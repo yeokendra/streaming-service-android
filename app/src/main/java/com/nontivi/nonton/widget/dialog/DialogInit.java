@@ -53,6 +53,10 @@ public class DialogInit {
         } else {
             dialog.mdContent.setVisibility(View.GONE);
         }
+
+        if(builder.content == null && builder.title == null) {
+            dialog.findViewById(R.id.ll_text_container).setVisibility(View.GONE);
+        }
 //        App.getApplication().setLatoRegularFontToView(dialog.mdContent);
 
         // Set up the focus of action buttons
