@@ -41,6 +41,7 @@
         android:layout_below="@id/app_bar">
 
         <RelativeLayout
+            android:id="@+id/rl_scroll_child"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
@@ -51,6 +52,9 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/padding_main"
                 android:layout_alignParentTop="true"/>
+
+            <include
+                layout="@layout/item_empty_view_full"/>
 
         </RelativeLayout>
 

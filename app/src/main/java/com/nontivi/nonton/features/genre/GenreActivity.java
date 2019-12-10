@@ -4,7 +4,11 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import androidx.recyclerview.widget.DefaultItemAnimator;
@@ -52,6 +56,15 @@ public class GenreActivity extends BaseActivity implements GenreMvpView, ErrorVi
 
     @BindView(R.id.rv_genre_result)
     RecyclerView mRvGenreResult;
+
+    @BindView(R.id.rl_empty_view)
+    RelativeLayout mRlEmptyView;
+
+    @BindView(R.id.scrollview)
+    ScrollView mScrollView;
+
+    @BindView(R.id.rl_scroll_child)
+    RelativeLayout mRvScrollChild;
 
     private GridLayoutManager layoutListManager;
     private BaseRecyclerAdapter<Channel> mAdapter;
@@ -130,6 +143,14 @@ public class GenreActivity extends BaseActivity implements GenreMvpView, ErrorVi
             mRvGenreResult.setAdapter(mAdapter);
         }else {
             mAdapter.notifyDataSetChanged();
+        }
+
+        if(channels.size() > 0){
+            mRvGenreResult.setVisibility(View.VISIBLE);
+            mRlEmptyView.setVisibility(View.GONE);
+        }else{
+            mRvGenreResult.setVisibility(View.GONE);
+            mRlEmptyView.setVisibility(View.VISIBLE);
         }
 
     }

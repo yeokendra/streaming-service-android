@@ -9,6 +9,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
@@ -53,6 +55,9 @@ public class BookmarkFragment extends BaseFragment {
 
     @BindView(R.id.scrollview)
     ScrollView mScrollview;
+
+    @BindView(R.id.rl_empty_view)
+    RelativeLayout mRlEmptyView;
 
     private GridLayoutManager layoutListManager;
     private BaseRecyclerAdapter<Channel> mAdapter;
@@ -173,6 +178,14 @@ public class BookmarkFragment extends BaseFragment {
             mRvBookmark.setAdapter(mAdapter);
         }else {
             mAdapter.notifyDataSetChanged();
+        }
+
+        if(channels.size() > 0){
+            mRvBookmark.setVisibility(View.VISIBLE);
+            mRlEmptyView.setVisibility(View.GONE);
+        }else{
+            mRvBookmark.setVisibility(View.GONE);
+            mRlEmptyView.setVisibility(View.VISIBLE);
         }
 
     }

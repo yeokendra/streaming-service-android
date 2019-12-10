@@ -36,4 +36,9 @@
     <string name="channel_save_as_fav">Save as Favorite</string>
     <string name="channel_remove_fav">Saved</string>
 
+    <string name="warning_is_using_mobile_data">You are currently using Mobile Data. Click here to stop showing warning.</string>
+    <string name="warning_close">Close</string>
+
+    <string name="error_player">Can\'t play video. Please try again later.</string>
+
 </resources>

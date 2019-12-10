@@ -99,12 +99,6 @@ public class HomeActivity extends BaseActivity implements HomeMvpView, ErrorView
         setCustomTabs();
         setPagerListener();
         //setSupportActionBar(toolbar);
-
-        ChannelContainer channelContainer = mRealm.where(ChannelContainer.class).findFirst();
-        if(channelContainer !=null){
-            Log.e(LOG_TAG,"oncreate channelContainer = "+ channelContainer.getChannels().size());
-        }
-
         homePresenter.getData();
     }
 
@@ -114,11 +108,6 @@ public class HomeActivity extends BaseActivity implements HomeMvpView, ErrorView
 
         if (mChannelClickedObservable != null) {
             RxBus.get().unregister(RxBus.KEY_CHANNEL_CLICKED, mChannelClickedObservable);
-        }
-
-        ChannelContainer channelContainer = mRealm.where(ChannelContainer.class).findFirst();
-        if(channelContainer !=null){
-            Log.e(LOG_TAG,"ondestroy channelContainer = "+ channelContainer.getChannels().size());
         }
 
         if(mRealm!=null){

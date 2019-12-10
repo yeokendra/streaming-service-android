@@ -66,6 +66,8 @@
 
     <dimen name="genre_image_size">80dp</dimen>
 
+    <dimen name="player_default_height">280dp</dimen>
+
 
 
 </resources>

@@ -36,4 +36,7 @@
 
     </androidx.recyclerview.widget.RecyclerView>
 
+    <include
+        layout="@layout/item_empty_view"/>
+
 </LinearLayout>

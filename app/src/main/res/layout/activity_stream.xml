@@ -32,7 +32,7 @@
                 android:layout_centerVertical="true"
                 android:layout_alignParentStart="true"
                 android:paddingRight="60dp"
-                android:text="You are currently using Mobile Data. Click here to stop showing warning."/>
+                android:text="@string/warning_is_using_mobile_data"/>
 
             <TextView
                 android:id="@+id/tv_data_warning_close"
@@ -42,19 +42,34 @@
                 android:layout_centerVertical="true"
                 android:layout_alignParentEnd="true"
                 android:gravity="center"
-                android:text="close"/>
+                android:text="@string/warning_close"/>
 
         </RelativeLayout>
 
         <com.google.android.exoplayer2.ui.PlayerView
             android:id="@+id/player_view"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="@dimen/player_default_height"
             app:show_buffering="when_playing"
             app:controller_layout_id="@layout/item_custom_exoplayer_controller"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toBottomOf="@id/rl_data_warning"/>
+
+        <TextView
+            android:id="@+id/tv_player_error"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/material_white"
+            android:textSize="@dimen/text_xtiny"
+            android:text="@string/error_player"
+            android:paddingLeft="@dimen/padding_main"
+            android:paddingRight="@dimen/padding_main"
+            android:visibility="gone"
+            app:layout_constraintTop_toBottomOf="@id/rl_data_warning"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"/>
 
 
 
@@ -227,6 +242,19 @@
                 android:paddingStart="@dimen/padding_main"
                 android:paddingEnd="@dimen/padding_main"
                 android:layout_below="@id/rv_schedule_day"/>
+
+            <FrameLayout
+                android:id="@+id/rl_empty_view_container"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/tv_schedule_title">
+
+                <include
+                    layout="@layout/item_empty_view_full"/>
+
+            </FrameLayout>
+
+
 
         </RelativeLayout>
 

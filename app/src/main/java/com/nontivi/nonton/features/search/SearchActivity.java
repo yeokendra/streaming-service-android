@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -65,6 +66,9 @@ public class SearchActivity extends BaseActivity implements SearchMvpView, Error
     @BindView(R.id.rv_search_result)
     RecyclerView mRvSearch;
 
+    @BindView(R.id.rl_empty_view)
+    RelativeLayout mRlEmptyView;
+
     private GridLayoutManager layoutListManager;
     private BaseRecyclerAdapter<Channel> mAdapter;
 
@@ -108,46 +112,59 @@ public class SearchActivity extends BaseActivity implements SearchMvpView, Error
     }
 
     private void loadData(){
-        mAdapter = new BaseRecyclerAdapter<Channel>(this, channelList, layoutListManager) {
-            @Override
-            public int getItemViewType(int position) {
-                return position;
-            }
+        if(mAdapter == null) {
+            mAdapter = new BaseRecyclerAdapter<Channel>(this, channelList, layoutListManager) {
+                @Override
+                public int getItemViewType(int position) {
+                    return position;
+                }
 
-            @Override
-            public int getItemLayoutId(int viewType) {
-                return R.layout.item_list_trending;
-            }
+                @Override
+                public int getItemLayoutId(int viewType) {
+                    return R.layout.item_list_trending;
+                }
 
-            @Override
-            public void bindData(BaseRecyclerViewHolder holder, int position, final Channel item) {
-                holder.setText(R.id.tv_title,item.getTitle());
-                holder.setText(R.id.tv_subtitle,item.getCurrentViewer()+ " Viewer(s)");
-                holder.setImageUrl(R.id.iv_preview, item.getImageUrl(), R.drawable.ic_home);
+                @Override
+                public void bindData(BaseRecyclerViewHolder holder, int position, final Channel item) {
+                    holder.setText(R.id.tv_title, item.getTitle());
+                    holder.setText(R.id.tv_subtitle, item.getCurrentViewer() + " Viewer(s)");
+                    holder.setImageUrl(R.id.iv_preview, item.getImageUrl(), R.drawable.ic_home);
 
-                holder.setOnClickListener(R.id.rl_trending, new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        RxBus.get().post(RxBus.KEY_CHANNEL_CLICKED, item.getId());
-                        Intent myIntent1 = new Intent(SearchActivity.this, StreamActivity.class);
-                        myIntent1.putExtra(KEY_CHANNEL_ID,item.getId());
-                        startActivity(myIntent1);
-                    }
-                });
-            }
-        };
-        mAdapter.setHasStableIds(true);
-        mRvSearch.setLayoutManager(layoutListManager);
-        mRvSearch.setItemAnimator(new DefaultItemAnimator());
+                    holder.setOnClickListener(R.id.rl_trending, new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            RxBus.get().post(RxBus.KEY_CHANNEL_CLICKED, item.getId());
+                            Intent myIntent1 = new Intent(SearchActivity.this, StreamActivity.class);
+                            myIntent1.putExtra(KEY_CHANNEL_ID, item.getId());
+                            startActivity(myIntent1);
+                        }
+                    });
+                }
+            };
+            mAdapter.setHasStableIds(true);
+            mRvSearch.setLayoutManager(layoutListManager);
+            mRvSearch.setItemAnimator(new DefaultItemAnimator());
 //        if (mRvBookmark.getItemAnimator() != null)
 //            mRvBookmark.getItemAnimator().setAddDuration(250);
 //        mRvBookmark.getItemAnimator().setMoveDuration(250);
 //        mRvBookmark.getItemAnimator().setChangeDuration(250);
 //        mRvBookmark.getItemAnimator().setRemoveDuration(250);
-        mRvSearch.setOverScrollMode(View.OVER_SCROLL_NEVER);
-        mRvSearch.setItemViewCacheSize(30);
-        mRvSearch.setNestedScrollingEnabled(false);
-        mRvSearch.setAdapter(mAdapter);
+            mRvSearch.setOverScrollMode(View.OVER_SCROLL_NEVER);
+            mRvSearch.setItemViewCacheSize(30);
+            mRvSearch.setNestedScrollingEnabled(false);
+            mRvSearch.setAdapter(mAdapter);
+        }else {
+            mAdapter.notifyDataSetChanged();
+        }
+
+        if(channelList.size() > 0){
+            mRvSearch.setVisibility(View.VISIBLE);
+            mRlEmptyView.setVisibility(View.GONE);
+        }else{
+            mRvSearch.setVisibility(View.GONE);
+            mRlEmptyView.setVisibility(View.VISIBLE);
+        }
+
     }
 
     @Override

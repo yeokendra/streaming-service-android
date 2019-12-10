@@ -20,4 +20,7 @@
     <string name="title_home">Utama</string>
     <string name="channel_remove_fav">Tersimpan</string>
     <string name="channel_save_as_fav">Simpan sebagai Favorite</string>
+    <string name="warning_is_using_mobile_data">Anda sedang menggunakan data seluler. Klik disini untuk berhenti menampilkan peringatan ini.</string>
+    <string name="warning_close">Tutup</string>
+    <string name="error_player">Tidak bisa memutar video. Coba sesaat lagi.</string>
 </resources>

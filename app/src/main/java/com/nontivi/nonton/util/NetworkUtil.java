@@ -23,4 +23,18 @@ public class NetworkUtil {
         NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
         return activeNetwork != null && activeNetwork.isConnectedOrConnecting();
     }
+
+    public static boolean isUsingMobileData(Context context){
+        final ConnectivityManager connMgr = (ConnectivityManager)
+                context.getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        final android.net.NetworkInfo mobile =
+                connMgr.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
+
+        if( mobile.isAvailable() && mobile.getDetailedState() == NetworkInfo.DetailedState.CONNECTED ){
+            return true;
+        } else {
+            return false;
+        }
+    }
 }

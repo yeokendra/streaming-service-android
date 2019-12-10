@@ -66,6 +66,9 @@
                 android:layout_marginTop="@dimen/padding_main"
                 android:layout_below="@id/tv_search_title"/>
 
+            <include
+                layout="@layout/item_empty_view_full"/>
+
         </RelativeLayout>
 
     </ScrollView>

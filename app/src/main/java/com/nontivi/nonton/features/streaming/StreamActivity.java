@@ -5,6 +5,7 @@ import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -13,14 +14,23 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import androidx.annotation.Nullable;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.exoplayer2.ExoPlaybackException;
 import com.google.android.exoplayer2.ExoPlayerFactory;
+import com.google.android.exoplayer2.PlaybackParameters;
+import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.SimpleExoPlayer;
+import com.google.android.exoplayer2.Timeline;
 import com.google.android.exoplayer2.source.MediaSource;
+import com.google.android.exoplayer2.source.TrackGroupArray;
+import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
 import com.google.android.exoplayer2.ui.PlayerView;
 
 import com.google.android.exoplayer2.source.hls.HlsMediaSource;
@@ -42,6 +52,7 @@ import com.nontivi.nonton.features.base.BaseActivity;
 import com.nontivi.nonton.features.base.BaseRecyclerAdapter;
 import com.nontivi.nonton.features.base.BaseRecyclerViewHolder;
 import com.nontivi.nonton.injection.component.ActivityComponent;
+import com.nontivi.nonton.util.NetworkUtil;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -58,6 +69,7 @@ import io.realm.Realm;
 
 import static com.nontivi.nonton.app.ConstantGroup.KEY_CHANNEL;
 import static com.nontivi.nonton.app.ConstantGroup.KEY_CHANNEL_ID;
+import static com.nontivi.nonton.app.ConstantGroup.LOG_TAG;
 import static com.nontivi.nonton.data.model.ChannelContainer.ID_CHANNEL_FAVORITES;
 
 public class StreamActivity extends BaseActivity implements StreamMvpView {
@@ -93,6 +105,9 @@ public class StreamActivity extends BaseActivity implements StreamMvpView {
 
     @BindView(R.id.btn_fav)
     Button btnFav;
+
+    @BindView(R.id.rl_empty_view)
+    RelativeLayout mRlEmptyView;
 
     private SimpleExoPlayer player;
     private int currentWindow = 0;
@@ -155,7 +170,9 @@ public class StreamActivity extends BaseActivity implements StreamMvpView {
                             rlDataWarning.setVisibility(View.GONE);
                             break;
                         case 1:
-                            rlDataWarning.setVisibility(View.VISIBLE);
+                            if(NetworkUtil.isUsingMobileData(StreamActivity.this)) {
+                                rlDataWarning.setVisibility(View.VISIBLE);
+                            }
                             break;
                     }
                 }
@@ -361,66 +378,74 @@ public class StreamActivity extends BaseActivity implements StreamMvpView {
         }
 
         if (scheduleDayList.size() > 0) {
+            rvScheduleDayList.setVisibility(View.VISIBLE);
+            rvScheduleDetailList.setVisibility(View.VISIBLE);
+            mRlEmptyView.setVisibility(View.GONE);
+
             scheduleDayList.get(lastSelectedItem).setSelected(true);
             initScheduleDetailList(scheduleDayList.get(lastSelectedItem).getSchedules());
-        }
 
-        GridLayoutManager layoutManager = new GridLayoutManager(this, 1, GridLayoutManager.HORIZONTAL, false);
-        layoutManager.setItemPrefetchEnabled(false);
-        mSCheduleDayAdapter = new BaseRecyclerAdapter<ScheduleDay>(this, scheduleDayList, layoutManager) {
+            GridLayoutManager layoutManager = new GridLayoutManager(this, 1, GridLayoutManager.HORIZONTAL, false);
+            layoutManager.setItemPrefetchEnabled(false);
+            rvScheduleDayList.setLayoutManager(layoutManager);
+            rvScheduleDayList.setItemAnimator(new DefaultItemAnimator());
+            if (rvScheduleDayList.getItemAnimator() != null)
+                rvScheduleDayList.getItemAnimator().setAddDuration(250);
+            rvScheduleDayList.getItemAnimator().setMoveDuration(250);
+            rvScheduleDayList.getItemAnimator().setChangeDuration(250);
+            rvScheduleDayList.getItemAnimator().setRemoveDuration(250);
+            rvScheduleDayList.setOverScrollMode(View.OVER_SCROLL_NEVER);
+            rvScheduleDayList.setItemViewCacheSize(30);
+            rvScheduleDayList.setNestedScrollingEnabled(false);
+            mSCheduleDayAdapter = new BaseRecyclerAdapter<ScheduleDay>(this, scheduleDayList, layoutManager) {
 
-            @Override
-            public int getItemViewType(int position) {
-                return mData.get(position).getId();
-            }
-
-            @Override
-            public int getItemLayoutId(int viewType) {
-                return R.layout.item_list_schedule_day;
-            }
-
-            @Override
-            public void bindData(final BaseRecyclerViewHolder holder, int position, final ScheduleDay item) {
-                Button btnScheduleDay = holder.getButton(R.id.btn_schedule_day);
-
-                if(item.isSelected()){
-                    btnScheduleDay.setBackgroundResource(R.drawable.shape_primary_rounded_selected);
-                    btnScheduleDay.setTextColor(getResources().getColor(R.color.white));
-                }else{
-                    btnScheduleDay.setBackgroundResource(R.drawable.shape_ripple_primary_rounded);
-                    btnScheduleDay.setTextColor(getResources().getColor(R.color.primary));
+                @Override
+                public int getItemViewType(int position) {
+                    return mData.get(position).getId();
                 }
-                btnScheduleDay.setText(item.getTitle());
-                btnScheduleDay.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        if(!item.isSelected()){
-                            mData.get(lastSelectedItem).setSelected(false);
-                            //notifyItemChanged(lastSelectedItem);
-                            lastSelectedItem = position;
-                            mData.get(lastSelectedItem).setSelected(true);
-                            //notifyItemChanged(lastSelectedItem);
-                            notifyDataSetChanged();
-                            initScheduleDetailList(item.getSchedules());
-                        }
+
+                @Override
+                public int getItemLayoutId(int viewType) {
+                    return R.layout.item_list_schedule_day;
+                }
+
+                @Override
+                public void bindData(final BaseRecyclerViewHolder holder, int position, final ScheduleDay item) {
+                    Button btnScheduleDay = holder.getButton(R.id.btn_schedule_day);
+
+                    if (item.isSelected()) {
+                        btnScheduleDay.setBackgroundResource(R.drawable.shape_primary_rounded_selected);
+                        btnScheduleDay.setTextColor(getResources().getColor(R.color.white));
+                    } else {
+                        btnScheduleDay.setBackgroundResource(R.drawable.shape_ripple_primary_rounded);
+                        btnScheduleDay.setTextColor(getResources().getColor(R.color.primary));
                     }
-                });
+                    btnScheduleDay.setText(item.getTitle());
+                    btnScheduleDay.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            if (!item.isSelected()) {
+                                mData.get(lastSelectedItem).setSelected(false);
+                                //notifyItemChanged(lastSelectedItem);
+                                lastSelectedItem = position;
+                                mData.get(lastSelectedItem).setSelected(true);
+                                //notifyItemChanged(lastSelectedItem);
+                                notifyDataSetChanged();
+                                initScheduleDetailList(item.getSchedules());
+                            }
+                        }
+                    });
 
-            }
-        };
+                }
+            };
 
-        mSCheduleDayAdapter.setHasStableIds(true);
-        rvScheduleDayList.setLayoutManager(layoutManager);
-        rvScheduleDayList.setItemAnimator(new DefaultItemAnimator());
-        if (rvScheduleDayList.getItemAnimator() != null)
-            rvScheduleDayList.getItemAnimator().setAddDuration(250);
-        rvScheduleDayList.getItemAnimator().setMoveDuration(250);
-        rvScheduleDayList.getItemAnimator().setChangeDuration(250);
-        rvScheduleDayList.getItemAnimator().setRemoveDuration(250);
-        rvScheduleDayList.setOverScrollMode(View.OVER_SCROLL_NEVER);
-        rvScheduleDayList.setItemViewCacheSize(30);
-        rvScheduleDayList.setAdapter(mSCheduleDayAdapter);
-        rvScheduleDayList.setNestedScrollingEnabled(false);
+            mSCheduleDayAdapter.setHasStableIds(true);
+            rvScheduleDayList.setAdapter(mSCheduleDayAdapter);
+        }else{
+            rvScheduleDayList.setVisibility(View.GONE);
+            rvScheduleDetailList.setVisibility(View.GONE);
+            mRlEmptyView.setVisibility(View.VISIBLE);
+        }
     }
 
     private void initScheduleDetailList(ArrayList<Schedule> schedules){
@@ -428,6 +453,16 @@ public class StreamActivity extends BaseActivity implements StreamMvpView {
         if(mScheduleDetailAdapter==null) {
             GridLayoutManager layoutManager = new GridLayoutManager(this, 1, GridLayoutManager.VERTICAL, false);
             layoutManager.setItemPrefetchEnabled(false);
+            rvScheduleDetailList.setLayoutManager(layoutManager);
+            rvScheduleDetailList.setItemAnimator(new DefaultItemAnimator());
+            if (rvScheduleDetailList.getItemAnimator() != null)
+                rvScheduleDetailList.getItemAnimator().setAddDuration(250);
+            rvScheduleDetailList.getItemAnimator().setMoveDuration(250);
+            rvScheduleDetailList.getItemAnimator().setChangeDuration(250);
+            rvScheduleDetailList.getItemAnimator().setRemoveDuration(250);
+            rvScheduleDetailList.setOverScrollMode(View.OVER_SCROLL_NEVER);
+            rvScheduleDetailList.setItemViewCacheSize(30);
+            rvScheduleDetailList.setNestedScrollingEnabled(false);
             mScheduleDetailAdapter = new BaseRecyclerAdapter<Schedule>(this, schedules, layoutManager) {
                 @Override
                 public int getItemViewType(int position) {
@@ -459,17 +494,8 @@ public class StreamActivity extends BaseActivity implements StreamMvpView {
                 }
             };
             mScheduleDetailAdapter.setHasStableIds(true);
-            rvScheduleDetailList.setLayoutManager(layoutManager);
-            rvScheduleDetailList.setItemAnimator(new DefaultItemAnimator());
-            if (rvScheduleDetailList.getItemAnimator() != null)
-                rvScheduleDetailList.getItemAnimator().setAddDuration(250);
-            rvScheduleDetailList.getItemAnimator().setMoveDuration(250);
-            rvScheduleDetailList.getItemAnimator().setChangeDuration(250);
-            rvScheduleDetailList.getItemAnimator().setRemoveDuration(250);
-            rvScheduleDetailList.setOverScrollMode(View.OVER_SCROLL_NEVER);
-            rvScheduleDetailList.setItemViewCacheSize(30);
             rvScheduleDetailList.setAdapter(mScheduleDetailAdapter);
-            rvScheduleDetailList.setNestedScrollingEnabled(false);
+
         }else{
             mScheduleDetailAdapter.setData(schedules);
             mScheduleDetailAdapter.notifyDataSetChanged();
@@ -543,6 +569,81 @@ public class StreamActivity extends BaseActivity implements StreamMvpView {
                     .createMediaSource(Uri.parse(url));
 // Prepare the player with the source.
         player.prepare(videoSource, true, false);
+
+        player.addListener(new Player.EventListener() {
+            @Override
+            public void onTimelineChanged(Timeline timeline, @Nullable Object manifest, int reason) {
+
+            }
+
+            @Override
+            public void onTracksChanged(TrackGroupArray trackGroups, TrackSelectionArray trackSelections) {
+
+            }
+
+            @Override
+            public void onLoadingChanged(boolean isLoading) {
+
+            }
+
+            @Override
+            public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
+                switch (playbackState){
+                    case Player.STATE_READY:
+                        ConstraintLayout.LayoutParams layoutParams = (ConstraintLayout.LayoutParams) playerView.getLayoutParams();
+                        layoutParams.height = ViewGroup.LayoutParams.WRAP_CONTENT;
+                        layoutParams.width = ViewGroup.LayoutParams.MATCH_PARENT;
+
+                        findViewById(R.id.rl_player_controller).setVisibility(View.VISIBLE);
+                        break;
+                }
+            }
+
+            @Override
+            public void onRepeatModeChanged(int repeatMode) {
+
+            }
+
+            @Override
+            public void onShuffleModeEnabledChanged(boolean shuffleModeEnabled) {
+
+            }
+
+            @Override
+            public void onPlayerError(ExoPlaybackException error) {
+                switch (error.type) {
+                    case ExoPlaybackException.TYPE_SOURCE:
+                        Log.e(LOG_TAG, "TYPE_SOURCE: " + error.getSourceException().getMessage());
+                        findViewById(R.id.tv_player_error).setVisibility(View.VISIBLE);
+                        break;
+
+                    case ExoPlaybackException.TYPE_RENDERER:
+                        Log.e(LOG_TAG, "TYPE_RENDERER: " + error.getRendererException().getMessage());
+                        findViewById(R.id.tv_player_error).setVisibility(View.VISIBLE);
+                        break;
+
+                    case ExoPlaybackException.TYPE_UNEXPECTED:
+                        Log.e(LOG_TAG, "TYPE_UNEXPECTED: " + error.getUnexpectedException().getMessage());
+                        findViewById(R.id.tv_player_error).setVisibility(View.VISIBLE);
+                        break;
+                }
+            }
+
+            @Override
+            public void onPositionDiscontinuity(int reason) {
+
+            }
+
+            @Override
+            public void onPlaybackParametersChanged(PlaybackParameters playbackParameters) {
+
+            }
+
+            @Override
+            public void onSeekProcessed() {
+
+            }
+        });
     }
 
 //    private MediaSource buildMediaSource(Uri uri){

@@ -187,16 +187,11 @@ public class HomepageFragment extends BaseFragment implements HomePageMvpView{
     private void loadData(){
         if(data == null) {
             data = new ArrayList<>();
-            if(trendingList.size() > 0) {
-                data.add(new HomeFeedResponse(HOME_TRENDING, trendingList));
-            }
+            data.add(new HomeFeedResponse(HOME_TRENDING, trendingList));
             data.add(new HomeFeedResponse(HOME_ADS1));
-            if(genreList.size() > 0) {
-                data.add(new HomeFeedResponse(HOME_GENRE, genreList));
-            }
-            if(channelList.size() > 0) {
-                data.add(new HomeFeedResponse(HOME_CHANNEL_LIST, channelList));
-            }
+            data.add(new HomeFeedResponse(HOME_GENRE, genreList));
+            data.add(new HomeFeedResponse(HOME_CHANNEL_LIST, channelList));
+
         }
         initHomeList();
     }
@@ -323,129 +318,125 @@ public class HomepageFragment extends BaseFragment implements HomePageMvpView{
 
     public void setTrendingSection(BaseRecyclerViewHolder holder, ArrayList<Channel> channels){
         RecyclerView rvTrending = holder.getRecyclerView(R.id.rv_trending);
+        RelativeLayout rlEmptyView = (RelativeLayout)holder.getView(R.id.rl_empty_view);
+
         GridLayoutManager layoutManager = new GridLayoutManager(this.getActivity(), 1, GridLayoutManager.HORIZONTAL, false);
         layoutManager.setItemPrefetchEnabled(false);
-        BaseRecyclerAdapter<Channel> trendingAdapter = new BaseRecyclerAdapter<Channel>(getActivity(), channels, layoutManager) {
-            @Override
-            public int getItemViewType(int position) {
-                return position;
-            }
-
-            @Override
-            public int getItemLayoutId(int viewType) {
-                return R.layout.item_list_trending;
-            }
-
-            @Override
-            public void bindData(final BaseRecyclerViewHolder holder, int position, final Channel item) {
-                holder.setText(R.id.tv_title,item.getTitle());
-                holder.setText(R.id.tv_subtitle,item.getCurrentViewer()+ " Viewer(s)");
-                holder.setImageUrl(R.id.iv_preview, item.getImageUrl(), R.drawable.ic_home);
-
-                holder.setOnClickListener(R.id.rl_trending, new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        RxBus.get().post(RxBus.KEY_CHANNEL_CLICKED, item.getId());
-                        Intent myIntent1 = new Intent(getActivity(), StreamActivity.class);
-                        myIntent1.putExtra(KEY_CHANNEL_ID,item.getId());
-                        getActivity().startActivity(myIntent1);
-                    }
-                });
-
-            }
-        };
-
-        trendingAdapter.setHasStableIds(true);
         rvTrending.setLayoutManager(layoutManager);
         rvTrending.setItemAnimator(new DefaultItemAnimator());
-        if (rvTrending.getItemAnimator() != null)
+        if (rvTrending.getItemAnimator() != null) {
             rvTrending.getItemAnimator().setAddDuration(250);
-        rvTrending.getItemAnimator().setMoveDuration(250);
-        rvTrending.getItemAnimator().setChangeDuration(250);
-        rvTrending.getItemAnimator().setRemoveDuration(250);
+            rvTrending.getItemAnimator().setMoveDuration(250);
+            rvTrending.getItemAnimator().setChangeDuration(250);
+            rvTrending.getItemAnimator().setRemoveDuration(250);
+        }
         rvTrending.setOverScrollMode(View.OVER_SCROLL_NEVER);
         rvTrending.setItemViewCacheSize(30);
-        rvTrending.setAdapter(trendingAdapter);
+
+        if(channels.size() > 0) {
+            rvTrending.setVisibility(View.VISIBLE);
+            rlEmptyView.setVisibility(View.GONE);
+            BaseRecyclerAdapter<Channel> trendingAdapter = new BaseRecyclerAdapter<Channel>(getActivity(), channels, layoutManager) {
+                @Override
+                public int getItemViewType(int position) {
+                    return position;
+                }
+
+                @Override
+                public int getItemLayoutId(int viewType) {
+                    return R.layout.item_list_trending;
+                }
+
+                @Override
+                public void bindData(final BaseRecyclerViewHolder holder, int position, final Channel item) {
+                    holder.setText(R.id.tv_title, item.getTitle());
+                    holder.setText(R.id.tv_subtitle, item.getCurrentViewer() + " Viewer(s)");
+                    holder.setImageUrl(R.id.iv_preview, item.getImageUrl(), R.drawable.ic_home);
+
+                    holder.setOnClickListener(R.id.rl_trending, new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            RxBus.get().post(RxBus.KEY_CHANNEL_CLICKED, item.getId());
+                            Intent myIntent1 = new Intent(getActivity(), StreamActivity.class);
+                            myIntent1.putExtra(KEY_CHANNEL_ID, item.getId());
+                            getActivity().startActivity(myIntent1);
+                        }
+                    });
+
+                }
+            };
+
+            trendingAdapter.setHasStableIds(true);
+            rvTrending.setAdapter(trendingAdapter);
+        }else{
+            holder.getView(R.id.rl_trending).setVisibility(View.VISIBLE);
+            rvTrending.setVisibility(View.GONE);
+            rlEmptyView.setVisibility(View.VISIBLE);
+        }
+
+
     }
 
     public void setGenreSection(BaseRecyclerViewHolder holder, ArrayList<Genre> genres){
         RecyclerView rvGenre = holder.getRecyclerView(R.id.rv_genre);
+        RelativeLayout rlEmptyView = (RelativeLayout)holder.getView(R.id.rl_empty_view);
+
         GridLayoutManager layoutManager = new GridLayoutManager(this.getActivity(), 1, GridLayoutManager.HORIZONTAL, false);
         layoutManager.setItemPrefetchEnabled(false);
-        BaseRecyclerAdapter<Genre> genreAdapter = new BaseRecyclerAdapter<Genre>(getActivity(), genres, layoutManager) {
-            @Override
-            public int getItemViewType(int position) {
-                return position;
-            }
-
-            @Override
-            public int getItemLayoutId(int viewType) {
-                return R.layout.item_list_genre;
-            }
-
-            @Override
-            public void bindData(final BaseRecyclerViewHolder holder, int position, final Genre item) {
-                holder.setText(R.id.tv_title,item.getName());
-                holder.setOnClickListener(R.id.rl_genre, new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        Intent myIntent1 = new Intent(getActivity(), GenreActivity.class);
-                        myIntent1.putExtra(KEY_GENRE,item);
-                        getActivity().startActivity(myIntent1);
-                    }
-                });
-
-            }
-        };
-
-        genreAdapter.setHasStableIds(true);
         rvGenre.setLayoutManager(layoutManager);
         rvGenre.setItemAnimator(new DefaultItemAnimator());
-        if (rvGenre.getItemAnimator() != null)
+        if (rvGenre.getItemAnimator() != null) {
             rvGenre.getItemAnimator().setAddDuration(250);
-        rvGenre.getItemAnimator().setMoveDuration(250);
-        rvGenre.getItemAnimator().setChangeDuration(250);
-        rvGenre.getItemAnimator().setRemoveDuration(250);
+            rvGenre.getItemAnimator().setMoveDuration(250);
+            rvGenre.getItemAnimator().setChangeDuration(250);
+            rvGenre.getItemAnimator().setRemoveDuration(250);
+        }
         rvGenre.setOverScrollMode(View.OVER_SCROLL_NEVER);
         rvGenre.setItemViewCacheSize(30);
-        rvGenre.setAdapter(genreAdapter);
+
+        if(genres.size() > 0){
+            rvGenre.setVisibility(View.VISIBLE);
+            rlEmptyView.setVisibility(View.GONE);
+            BaseRecyclerAdapter<Genre> genreAdapter = new BaseRecyclerAdapter<Genre>(getActivity(), genres, layoutManager) {
+                @Override
+                public int getItemViewType(int position) {
+                    return position;
+                }
+
+                @Override
+                public int getItemLayoutId(int viewType) {
+                    return R.layout.item_list_genre;
+                }
+
+                @Override
+                public void bindData(final BaseRecyclerViewHolder holder, int position, final Genre item) {
+                    holder.setText(R.id.tv_title,item.getName());
+                    holder.setOnClickListener(R.id.rl_genre, new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            Intent myIntent1 = new Intent(getActivity(), GenreActivity.class);
+                            myIntent1.putExtra(KEY_GENRE,item);
+                            getActivity().startActivity(myIntent1);
+                        }
+                    });
+
+                }
+            };
+
+            genreAdapter.setHasStableIds(true);
+            rvGenre.setAdapter(genreAdapter);
+        }else{
+            rvGenre.setVisibility(View.GONE);
+            rlEmptyView.setVisibility(View.VISIBLE);
+        }
     }
 
     public void setAllChannelSection(BaseRecyclerViewHolder holder, ArrayList<Channel> channels){
         RecyclerView rvChannelList = holder.getRecyclerView(R.id.rv_channel_list);
+        RelativeLayout rlEmptyView = (RelativeLayout)holder.getView(R.id.rl_empty_view);
+
         GridLayoutManager layoutManager = new GridLayoutManager(this.getActivity(), 2, GridLayoutManager.VERTICAL, false);
         layoutManager.setItemPrefetchEnabled(false);
-        BaseRecyclerAdapter<Channel> channelListAdapter = new BaseRecyclerAdapter<Channel>(getActivity(), channels, layoutManager) {
-            @Override
-            public int getItemViewType(int position) {
-                return position;
-            }
-
-            @Override
-            public int getItemLayoutId(int viewType) {
-                return R.layout.item_list_trending;
-            }
-
-            @Override
-            public void bindData(final BaseRecyclerViewHolder holder, int position, final Channel item) {
-                holder.setText(R.id.tv_title,item.getTitle());
-                holder.setText(R.id.tv_subtitle,item.getCurrentViewer()+ " Viewer(s)");
-                holder.setImageUrl(R.id.iv_preview, item.getImageUrl(), R.drawable.ic_home);
-
-                holder.setOnClickListener(R.id.rl_trending, new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        RxBus.get().post(RxBus.KEY_CHANNEL_CLICKED, item.getId());
-                        Intent myIntent1 = new Intent(getActivity(), StreamActivity.class);
-                        myIntent1.putExtra(KEY_CHANNEL_ID,item.getId());
-                        getActivity().startActivity(myIntent1);
-                    }
-                });
-
-            }
-        };
-
-        channelListAdapter.setHasStableIds(true);
         rvChannelList.setLayoutManager(layoutManager);
         rvChannelList.setItemAnimator(new DefaultItemAnimator());
         if (rvChannelList.getItemAnimator() != null)
@@ -455,7 +446,46 @@ public class HomepageFragment extends BaseFragment implements HomePageMvpView{
         rvChannelList.getItemAnimator().setRemoveDuration(250);
         rvChannelList.setOverScrollMode(View.OVER_SCROLL_NEVER);
         rvChannelList.setItemViewCacheSize(30);
-        rvChannelList.setAdapter(channelListAdapter);
+
+        if(channels.size() > 0) {
+            rvChannelList.setVisibility(View.VISIBLE);
+            rlEmptyView.setVisibility(View.GONE);
+            BaseRecyclerAdapter<Channel> channelListAdapter = new BaseRecyclerAdapter<Channel>(getActivity(), channels, layoutManager) {
+                @Override
+                public int getItemViewType(int position) {
+                    return position;
+                }
+
+                @Override
+                public int getItemLayoutId(int viewType) {
+                    return R.layout.item_list_trending;
+                }
+
+                @Override
+                public void bindData(final BaseRecyclerViewHolder holder, int position, final Channel item) {
+                    holder.setText(R.id.tv_title, item.getTitle());
+                    holder.setText(R.id.tv_subtitle, item.getCurrentViewer() + " Viewer(s)");
+                    holder.setImageUrl(R.id.iv_preview, item.getImageUrl(), R.drawable.ic_home);
+
+                    holder.setOnClickListener(R.id.rl_trending, new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            RxBus.get().post(RxBus.KEY_CHANNEL_CLICKED, item.getId());
+                            Intent myIntent1 = new Intent(getActivity(), StreamActivity.class);
+                            myIntent1.putExtra(KEY_CHANNEL_ID, item.getId());
+                            getActivity().startActivity(myIntent1);
+                        }
+                    });
+
+                }
+            };
+
+            channelListAdapter.setHasStableIds(true);
+            rvChannelList.setAdapter(channelListAdapter);
+        }else{
+            rvChannelList.setVisibility(View.GONE);
+            rlEmptyView.setVisibility(View.VISIBLE);
+        }
     }
 
     @Override
