@@ -62,6 +62,14 @@ import static com.nontivi.nonton.app.ConstantGroup.KEY_FROM;
 import static com.nontivi.nonton.app.ConstantGroup.KEY_GENRE;
 import static com.nontivi.nonton.app.ConstantGroup.KEY_SEARCH_STRING;
 import static com.nontivi.nonton.app.ConstantGroup.LOG_TAG;
+import static com.nontivi.nonton.app.StaticGroup.GENRE_DRAMA;
+import static com.nontivi.nonton.app.StaticGroup.GENRE_ENTERTAINMENT;
+import static com.nontivi.nonton.app.StaticGroup.GENRE_KDRAMA;
+import static com.nontivi.nonton.app.StaticGroup.GENRE_KIDS;
+import static com.nontivi.nonton.app.StaticGroup.GENRE_MOVIES;
+import static com.nontivi.nonton.app.StaticGroup.GENRE_NEWS;
+import static com.nontivi.nonton.app.StaticGroup.GENRE_SCIENCE;
+import static com.nontivi.nonton.app.StaticGroup.GENRE_SPORTS;
 import static com.nontivi.nonton.app.StaticGroup.HOME_ADS1;
 import static com.nontivi.nonton.app.StaticGroup.HOME_CHANNEL_LIST;
 import static com.nontivi.nonton.app.StaticGroup.HOME_GENRE;
@@ -413,6 +421,32 @@ public class HomepageFragment extends BaseFragment implements HomePageMvpView{
 
                 @Override
                 public void bindData(final BaseRecyclerViewHolder holder, int position, final Genre item) {
+                    switch (item.getId()){
+                        case GENRE_ENTERTAINMENT:
+                            holder.setImageResource(R.id.iv_genre,R.drawable.ic_genre_entertainment);
+                            break;
+                        case GENRE_SPORTS:
+                            holder.setImageResource(R.id.iv_genre,R.drawable.ic_genre_sports);
+                            break;
+                        case GENRE_MOVIES:
+                            holder.setImageResource(R.id.iv_genre,R.drawable.ic_genre_movies);
+                            break;
+                        case GENRE_NEWS:
+                            holder.setImageResource(R.id.iv_genre,R.drawable.ic_genre_news);
+                            break;
+                        case GENRE_SCIENCE:
+                            holder.setImageResource(R.id.iv_genre,R.drawable.ic_genre_science);
+                            break;
+                        case GENRE_KIDS:
+                            holder.setImageResource(R.id.iv_genre,R.drawable.ic_genre_kids);
+                            break;
+                        case GENRE_DRAMA:
+                            holder.setImageResource(R.id.iv_genre,R.drawable.ic_genre_drama);
+                            break;
+                        case GENRE_KDRAMA:
+                            holder.setImageResource(R.id.iv_genre,R.drawable.ic_genre_kdrama);
+                            break;
+                    }
                     holder.setText(R.id.tv_title,item.getName());
                     holder.setOnClickListener(R.id.rl_genre, new View.OnClickListener() {
                         @Override

@@ -15,7 +15,7 @@
 
         <ImageView
             android:id="@+id/iv_empty_view"
-            android:src="@drawable/ic_empty_illustration"
+            android:src="@drawable/ic_empty_illustration_big"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
 

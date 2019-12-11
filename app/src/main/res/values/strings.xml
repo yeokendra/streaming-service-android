@@ -60,4 +60,10 @@
     <string name="appversion_newer_desc">We recommend you to download the newer version to enjoy this app with the best experience!</string>
     <string name="appversion_newer_download">Download</string>
 
+    <string name="faq_1_header">What is StreamingAja?</string>
+    <string name="faq_1_body">StreamingAja is a free streaming app that let you watch Indonesian channels anywhere, anytime.</string>
+    <string name="faq_2_header">Is StreamingAja free?</string>
+    <string name="faq_2_body">StreamingAja is totally free and you can enjoy watching your favorite local drama and news without worrying about any payment or subscription.</string>
+    <string name="faq_3_header">Do i need to download the video?</string>
+    <string name="faq_3_body">No, you don’t need to download the video. Because you can stream every video without downloading.</string>
 </resources>

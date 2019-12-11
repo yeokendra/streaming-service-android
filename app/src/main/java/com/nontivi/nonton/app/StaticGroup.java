@@ -42,6 +42,16 @@ public class StaticGroup {
     public static final int HOME_GENRE = 3;
     public static final int HOME_CHANNEL_LIST = 4;
 
+    public static final int GENRE_ENTERTAINMENT = 1;
+    public static final int GENRE_SPORTS = 2;
+    public static final int GENRE_MOVIES = 3;
+    public static final int GENRE_NEWS = 4;
+    public static final int GENRE_SCIENCE = 5;
+    public static final int GENRE_KIDS = 6;
+    public static final int GENRE_DRAMA = 7;
+    public static final int GENRE_KDRAMA = 8;
+
+
     public static String os = Build.VERSION.RELEASE;
     public static String VERSION = null;
     public static long VERSION_CODE = 0;

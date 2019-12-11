@@ -10,27 +10,14 @@
     android:padding="@dimen/padding_content">
 
         <ImageView
-            android:id="@+id/iv_preview"
+            android:id="@+id/iv_genre"
             android:src="@drawable/ic_genre_entertainment"
-            android:layout_width="@dimen/genre_image_size"
-            android:layout_height="@dimen/genre_image_size"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/shape_ripple_primary_fill_rounded"
             android:contentDescription="@string/image_content_description"
+            android:padding="@dimen/interval_main"
             android:scaleType="centerCrop" />
-
-<!--        for duration-->
-<!--        <TextView-->
-<!--            android:id="@+id/tv_duration"-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:textSize="@dimen/text_xtiny"-->
-<!--            android:textColor="@color/white"-->
-<!--            android:text="04:00"-->
-<!--            android:layout_alignBottom="@id/iv_preview"-->
-<!--            android:layout_alignEnd="@id/iv_preview"-->
-<!--            android:layout_marginBottom="@dimen/padding_small"-->
-<!--            android:layout_marginEnd="@dimen/padding_small">-->
-<!--            -->
-<!--        </TextView>-->
 
         <TextView
             android:id="@+id/tv_title"
@@ -38,8 +25,7 @@
             android:layout_height="wrap_content"
             android:textSize="@dimen/text_small"
             android:textColor="@color/material_black_2828"
-            android:text="Comedy"
-            android:layout_below="@id/iv_preview"
+            android:layout_below="@id/iv_genre"
             android:layout_marginTop="@dimen/padding_content">
 
         </TextView>

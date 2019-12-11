@@ -30,6 +30,7 @@ import com.nontivi.nonton.features.base.BaseFragment;
 import com.nontivi.nonton.features.base.BaseRecyclerAdapter;
 import com.nontivi.nonton.features.base.BaseRecyclerViewHolder;
 import com.nontivi.nonton.features.setting.ChangeLangActivity;
+import com.nontivi.nonton.features.setting.FaqActivity;
 import com.nontivi.nonton.injection.component.FragmentComponent;
 import com.nontivi.nonton.util.ClickUtil;
 import com.nontivi.nonton.util.LocaleUtil;
@@ -210,6 +211,16 @@ public class SettingFragment extends BaseFragment {
 //                                initLanguageDialog(customDialog, viewLang);
 //                                customDialog.show();
                                 Intent intent = new Intent(getActivity(), ChangeLangActivity.class);
+                                getActivity().startActivity(intent);
+                            }
+                        });
+                        break;
+
+                    case ID_FAQ:
+                        holder.setOnClickListener(R.id.rl_setting, new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                Intent intent = new Intent(getActivity(), FaqActivity.class);
                                 getActivity().startActivity(intent);
                             }
                         });
