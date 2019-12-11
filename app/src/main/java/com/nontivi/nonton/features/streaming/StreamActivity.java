@@ -57,6 +57,7 @@ import com.nontivi.nonton.features.home.HomeActivity;
 import com.nontivi.nonton.injection.component.ActivityComponent;
 import com.nontivi.nonton.util.ClickUtil;
 import com.nontivi.nonton.util.NetworkUtil;
+import com.nontivi.nonton.util.ViewUtil;
 import com.nontivi.nonton.widget.dialog.CustomDialog;
 import com.nontivi.nonton.widget.dialog.DialogAction;
 import com.nontivi.nonton.widget.dialog.DialogOptionType;
@@ -150,22 +151,19 @@ public class StreamActivity extends BaseActivity implements StreamMvpView {
 
         mChannel = (Channel)getIntent().getSerializableExtra(KEY_CHANNEL);
 
-        if(mChannel !=null){
-            mTvTitle.setText(mChannel.getTitle());
-            mTvViewer.setText(mChannel.getCurrentViewer()+" Viewer(s)");
-            mTvDesc.setText(mChannel.getDescription());
-            streamPresenter.getScheduleList(mChannel.getId());
-        }else{
+        if(mChannel ==null){
             int channelId = getIntent().getIntExtra(KEY_CHANNEL_ID,-1);
             if(channelId != -1){
                 mChannel = mRealm.where(Channel.class).equalTo("id",channelId).findFirst();
-                if(mChannel!=null){
-                    mTvTitle.setText(mChannel.getTitle());
-                    mTvViewer.setText(mChannel.getCurrentViewer()+" Viewer(s)");
-                    mTvDesc.setText(mChannel.getDescription());
-                    streamPresenter.getScheduleList(mChannel.getId());
-                }
             }
+        }
+
+        if(mChannel!=null) {
+            mTvTitle.setText(mChannel.getTitle());
+            mTvViewer.setText(mChannel.getCurrentViewer() + " Viewer(s)");
+            mTvDesc.setText(mChannel.getDescription());
+            streamPresenter.getScheduleList(mChannel.getId());
+            ViewUtil.setRoundImageUrl(this,R.id.iv_channel,mChannel.getImageUrl(),R.drawable.ic_home);
         }
         mRealm.executeTransaction(new Realm.Transaction() {
             @Override
@@ -462,10 +460,10 @@ public class StreamActivity extends BaseActivity implements StreamMvpView {
                     Button btnScheduleDay = holder.getButton(R.id.btn_schedule_day);
 
                     if (item.isSelected()) {
-                        btnScheduleDay.setBackgroundResource(R.drawable.shape_primary_rounded_selected);
+                        btnScheduleDay.setBackgroundResource(R.drawable.shape_primary_small_rounded_selected);
                         btnScheduleDay.setTextColor(getResources().getColor(R.color.white));
                     } else {
-                        btnScheduleDay.setBackgroundResource(R.drawable.shape_ripple_primary_rounded);
+                        btnScheduleDay.setBackgroundResource(R.drawable.shape_ripple_primary_small_rounded);
                         btnScheduleDay.setTextColor(getResources().getColor(R.color.primary));
                     }
                     btnScheduleDay.setText(item.getTitle());
@@ -555,7 +553,8 @@ public class StreamActivity extends BaseActivity implements StreamMvpView {
             mAdView = new AdView(this);
             AdRequest adRequest = new AdRequest.Builder().build();
             mAdView.setAdSize(AdSize.BANNER);
-            mAdView.setAdUnitId("ca-app-pub-1457023993566419/3344001375");
+            //mAdView.setAdUnitId("ca-app-pub-8461471832857878/4383390929");
+            mAdView.setAdUnitId("ca-app-pub-3940256099942544/6300978111");
             RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
             layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE);
             mAdView.setLayoutParams(layoutParams);
@@ -798,10 +797,10 @@ public class StreamActivity extends BaseActivity implements StreamMvpView {
     private void setIsChannelFavorite(boolean isFav){
         isSavedAsFav = isFav;
         if(isFav){
-            btnFav.setBackgroundColor(getResources().getColor(R.color.material_grey_8080));
+            btnFav.setBackground(getResources().getDrawable(R.drawable.shape_gray_fill_small_rounded));
             btnFav.setText(R.string.channel_remove_fav);
         }else{
-            btnFav.setBackgroundColor(getResources().getColor(R.color.primary));
+            btnFav.setBackground(getResources().getDrawable(R.drawable.shape_ripple_primary_fill_small_rounded));
             btnFav.setText(R.string.channel_save_as_fav);
         }
     }

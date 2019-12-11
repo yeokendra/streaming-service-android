@@ -21,7 +21,8 @@
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:text="Report"
-            android:textSize="@dimen/text_small_medium" />
+            android:textSize="@dimen/text_medium"
+            android:textStyle="bold"/>
 
     </RelativeLayout>
 

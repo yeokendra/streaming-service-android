@@ -1,6 +1,7 @@
 package com.nontivi.nonton.features.home.settingpage;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
@@ -28,6 +29,7 @@ import com.nontivi.nonton.data.model.Setting;
 import com.nontivi.nonton.features.base.BaseFragment;
 import com.nontivi.nonton.features.base.BaseRecyclerAdapter;
 import com.nontivi.nonton.features.base.BaseRecyclerViewHolder;
+import com.nontivi.nonton.features.setting.ChangeLangActivity;
 import com.nontivi.nonton.injection.component.FragmentComponent;
 import com.nontivi.nonton.util.ClickUtil;
 import com.nontivi.nonton.util.LocaleUtil;
@@ -50,6 +52,10 @@ public class SettingFragment extends BaseFragment {
     private final int ID_VERSION = 0;
     private final int ID_MOBILE_DATA_WARNING = 1;
     private final int ID_CHANGE_LANGUAGE = 2;
+    private final int ID_WATCH_HISTORY = 3;
+    private final int ID_RATE_US = 4;
+    private final int ID_FAQ = 5;
+    private final int ID_FEEDBACK = 6;
 
     @BindView(R.id.rv_setting)
     RecyclerView mRvSetting;
@@ -66,6 +72,7 @@ public class SettingFragment extends BaseFragment {
     private ArrayList<Option> data;
 
     private Realm mRealm;
+    private String mVersion = "Version x.x.x.x";
 
 
     public static SettingFragment newInstance() {
@@ -97,6 +104,9 @@ public class SettingFragment extends BaseFragment {
         layoutListManager = new GridLayoutManager(this.getActivity(), 1, GridLayoutManager.VERTICAL, false);
         layoutListManager.setItemPrefetchEnabled(false);
 
+        mVersion = getString(R.string.setting_version) + " " + BuildConfig.VERSION_NAME;
+        ((TextView)view.findViewById(R.id.tv_version)).setText(mVersion);
+
         loadData();
         initSettingList();
     }
@@ -105,10 +115,12 @@ public class SettingFragment extends BaseFragment {
 
         data = new ArrayList<>();
 
-        data.add(new Option(ID_CHANGE_LANGUAGE,getString(R.string.setting_change_lang)));
-        data.add(new Option(ID_MOBILE_DATA_WARNING,getString(R.string.setting_mobile_data_warning)));
-        data.add(new Option(ID_VERSION,getString(R.string.setting_version)));
-
+        data.add(new Option(ID_CHANGE_LANGUAGE,getString(R.string.setting_change_lang),R.drawable.ic_language));
+        data.add(new Option(ID_MOBILE_DATA_WARNING,getString(R.string.setting_mobile_data_warning),R.drawable.ic_history));
+        //data.add(new Option(ID_VERSION,getString(R.string.setting_version),R.drawable.ic_language));
+        data.add(new Option(ID_RATE_US,getString(R.string.setting_rate_us),R.drawable.ic_rate));
+        data.add(new Option(ID_FAQ,getString(R.string.setting_faq),R.drawable.ic_faq));
+        data.add(new Option(ID_FEEDBACK,getString(R.string.setting_feedback),R.drawable.ic_feedback));
     }
 
     private void initSettingList() {
@@ -126,10 +138,11 @@ public class SettingFragment extends BaseFragment {
             @Override
             public void bindData(BaseRecyclerViewHolder holder, int position, final Option item) {
                 holder.setText(R.id.tv_title, item.getName());
+                holder.setImageResource(R.id.iv_icon, item.getDrawableId());
                 switch (item.getId()){
                     case ID_VERSION:
-                        String title = getString(R.string.setting_version) + " " + BuildConfig.VERSION_NAME;
-                        holder.setText(R.id.tv_title, title);
+
+                        holder.setText(R.id.tv_title, mVersion);
                         break;
                     case ID_MOBILE_DATA_WARNING:
                         Switch switchSetting = (Switch)holder.getView(R.id.switch_setting);
@@ -173,25 +186,31 @@ public class SettingFragment extends BaseFragment {
 
                         break;
                     case ID_CHANGE_LANGUAGE:
+                        holder.getTextView(R.id.tv_value).setVisibility(View.VISIBLE);
+                        String lang = LocaleUtil.getLanguage(getContext());
+                        switch (lang){
+                            case "id":
+                                holder.setText(R.id.tv_value,"Bahasa");
+                                break;
+                            case "en":
+                                holder.setText(R.id.tv_value,"English");
+                                break;
+                        }
+
                         holder.setOnClickListener(R.id.rl_setting, new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
-                                View viewLang = View.inflate(getActivity(), R.layout.include_choose_language, null);
-                                final CustomDialog customDialog = new CustomDialog.Builder(getActivity())
-                                        .optionType(DialogOptionType.NONE)
-                                        //.title(R.string.setting_change_lang)
-                                        .onPositive(new CustomDialog.MaterialDialogButtonCallback() {
-                                            @Override
-                                            public void onClick(@NonNull CustomDialog dialog, @NonNull DialogAction which) {
-                                                dialog.dismiss();
-                                            }
-                                        })
-                                        .addCustomView(viewLang)
-                                        .autoDismiss(false)
-                                        .canceledOnTouchOutside(true).build();
-
-                                initLanguageDialog(customDialog, viewLang);
-                                customDialog.show();
+//                                View viewLang = View.inflate(getActivity(), R.layout.include_choose_language, null);
+//                                final CustomDialog customDialog = new CustomDialog.Builder(getActivity())
+//                                        .optionType(DialogOptionType.NONE)
+//                                        .addCustomView(viewLang)
+//                                        .autoDismiss(false)
+//                                        .canceledOnTouchOutside(true).build();
+//
+//                                initLanguageDialog(customDialog, viewLang);
+//                                customDialog.show();
+                                Intent intent = new Intent(getActivity(), ChangeLangActivity.class);
+                                getActivity().startActivity(intent);
                             }
                         });
                         break;
@@ -201,11 +220,10 @@ public class SettingFragment extends BaseFragment {
         };
         mAdapter.setHasStableIds(true);
         mRvSetting.setLayoutManager(layoutListManager);
-        if (this.getActivity() != null)
-            mRvSetting.addItemDecoration(new DividerItemDecoration(getActivity(),DividerItemDecoration.VERTICAL));
+//        if (this.getActivity() != null)
+//            mRvSetting.addItemDecoration(new DividerItemDecoration(getActivity(),DividerItemDecoration.VERTICAL));
         mRvSetting.setItemAnimator(new DefaultItemAnimator());
         mRvSetting.setOverScrollMode(View.OVER_SCROLL_NEVER);
-        mRvSetting.setItemViewCacheSize(30);
         mRvSetting.setNestedScrollingEnabled(false);
         mRvSetting.setAdapter(mAdapter);
     }

@@ -90,7 +90,7 @@ public class HomeActivity extends BaseActivity implements HomeMvpView, ErrorView
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        MobileAds.initialize(this, "ca-app-pub-1457023993566419~3956309691");
+        MobileAds.initialize(this, "ca-app-pub-8461471832857878~1473338314");
 
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
         LocaleUtil.onAttach(this);
@@ -288,8 +288,8 @@ public class HomeActivity extends BaseActivity implements HomeMvpView, ErrorView
         }
 
         mCustomTabBarView.addTabView(HOME_FRAGMENT, R.drawable.ic_home, R.drawable.ic_home_active,getString(R.string.title_home));
-        mCustomTabBarView.addTabView(BOOKMARK_FRAGMENT, R.drawable.ic_star, R.drawable.ic_star_active,getString(R.string.title_bookmark));
-        mCustomTabBarView.addTabView(SETTING_FRAGMENT, R.drawable.ic_setting_dock, R.drawable.ic_setting_dock_active,getString(R.string.title_setting));
+        mCustomTabBarView.addTabView(BOOKMARK_FRAGMENT, R.drawable.ic_subscriptions, R.drawable.ic_subscriptions_active,getString(R.string.title_bookmark));
+        mCustomTabBarView.addTabView(SETTING_FRAGMENT, R.drawable.ic_settings, R.drawable.ic_settings_active,getString(R.string.title_setting));
 
         setFragmentToolbar(0);
 

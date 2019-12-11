@@ -2,16 +2,28 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/rl_setting"
     android:layout_width="match_parent"
-    android:layout_height="64dp"
-    android:padding="@dimen/padding_main">
+    android:layout_height="48dp"
+    android:background="@drawable/shape_ripple_transparent"
+    android:clickable="true"
+    android:focusable="true"
+    android:paddingLeft="@dimen/interval_main"
+    android:paddingRight="@dimen/interval_main">
+
+    <ImageView
+        android:id="@+id/iv_icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/interval_main"
+        android:layout_alignParentStart="true"
+        android:layout_centerVertical="true"/>
 
     <TextView
         android:id="@+id/tv_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="@dimen/text_small"
+        android:textSize="@dimen/text_medium"
         android:textColor="@color/material_black_2828"
-        android:layout_alignParentStart="true"
+        android:layout_toEndOf="@id/iv_icon"
         android:layout_centerVertical="true">
 
     </TextView>
@@ -22,7 +34,20 @@
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:layout_centerVertical="true"
+        android:focusable="false"
         android:visibility="gone"/>
+
+    <TextView
+        android:id="@+id/tv_value"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="@dimen/text_tiny"
+        android:textColor="@color/primary"
+        android:visibility="gone"
+        android:layout_alignParentEnd="true"
+        android:layout_centerVertical="true">
+
+    </TextView>
 
 
     </RelativeLayout>

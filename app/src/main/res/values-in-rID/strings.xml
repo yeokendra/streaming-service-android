@@ -16,10 +16,13 @@
     <string name="title_trending">Sedang Tren!</string>
     <string name="setting_change_lang">Ubah Bahasa</string>
     <string name="setting_mobile_data_warning">Peringatan Data Seluler</string>
+    <string name="setting_rate_us">Nilai kami di Playstore</string>
+    <string name="setting_faq">Pertanyaan yang Sering Diajukan</string>
+    <string name="setting_feedback">Beri Umpan Balik</string>
     <string name="setting_version">Versi</string>
     <string name="title_home">Utama</string>
     <string name="channel_remove_fav">Tersimpan</string>
-    <string name="channel_save_as_fav">Simpan sebagai Favorite</string>
+    <string name="channel_save_as_fav">Simpan</string>
     <string name="warning_is_using_mobile_data">Anda sedang menggunakan data seluler. Klik disini untuk berhenti menampilkan peringatan ini.</string>
     <string name="warning_close">Tutup</string>
     <string name="error_player">Tidak bisa memutar video. Coba sesaat lagi.</string>

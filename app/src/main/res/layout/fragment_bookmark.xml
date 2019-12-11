@@ -15,7 +15,6 @@
             android:layout_height="wrap_content">
 
             <androidx.appcompat.widget.Toolbar
-                xmlns:android="http://schemas.android.com/apk/res/android"
                 android:id="@+id/toolbar_main"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -26,6 +25,7 @@
                 android:contentInsetStart="0dp"
                 android:elevation="4dp"
                 android:padding="0dp"
+                android:background="@color/white"
                 app:contentInsetEnd="0dp"
                 app:contentInsetLeft="0dp"
                 app:contentInsetRight="0dp"
@@ -37,16 +37,6 @@
             </androidx.appcompat.widget.Toolbar>
 
         </com.google.android.material.appbar.AppBarLayout>
-
-        <com.wang.avi.AVLoadingIndicatorView
-            android:id="@+id/avi"
-            style="@style/AVLoadingIndicatorView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:visibility="gone"
-            app:indicatorColor="@color/vex_orange"
-            app:indicatorName="TriangleSkewSpinIndicator" />
 
         <com.nontivi.nonton.features.common.ErrorView
             android:id="@+id/view_error"

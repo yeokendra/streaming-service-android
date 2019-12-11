@@ -241,7 +241,8 @@ public class HomepageFragment extends BaseFragment implements HomePageMvpView{
                             AdView mAdView = new AdView(getActivity());
                             AdRequest adRequest = new AdRequest.Builder().build();
                             mAdView.setAdSize(AdSize.BANNER);
-                            mAdView.setAdUnitId("ca-app-pub-1457023993566419/3318015448");
+                            //mAdView.setAdUnitId("ca-app-pub-8461471832857878/4850294786");
+                            mAdView.setAdUnitId("ca-app-pub-3940256099942544/6300978111");
                             RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
                             layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE);
                             RelativeLayout rlAdsContainer = (RelativeLayout) holder.getView(R.id.rl_ads_container);
@@ -251,11 +252,13 @@ public class HomepageFragment extends BaseFragment implements HomePageMvpView{
                                 @Override
                                 public void onAdLoaded() {
                                     // Code to be executed when an ad finishes loading.
+                                    Toast.makeText(mContext, "loaded", Toast.LENGTH_SHORT).show();
                                 }
 
                                 @Override
                                 public void onAdFailedToLoad(int errorCode) {
                                     // Code to be executed when an ad request fails.
+                                    Toast.makeText(mContext, "failed "+errorCode, Toast.LENGTH_SHORT).show();
                                 }
 
                                 @Override

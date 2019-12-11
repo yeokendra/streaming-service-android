@@ -24,7 +24,7 @@
     <string name="title_channel_list">Channel List</string>
 
     <string name="title_home">Home</string>
-    <string name="title_bookmark">Favorites</string>
+    <string name="title_bookmark">Subsciption</string>
     <string name="title_schedule">Schedule</string>
     <string name="title_search">Search</string>
     <string name="title_setting">Setting</string>
@@ -32,9 +32,13 @@
     <string name="setting_version">Version</string>
     <string name="setting_change_lang">Change Language</string>
     <string name="setting_mobile_data_warning">Mobile Data Warning</string>
+    <string name="setting_rate_us">Rate Us on Playstore</string>
+    <string name="setting_faq">FAQ</string>
+    <string name="setting_feedback">Send Feedback</string>
 
-    <string name="channel_save_as_fav">Save as Favorite</string>
-    <string name="channel_remove_fav">Saved</string>
+
+    <string name="channel_save_as_fav">Subscribe</string>
+    <string name="channel_remove_fav">Subscribed</string>
 
     <string name="warning_is_using_mobile_data">You are currently using Mobile Data. Click here to stop showing warning.</string>
     <string name="warning_close">Close</string>

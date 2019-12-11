@@ -111,6 +111,14 @@ public class SearchActivity extends BaseActivity implements SearchMvpView, Error
 
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if(mRealm!=null){
+            mRealm.close();
+        }
+    }
+
     private void loadData(){
         if(mAdapter == null) {
             mAdapter = new BaseRecyclerAdapter<Channel>(this, channelList, layoutListManager) {

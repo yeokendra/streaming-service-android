@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="primary">#6654FF</color>
-    <color name="primary_dark">#6654FF</color>
+    <color name="primary">#FF8325</color>
+    <color name="secondary">#FFB625</color>
+    <color name="primary_dark">#FFFFFF</color>
     <!--<color name="primary_light">#FFCDD2</color>-->
     <color name="accent">#FF5722</color>
     <!--<color name="primary_text">#212121</color>-->
@@ -31,8 +32,6 @@
     <color name="toolbar_color">@color/material_grey_f2</color>
 
     //my color
-    <color name="vex_orange">#FAA105</color>
-    <color name="vex_pink">#DB3069</color>
 
     <color name="fb_blue">#4267B2</color>
 
@@ -41,7 +40,6 @@
 
     <color name="transparent">#00FFFFFF</color>
     <color name="primary_text">#555555</color>
-    <color name="secondary">@color/material_black_text_color</color>
     <color name="tertiary">#929CFF</color>
     <color name="tertiary_dark">#6A61E7</color>
     <color name="tertiary_more_dark">#665cf5</color>

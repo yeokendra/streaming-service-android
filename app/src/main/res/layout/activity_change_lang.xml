@@ -36,26 +36,16 @@
     </com.google.android.material.appbar.AppBarLayout>
 
     <ScrollView
-        android:id="@+id/scrollview"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/app_bar">
 
         <RelativeLayout
-            android:id="@+id/rl_scroll_child"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rv_genre_result"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/padding_main"
-                android:layout_alignParentTop="true"/>
-
             <include
-                layout="@layout/item_empty_view_full"/>
+                layout="@layout/include_choose_language"/>
 
         </RelativeLayout>
 

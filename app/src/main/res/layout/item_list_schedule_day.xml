@@ -4,17 +4,20 @@
     android:id="@+id/rl_schedule_day"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
+    android:clipToPadding="false"
     android:layout_marginStart="@dimen/padding_content"
-    android:layout_marginEnd="@dimen/padding_content">
+    android:layout_marginEnd="@dimen/padding_content"
+    android:paddingTop="@dimen/interval_small"
+    android:paddingBottom="@dimen/interval_small">
 
     <Button
         android:id="@+id/btn_schedule_day"
         android:layout_width="wrap_content"
-        android:layout_height="28dp"
+        android:layout_height="26dp"
         android:textSize="@dimen/text_tiny"
         android:textStyle="bold"
         android:textColor="@color/primary"
-        android:background="@drawable/shape_ripple_primary_rounded"
+        android:background="@drawable/shape_ripple_primary_small_rounded"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
