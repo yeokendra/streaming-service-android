@@ -9,12 +9,14 @@ import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import android.util.Log;
+import android.os.Handler;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
@@ -30,6 +32,7 @@ import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.ads.initialization.InitializationStatus;
 import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
 import com.nontivi.nonton.R;
+import com.nontivi.nonton.app.StaticGroup;
 import com.nontivi.nonton.data.model.Channel;
 import com.nontivi.nonton.data.model.ChannelContainer;
 import com.nontivi.nonton.data.model.Genre;
@@ -44,6 +47,7 @@ import com.nontivi.nonton.features.genre.GenreActivity;
 import com.nontivi.nonton.features.search.SearchActivity;
 import com.nontivi.nonton.features.streaming.StreamActivity;
 import com.nontivi.nonton.injection.component.FragmentComponent;
+import com.nontivi.nonton.util.ClickUtil;
 import com.nontivi.nonton.util.NetworkUtil;
 import com.nontivi.nonton.util.RxBus;
 
@@ -53,15 +57,12 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import io.realm.Realm;
-import io.realm.RealmList;
 import io.realm.RealmResults;
 
-import static com.nontivi.nonton.app.ConstantGroup.KEY_CHANNEL;
 import static com.nontivi.nonton.app.ConstantGroup.KEY_CHANNEL_ID;
 import static com.nontivi.nonton.app.ConstantGroup.KEY_FROM;
 import static com.nontivi.nonton.app.ConstantGroup.KEY_GENRE;
 import static com.nontivi.nonton.app.ConstantGroup.KEY_SEARCH_STRING;
-import static com.nontivi.nonton.app.ConstantGroup.LOG_TAG;
 import static com.nontivi.nonton.app.StaticGroup.GENRE_DRAMA;
 import static com.nontivi.nonton.app.StaticGroup.GENRE_ENTERTAINMENT;
 import static com.nontivi.nonton.app.StaticGroup.GENRE_KDRAMA;
@@ -88,6 +89,12 @@ public class HomepageFragment extends BaseFragment implements HomePageMvpView{
     @BindView(R.id.scrollview)
     ScrollView mScrollview;
 
+    @BindView(R.id.srl_home)
+    SwipeRefreshLayout mSrlHome;
+
+    @BindView(R.id.rl_error_view)
+    RelativeLayout mRlErrorView;
+
     private GridLayoutManager layoutListManager;
     private BaseRecyclerAdapter<HomeFeedResponse> mAdapter;
     private ArrayList<HomeFeedResponse> data;
@@ -100,6 +107,10 @@ public class HomepageFragment extends BaseFragment implements HomePageMvpView{
     HomePagePresenter homePagePresenter;
 
     private Realm mRealm;
+    private Handler mRefreshHandler;
+    private Runnable mRefreshRunnable;
+    private AdView mAdView1;
+    private boolean isAdView1Loaded = false;
 
     public static HomepageFragment newInstance() {
         return new HomepageFragment();
@@ -111,6 +122,15 @@ public class HomepageFragment extends BaseFragment implements HomePageMvpView{
         super.onResume();
         mScrollview.scrollTo(0,0);
         mEtSearch.getText().clear();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        if(mEtSearch.hasFocus()){
+            mEtSearch.clearFocus();
+            getActivity().findViewById(R.id.rl_search_bar).requestFocus();
+        }
     }
 
     @Override
@@ -143,64 +163,129 @@ public class HomepageFragment extends BaseFragment implements HomePageMvpView{
         genreList = new ArrayList<>();
 
         mRealm = Realm.getDefaultInstance();
-
-        if(!NetworkUtil.isNetworkConnected(getActivity())) {
-            //RealmResults<ChannelContainer> channelContainer = mRealm.where(ChannelContainer.class).equalTo("id",ID_CHANNEL_ALL).findAll();
-            mRealm.executeTransaction(new Realm.Transaction() {
-                @Override
-                public void execute(Realm realm) {
-                    //if(channelContainer!=null) {
-                        RealmResults<Channel> trendings = realm.where(Channel.class).equalTo("channelContainer.id", ID_CHANNEL_ALL).equalTo("isTrending",true).findAll();
-                        if (trendings != null && trendings.size() > 0) {
-                            trendingList.addAll(trendings);
-                        }
-                    //}
-                    RealmResults<Channel> channels = realm.where(Channel.class).equalTo("channelContainer.id", ID_CHANNEL_ALL).findAll();
-                    if (channels != null && channels.size() > 0) {
-                        channelList.addAll(channels);
-                    }
-                    RealmResults<Genre> genres = realm.where(Genre.class).findAll();
-                    if (genres != null && genres.size() > 0) {
-                        genreList.addAll(genres);
-                    }
-                }
-            });
+        showFullPageError(false);
+        if (!NetworkUtil.isNetworkConnected(getActivity())) {
+            loadTrendingFromRealm();
+            loadGenreFromRealm();
+            loadAllChannelFromRealm();
             loadData();
-        }else {
+            if(channelList == null || channelList.size() <= 0){
+                showFullPageError(true);
+            }
+        } else {
             homePagePresenter.getChannels();
         }
         mEtSearch.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             public boolean onEditorAction(TextView v, int actionId,
                                           KeyEvent event) {
                 if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-                        if(mEtSearch.getText() == null || mEtSearch.getText().toString().equals("")){
+                    if (mEtSearch.getText() == null || mEtSearch.getText().toString().equals("")) {
+                        return false;
+                    } else {
+                        Intent myIntent1 = new Intent(getActivity(), SearchActivity.class);
+                        myIntent1.putExtra(KEY_SEARCH_STRING, mEtSearch.getText().toString());
+                        myIntent1.putExtra(KEY_FROM, 0);
+                        try {
+                            getActivity().startActivity(myIntent1);
+                        } catch (NullPointerException e) {
                             return false;
-                        }else {
-                            Intent myIntent1 = new Intent(getActivity(), SearchActivity.class);
-                            myIntent1.putExtra(KEY_SEARCH_STRING,mEtSearch.getText().toString());
-                            myIntent1.putExtra(KEY_FROM,0);
-                            try {
-                                getActivity().startActivity(myIntent1);
-                            }catch (NullPointerException e){
-                                return false;
-                            }
-                            return true;
                         }
+                        return true;
+                    }
                 }
                 return false;
             }
         });
+
+        mRefreshHandler = new Handler();
+        mRefreshRunnable = new Runnable() {
+            @Override
+            public void run() {
+                mSrlHome.setEnabled(true);
+            }
+        };
+
+        mSrlHome.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                refresh();
+            }
+        });
+
+        int textSize1 = getResources().getDimensionPixelSize(R.dimen.text_medium);
+        int textSize2 = getResources().getDimensionPixelSize(R.dimen.text_small);
+
+        String emptyMain = getString(R.string.error_empty_home_main);
+        String emptySubMain = getString(R.string.error_empty_home_submain);
+
+        ((TextView)mRlErrorView.findViewById(R.id.tv_empty_view)).setText(StaticGroup.combineString(emptyMain,emptySubMain,textSize1,textSize2));
+        mRlErrorView.findViewById(R.id.btn_refresh).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                refresh();
+            }
+        });
+
+        mScrollview.getViewTreeObserver().addOnScrollChangedListener(new ViewTreeObserver.OnScrollChangedListener() {
+            @Override
+            public void onScrollChanged() {
+                int scrollY = mScrollview.getScrollY(); // For ScrollView
+                if(scrollY == 0){
+                    mSrlHome.setEnabled(true);
+                }else{
+                    mSrlHome.setEnabled(false);
+                }
+            }
+        });
+    }
+
+    private void refresh(){
+        if (mRefreshHandler != null) {
+            mRefreshHandler.removeCallbacks(mRefreshRunnable);
+        }
+        //mLlErrorView.setVisibility(View.GONE);
+        if(mScrollview.getScrollY() == 0){
+            mSrlHome.setEnabled(true);
+        }else{
+            mSrlHome.setEnabled(false);
+        }
+        mSrlHome.setRefreshing(false);
+        if (NetworkUtil.isNetworkConnected(getActivity())) {
+            showFullPageError(false);
+            homePagePresenter.getChannels();
+        } else {
+            Toast.makeText(getActivity(), "No internet connection", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void loadTrendingFromRealm(){
+        RealmResults<Channel> trendings = mRealm.where(Channel.class).equalTo("channelContainer.id", ID_CHANNEL_ALL).equalTo("isTrending",true).findAll();
+        if (trendings != null && trendings.size() > 0) {
+            trendingList.addAll(trendings);
+        }
+    }
+
+    private void loadGenreFromRealm(){
+        RealmResults<Genre> genres = mRealm.where(Genre.class).findAll();
+        if (genres != null && genres.size() > 0) {
+            genreList.addAll(genres);
+        }
+    }
+
+    private void loadAllChannelFromRealm(){
+        RealmResults<Channel> channels = mRealm.where(Channel.class).equalTo("channelContainer.id", ID_CHANNEL_ALL).findAll();
+        if (channels != null && channels.size() > 0) {
+            channelList.addAll(channels);
+        }
     }
 
     private void loadData(){
-        if(data == null) {
-            data = new ArrayList<>();
-            data.add(new HomeFeedResponse(HOME_TRENDING, trendingList));
-            data.add(new HomeFeedResponse(HOME_ADS1));
-            data.add(new HomeFeedResponse(HOME_GENRE, genreList));
-            data.add(new HomeFeedResponse(HOME_CHANNEL_LIST, channelList));
+        data = new ArrayList<>();
+        data.add(new HomeFeedResponse(HOME_TRENDING, trendingList));
+        data.add(new HomeFeedResponse(HOME_ADS1));
+        data.add(new HomeFeedResponse(HOME_GENRE, genreList));
+        data.add(new HomeFeedResponse(HOME_CHANNEL_LIST, channelList));
 
-        }
         initHomeList();
     }
 
@@ -241,57 +326,66 @@ public class HomepageFragment extends BaseFragment implements HomePageMvpView{
 
                             break;
                         case HOME_ADS1:
-                            MobileAds.initialize(getActivity(), new OnInitializationCompleteListener() {
-                                @Override
-                                public void onInitializationComplete(InitializationStatus initializationStatus) {
-                                }
-                            });
-                            AdView mAdView = new AdView(getActivity());
-                            AdRequest adRequest = new AdRequest.Builder().build();
-                            mAdView.setAdSize(AdSize.BANNER);
-                            //mAdView.setAdUnitId("ca-app-pub-8461471832857878/4850294786");
-                            mAdView.setAdUnitId("ca-app-pub-3940256099942544/6300978111");
-                            RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-                            layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE);
                             RelativeLayout rlAdsContainer = (RelativeLayout) holder.getView(R.id.rl_ads_container);
-                            rlAdsContainer.addView(mAdView);
+                            if(mAdView1 == null){
+                                MobileAds.initialize(getActivity(), new OnInitializationCompleteListener() {
+                                    @Override
+                                    public void onInitializationComplete(InitializationStatus initializationStatus) {
+                                    }
+                                });
+                                mAdView1 = new AdView(getActivity());
+                                AdRequest adRequest = new AdRequest.Builder().build();
+                                mAdView1.setAdSize(AdSize.BANNER);
+                                mAdView1.setAdUnitId("ca-app-pub-8461471832857878/4850294786");
+                                //mAdView1.setAdUnitId("ca-app-pub-3940256099942544/6300978111");
+                                RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                                layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE);
 
-                            mAdView.setAdListener(new AdListener() {
-                                @Override
-                                public void onAdLoaded() {
-                                    // Code to be executed when an ad finishes loading.
-                                    Toast.makeText(mContext, "loaded", Toast.LENGTH_SHORT).show();
-                                }
+                                rlAdsContainer.addView(mAdView1);
 
-                                @Override
-                                public void onAdFailedToLoad(int errorCode) {
-                                    // Code to be executed when an ad request fails.
-                                    Toast.makeText(mContext, "failed "+errorCode, Toast.LENGTH_SHORT).show();
-                                }
+                                mAdView1.setAdListener(new AdListener() {
+                                    @Override
+                                    public void onAdLoaded() {
+                                        // Code to be executed when an ad finishes loading.
+                                        isAdView1Loaded = true;
+                                    }
 
-                                @Override
-                                public void onAdOpened() {
-                                    // Code to be executed when an ad opens an overlay that
-                                    // covers the screen.
-                                }
+                                    @Override
+                                    public void onAdFailedToLoad(int errorCode) {
+                                        // Code to be executed when an ad request fails.
+                                        //Toast.makeText(mContext, "fail to load ads "+errorCode, Toast.LENGTH_SHORT).show();
+                                        isAdView1Loaded = false;
+                                    }
 
-                                @Override
-                                public void onAdClicked() {
-                                    // Code to be executed when the user clicks on an ad.
-                                }
+                                    @Override
+                                    public void onAdOpened() {
+                                        // Code to be executed when an ad opens an overlay that
+                                        // covers the screen.
+                                    }
 
-                                @Override
-                                public void onAdLeftApplication() {
-                                    // Code to be executed when the user has left the app.
-                                }
+                                    @Override
+                                    public void onAdClicked() {
+                                        // Code to be executed when the user clicks on an ad.
+                                    }
 
-                                @Override
-                                public void onAdClosed() {
-                                    // Code to be executed when the user is about to return
-                                    // to the app after tapping on an ad.
+                                    @Override
+                                    public void onAdLeftApplication() {
+                                        // Code to be executed when the user has left the app.
+                                    }
+
+                                    @Override
+                                    public void onAdClosed() {
+                                        // Code to be executed when the user is about to return
+                                        // to the app after tapping on an ad.
+                                    }
+                                });
+                                mAdView1.loadAd(adRequest);
+                            }else{
+                                if(!isAdView1Loaded){
+                                    AdRequest adRequest = new AdRequest.Builder().build();
+                                    mAdView1.loadAd(adRequest);
                                 }
-                            });
-                            mAdView.loadAd(adRequest);
+                            }
                             break;
                         case HOME_GENRE:
                             if (item.object instanceof ArrayList<?>) {
@@ -323,6 +417,7 @@ public class HomepageFragment extends BaseFragment implements HomePageMvpView{
             mRvHome.setNestedScrollingEnabled(false);
             mRvHome.setAdapter(mAdapter);
         }else{
+            mAdapter.setData(data);
             mAdapter.notifyDataSetChanged();
         }
     }
@@ -367,6 +462,7 @@ public class HomepageFragment extends BaseFragment implements HomePageMvpView{
                     holder.setOnClickListener(R.id.rl_trending, new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
+                            if(ClickUtil.isFastDoubleClick()) return;
                             RxBus.get().post(RxBus.KEY_CHANNEL_CLICKED, item.getId());
                             Intent myIntent1 = new Intent(getActivity(), StreamActivity.class);
                             myIntent1.putExtra(KEY_CHANNEL_ID, item.getId());
@@ -451,6 +547,7 @@ public class HomepageFragment extends BaseFragment implements HomePageMvpView{
                     holder.setOnClickListener(R.id.rl_genre, new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
+                            if(ClickUtil.isFastDoubleClick()) return;
                             Intent myIntent1 = new Intent(getActivity(), GenreActivity.class);
                             myIntent1.putExtra(KEY_GENRE,item);
                             getActivity().startActivity(myIntent1);
@@ -507,6 +604,7 @@ public class HomepageFragment extends BaseFragment implements HomePageMvpView{
                     holder.setOnClickListener(R.id.rl_trending, new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
+                            if(ClickUtil.isFastDoubleClick()) return;
                             RxBus.get().post(RxBus.KEY_CHANNEL_CLICKED, item.getId());
                             Intent myIntent1 = new Intent(getActivity(), StreamActivity.class);
                             myIntent1.putExtra(KEY_CHANNEL_ID, item.getId());
@@ -522,6 +620,14 @@ public class HomepageFragment extends BaseFragment implements HomePageMvpView{
         }else{
             rvChannelList.setVisibility(View.GONE);
             rlEmptyView.setVisibility(View.VISIBLE);
+        }
+    }
+
+    private void showFullPageError(boolean show){
+        if(show){
+            mRlErrorView.setVisibility(View.VISIBLE);
+        }else{
+            mRlErrorView.setVisibility(View.GONE);
         }
     }
 
@@ -575,7 +681,11 @@ public class HomepageFragment extends BaseFragment implements HomePageMvpView{
             }
         }
 
-        homePagePresenter.getGenres();
+        if(channelList == null || channelList.size() <= 0){
+            showFullPageError(true);
+        }else {
+            homePagePresenter.getGenres();
+        }
     }
 
     @Override
@@ -603,7 +713,20 @@ public class HomepageFragment extends BaseFragment implements HomePageMvpView{
     }
 
     @Override
-    public void showError(Throwable error) {
-        Toast.makeText(getActivity(), error.getMessage().toString(), Toast.LENGTH_SHORT).show();
+    public void showChannelError(Throwable error) {
+        loadAllChannelFromRealm();
+        loadTrendingFromRealm();
+        if(channelList == null || channelList.size() <= 0){
+            showFullPageError(true);
+        }else {
+            homePagePresenter.getGenres();
+        }
+    }
+
+    @Override
+    public void showGenreError(Throwable error) {
+        Toast.makeText(getActivity(), "Failed to load genre(s)\n"+error.getMessage().toString(), Toast.LENGTH_SHORT).show();
+        loadGenreFromRealm();
+        loadData();
     }
 }

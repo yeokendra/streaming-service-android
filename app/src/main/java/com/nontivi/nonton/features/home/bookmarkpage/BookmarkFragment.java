@@ -21,6 +21,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.nontivi.nonton.R;
+import com.nontivi.nonton.app.StaticGroup;
 import com.nontivi.nonton.data.model.Channel;
 import com.nontivi.nonton.data.model.ChannelContainer;
 import com.nontivi.nonton.features.base.BaseFragment;
@@ -49,6 +50,9 @@ public class BookmarkFragment extends BaseFragment {
 
     @BindView(R.id.tv_box_title)
     TextView mTvTitle;
+
+    @BindView(R.id.rl_search_bar)
+    RelativeLayout mRlSearchBar;
 
     @BindView(R.id.et_search)
     EditText mEtSearch;
@@ -85,6 +89,15 @@ public class BookmarkFragment extends BaseFragment {
             mRealm.commitTransaction();
         }
         initBookmarkList(favorites.getChannels());
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        if(mEtSearch.hasFocus()){
+            mEtSearch.clearFocus();
+            getActivity().findViewById(R.id.rl_search_bar).requestFocus();
+        }
     }
 
     @Override
@@ -181,9 +194,18 @@ public class BookmarkFragment extends BaseFragment {
         }
 
         if(channels.size() > 0){
+            mRlSearchBar.setVisibility(View.VISIBLE);
             mRvBookmark.setVisibility(View.VISIBLE);
             mRlEmptyView.setVisibility(View.GONE);
         }else{
+            mRlSearchBar.setVisibility(View.GONE);
+            int textSize1 = getResources().getDimensionPixelSize(R.dimen.text_medium);
+            int textSize2 = getResources().getDimensionPixelSize(R.dimen.text_small);
+
+            String emptyMain = getString(R.string.error_empty_subscibe_main);
+            String emptySubMain = getString(R.string.error_empty_subscibe_submain);
+
+            ((TextView)mRlEmptyView.findViewById(R.id.tv_empty_view)).setText(StaticGroup.combineString(emptyMain,emptySubMain,textSize1,textSize2));
             mRvBookmark.setVisibility(View.GONE);
             mRlEmptyView.setVisibility(View.VISIBLE);
         }

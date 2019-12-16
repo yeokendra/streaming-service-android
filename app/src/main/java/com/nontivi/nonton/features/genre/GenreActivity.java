@@ -25,6 +25,7 @@ import com.nontivi.nonton.features.base.BaseRecyclerViewHolder;
 import com.nontivi.nonton.features.common.ErrorView;
 import com.nontivi.nonton.features.streaming.StreamActivity;
 import com.nontivi.nonton.injection.component.ActivityComponent;
+import com.nontivi.nonton.util.ClickUtil;
 import com.nontivi.nonton.util.RxBus;
 
 import java.util.ArrayList;
@@ -69,6 +70,7 @@ public class GenreActivity extends BaseActivity implements GenreMvpView, ErrorVi
     private GridLayoutManager layoutListManager;
     private BaseRecyclerAdapter<Channel> mAdapter;
     Realm mRealm;
+    Genre mGenre;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,14 +90,14 @@ public class GenreActivity extends BaseActivity implements GenreMvpView, ErrorVi
         layoutListManager.setItemPrefetchEnabled(false);
 
         Bundle bundle = getIntent().getExtras();
-        Genre genre = (Genre)bundle.getSerializable(KEY_GENRE);
-        mTvTitle.setText(genre.getName());
+        mGenre = (Genre)bundle.getSerializable(KEY_GENRE);
+        mTvTitle.setText(mGenre.getName());
 
         RealmResults<Channel> channels = mRealm.where(Channel.class).equalTo("channelContainer.id", ID_CHANNEL_ALL).findAll();
         ArrayList<Channel> channelList = new ArrayList<>();
         for(Channel channel : channels){
             for(int i : channel.getGenreId()){
-                if(i == genre.getId()){
+                if(i == mGenre.getId()){
                     channelList.add(channel);
                     break;
                 }
@@ -126,6 +128,7 @@ public class GenreActivity extends BaseActivity implements GenreMvpView, ErrorVi
                     holder.setOnClickListener(R.id.rl_trending, new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
+                            if(ClickUtil.isFastDoubleClick()) return;
                             RxBus.get().post(RxBus.KEY_CHANNEL_CLICKED, item.getId());
                             Intent myIntent1 = new Intent(GenreActivity.this, StreamActivity.class);
                             myIntent1.putExtra(KEY_CHANNEL_ID, item.getId());
@@ -149,6 +152,8 @@ public class GenreActivity extends BaseActivity implements GenreMvpView, ErrorVi
             mRvGenreResult.setVisibility(View.VISIBLE);
             mRlEmptyView.setVisibility(View.GONE);
         }else{
+            String emptyMain = String.format(getString(R.string.error_empty_search_main),mGenre.getName());
+            ((TextView)mRlEmptyView.findViewById(R.id.tv_empty_view)).setText(emptyMain);
             mRvGenreResult.setVisibility(View.GONE);
             mRlEmptyView.setVisibility(View.VISIBLE);
         }

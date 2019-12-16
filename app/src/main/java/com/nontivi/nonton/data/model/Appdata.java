@@ -6,6 +6,7 @@ import io.realm.annotations.PrimaryKey;
 public class Appdata extends RealmObject {
 
     public static final long ID_DATA_WARNING = 0;
+    public static final long ID_WALKTHROUGH = 1;
 
     private long id;
     private int value;

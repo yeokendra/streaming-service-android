@@ -68,6 +68,7 @@
 
     <dimen name="player_default_height">280dp</dimen>
 
-
+    <dimen name="walkthrough_indicator_padding">16dp</dimen>
+    <dimen name="walkthrough_indicator_radius">4dp</dimen>
 
 </resources>

@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/rl_error_view"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:visibility="visible">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:layout_centerInParent="true"
+        android:orientation="vertical">
+
+        <ImageView
+            android:id="@+id/iv_empty_view"
+            android:src="@drawable/ic_error_illustration_bg"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <TextView
+            android:id="@+id/tv_empty_view"
+            android:text="@string/error_empty"
+            android:textColor="@color/material_grey_8080"
+            android:textSize="@dimen/text_medium"
+            android:textStyle="bold"
+            android:textAlignment="center"
+            android:paddingLeft="64dp"
+            android:paddingRight="64dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/padding_main"/>
+
+        <LinearLayout
+            android:id="@+id/btn_refresh"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/interval_main"
+            android:layout_marginTop="@dimen/interval_main"
+            android:background="@drawable/shape_ripple_primary_fill_rounded"
+            android:gravity="center"
+            android:paddingBottom="@dimen/interval_submain"
+            android:paddingLeft="@dimen/interval_big"
+            android:paddingRight="@dimen/interval_big"
+            android:paddingTop="@dimen/interval_submain">
+
+            <TextView
+                android:id="@+id/tv_refresh"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:tag="bold"
+                android:text="@string/main_refresh"
+                android:textAllCaps="true"
+                android:textColor="@color/material_white"
+                android:textSize="@dimen/text_xtiny" />
+        </LinearLayout>
+    </LinearLayout>
+
+</RelativeLayout>

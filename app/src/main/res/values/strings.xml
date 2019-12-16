@@ -24,7 +24,7 @@
     <string name="title_channel_list">Channel List</string>
 
     <string name="title_home">Home</string>
-    <string name="title_bookmark">Subsciption</string>
+    <string name="title_bookmark">Subscription</string>
     <string name="title_schedule">Schedule</string>
     <string name="title_search">Search</string>
     <string name="title_setting">Setting</string>
@@ -42,8 +42,19 @@
 
     <string name="warning_is_using_mobile_data">You are currently using Mobile Data. Click here to stop showing warning.</string>
     <string name="warning_close">Close</string>
+    <string name="warning_schedule">*note: schedule can be changed without further warning</string>
 
     <string name="error_player">Can\'t play video. Please try again later.</string>
+    <string name="error_empty">Nothing found</string>
+    <string name="error_empty_subscibe_main">No subscription yet</string>
+    <string name="error_empty_subscibe_submain">Use \"Subscribe\" button to add channel to this page</string>
+    <string name="error_empty_genre_main">No channel with \"%s\" genre yet</string>
+    <string name="error_empty_search_main">Can\'t find result for \"%s\"</string>
+    <string name="error_empty_search_submain">Check the spelling or try a different keyword</string>
+    <string name="error_empty_schedule_main">There is no schedule for this channel</string>
+
+    <string name="error_empty_home_main">Oops… something went wrong</string>
+    <string name="error_empty_home_submain">Please try to refresh or check your internet connection</string>
 
     <string name="appversion_need_update_title">Update Required</string>
     <string name="appversion_need_update_desc">We have fixed something &amp; added stuff! We assure you the newer version is better \:\)</string>
@@ -66,4 +77,13 @@
     <string name="faq_2_body">StreamingAja is totally free and you can enjoy watching your favorite local drama and news without worrying about any payment or subscription.</string>
     <string name="faq_3_header">Do i need to download the video?</string>
     <string name="faq_3_body">No, you don’t need to download the video. Because you can stream every video without downloading.</string>
+    
+    <string name="onboarding1">Never miss any news again!</string>
+    <string name="onboarding2">Watch your favorite TV series anywhere, anytime!</string>
+    <string name="onboarding3">Enjoy your local TV entertainment show easily!</string>
+    <string name="onboarding_next">Next</string>
+    <string name="onboarding_back">Back</string>
+    <string name="onboarding_skip">Skip</string>
+
+    <string name="main_refresh">Refresh</string>
 </resources>

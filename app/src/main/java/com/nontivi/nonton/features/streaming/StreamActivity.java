@@ -205,8 +205,8 @@ public class StreamActivity extends BaseActivity implements StreamMvpView {
                 mRealm.executeTransaction(new Realm.Transaction() {
                     @Override
                     public void execute(Realm realm) {
-                        Appdata appdata = realm.where(Appdata.class).equalTo("id", Appdata.ID_DATA_WARNING)
-                                .findFirst();
+                        if(ClickUtil.isFastDoubleClick()) return;
+                        Appdata appdata = realm.where(Appdata.class).equalTo("id", Appdata.ID_DATA_WARNING).findFirst();
                         appdata.setValue(0);
                         rlDataWarning.setVisibility(View.GONE);
                     }
@@ -225,7 +225,7 @@ public class StreamActivity extends BaseActivity implements StreamMvpView {
         btnFav.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                if(ClickUtil.isFastDoubleClick()) return;
                 ChannelContainer fav = mRealm.where(ChannelContainer.class).equalTo("id",ID_CHANNEL_FAVORITES).findFirst();
                 if(!isSavedAsFav){
                     if(fav!=null){
@@ -277,6 +277,7 @@ public class StreamActivity extends BaseActivity implements StreamMvpView {
         findViewById(R.id.ib_share).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if(ClickUtil.isFastDoubleClick()) return;
                 String deepUrl;
                 String storeUrl = "https://play.google.com/";
                 deepUrl = "Hi! I've found a new way to watch TV show!\nClick the link below to download!\n"+storeUrl;
@@ -287,13 +288,14 @@ public class StreamActivity extends BaseActivity implements StreamMvpView {
         findViewById(R.id.ib_setting).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if(ClickUtil.isFastDoubleClick()) return;
                 View viewSetting = View.inflate(StreamActivity.this, R.layout.include_streaming_menu, null);
                 RelativeLayout btnReport = viewSetting.findViewById(R.id.rl_report);
                 btnReport.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         if (ClickUtil.isFastDoubleClick()) return;
-                        String subject = "[REPORT]";
+                        String subject = "[REPORT STREAMING AJA]";
                         String message = String.format("Hello Support!\nI have to report %s beacuse...",mChannel.getTitle());
                         StaticGroup.shareWithEmail(StreamActivity.this,SUPPORT_EMAIL,subject,message);
                     }
@@ -326,6 +328,7 @@ public class StreamActivity extends BaseActivity implements StreamMvpView {
         btnFullscreen.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if(ClickUtil.isFastDoubleClick()) return;
                 int orientation = getResources().getConfiguration().orientation;
                 if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
                     setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
@@ -470,6 +473,7 @@ public class StreamActivity extends BaseActivity implements StreamMvpView {
                     btnScheduleDay.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
+                            if(ClickUtil.isFastDoubleClick()) return;
                             if (!item.isSelected()) {
                                 mData.get(lastSelectedItem).setSelected(false);
                                 //notifyItemChanged(lastSelectedItem);
@@ -488,6 +492,8 @@ public class StreamActivity extends BaseActivity implements StreamMvpView {
             mSCheduleDayAdapter.setHasStableIds(true);
             rvScheduleDayList.setAdapter(mSCheduleDayAdapter);
         }else{
+            findViewById(R.id.tv_schedule_note).setVisibility(View.GONE);
+            ((TextView)mRlEmptyView.findViewById(R.id.tv_empty_view)).setText(getString(R.string.error_empty_schedule_main));
             rvScheduleDayList.setVisibility(View.GONE);
             rvScheduleDetailList.setVisibility(View.GONE);
             mRlEmptyView.setVisibility(View.VISIBLE);
@@ -553,8 +559,8 @@ public class StreamActivity extends BaseActivity implements StreamMvpView {
             mAdView = new AdView(this);
             AdRequest adRequest = new AdRequest.Builder().build();
             mAdView.setAdSize(AdSize.BANNER);
-            //mAdView.setAdUnitId("ca-app-pub-8461471832857878/4383390929");
-            mAdView.setAdUnitId("ca-app-pub-3940256099942544/6300978111");
+            mAdView.setAdUnitId("ca-app-pub-8461471832857878/4383390929");
+            //mAdView.setAdUnitId("ca-app-pub-3940256099942544/6300978111");
             RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
             layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE);
             mAdView.setLayoutParams(layoutParams);

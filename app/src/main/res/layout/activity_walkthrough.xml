@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+
+    <androidx.viewpager.widget.ViewPager
+        android:id="@+id/cvp_walkthrough"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/white"
+        app:piv_dynamicCount="true"
+        app:piv_interactiveAnimation="true">
+
+    </androidx.viewpager.widget.ViewPager>
+
+    <TextView
+        android:id="@+id/btn_skip"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/onboarding_skip"
+        android:textAllCaps="true"
+        android:textSize="@dimen/text_medium"
+        android:textColor="@color/text_primary"
+        android:layout_marginTop="@dimen/interval_main"
+        android:layout_marginEnd="@dimen/interval_main"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"/>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="84dp"
+        android:layout_alignParentBottom="true">
+
+        <LinearLayout
+            android:id="@+id/btn_back"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingRight="@dimen/interval_main"
+            android:paddingLeft="@dimen/interval_main"
+            android:paddingTop="@dimen/interval_small"
+            android:paddingBottom="@dimen/interval_small"
+            android:layout_marginStart="@dimen/interval_main"
+            android:layout_centerVertical="true"
+            android:layout_alignParentStart="true"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/onboarding_back"
+            android:textSize="@dimen/text_medium"
+            android:textColor="@color/text_primary" />
+        </LinearLayout>
+
+        <com.rd.PageIndicatorView
+            android:id="@+id/pageIndicatorView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/interval_main"
+            android:layout_centerInParent="true"
+            app:piv_animationType="scale"
+            app:piv_dynamicCount="true"
+            app:piv_interactiveAnimation="true"
+            app:piv_padding="@dimen/walkthrough_indicator_padding"
+            app:piv_radius="@dimen/walkthrough_indicator_radius"
+            app:piv_strokeWidth="4dp"
+            app:piv_selectedColor="@color/primary"
+            app:piv_unselectedColor="@color/secondary"
+            app:piv_viewPager="@id/cvp_walkthrough" />
+
+        <LinearLayout
+            android:id="@+id/btn_next"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/shape_ripple_primary_fill_very_rounded"
+            android:paddingRight="@dimen/interval_main"
+            android:paddingLeft="@dimen/interval_main"
+            android:paddingTop="@dimen/interval_content"
+            android:paddingBottom="@dimen/interval_content"
+            android:layout_marginEnd="@dimen/interval_main"
+            android:layout_centerVertical="true"
+            android:layout_alignParentEnd="true"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/onboarding_next"
+                android:textSize="@dimen/text_medium"
+                android:textStyle="bold"
+                android:textColor="@color/white"
+                android:layout_marginEnd="@dimen/interval_medium"/>
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_next_arrow"/>
+
+
+        </LinearLayout>
+
+
+    </RelativeLayout>
+
+
+
+</RelativeLayout>

@@ -25,6 +25,14 @@
     <string name="channel_save_as_fav">Simpan</string>
     <string name="warning_is_using_mobile_data">Anda sedang menggunakan data seluler. Klik disini untuk berhenti menampilkan peringatan ini.</string>
     <string name="warning_close">Tutup</string>
+    <string name="warning_schedule">*catatan: jadwal masih dapat berubah tanpa pemberitahuan sebelumnya</string>
+    <string name="error_empty">Tidak ada data</string>
+    <string name="error_empty_subscibe_main">Belum ada yang tersimpan</string>
+    <string name="error_empty_subscibe_submain">Tekan tombol \"Simpan\" untuk mendaftarkan saluran ke halaman ini</string>
+    <string name="error_empty_genre_main">Belum ada tayangan dengan genre \"%s\"</string>
+    <string name="error_empty_search_main">Tidak bisa menemukan hasil pencarian untuk \"%s\"</string>
+    <string name="error_empty_search_submain">Periksa ejaan atau coba cari dengan kata kunci lain</string>
+    <string name="error_empty_schedule_main">Tidak ada jadwal untuk tayangan ini</string>
     <string name="error_player">Tidak bisa memutar video. Coba sesaat lagi.</string>
     <string name="appversion_need_update_title">Perbarui Aplikasi</string>
     <string name="appversion_need_update_desc">Kami telah memperbaiki masalah &amp; menambahkan fitur baru! Kami jamin versi yang terbaru lebih baik \:\)</string>
@@ -38,4 +46,23 @@
     <string name="appversion_newer_title">Versi Baru Tersedia</string>
     <string name="appversion_newer_desc">Kami menyarankan untuk mengunduh versi terbaru untuk mendapatkan Experience yang maksimal!</string>
     <string name="appversion_newer_download">Unduh</string>
+
+    <string name="faq_1_header">Apa itu StreamingAja?</string>
+    <string name="faq_1_body">StreamingAja adalah aplikasi streaming yang memberikan akses gratis untuk menonton tayangan lokal dan manca negara dimana saja dan kapan saja.</string>
+    <string name="faq_2_header">Apakah StreamingAja gratis?</string>
+    <string name="faq_2_body">StreamingAja sepenuhnya gratis dan anda bisa menikmati tayangan favorit anda dimana saja tanpa harus mengkhawatirkan pembayaran.</string>
+    <string name="faq_3_header">Apakah Saya perlu mengunduh video?</string>
+    <string name="faq_3_body">Tidak, Anda tidak perlu mengunduh video. Dengan aplikasi StreamingAja, Anda hanya perlu streaming tanpa perlu memikirkan memori.</string>
+
+    <string name="onboarding1">Jangan pernah ketinggalan berita lagi!</string>
+    <string name="onboarding2">Nonton tayangan favorit Anda dimana saja, kapan saja!</string>
+    <string name="onboarding3">Akses tayangan lokal Anda dengan mudah!</string>
+    <string name="onboarding_next">Berikut</string>
+    <string name="onboarding_back">Kembali</string>
+    <string name="onboarding_skip">Skip</string>
+    <string name="error_empty_home_main">Oops… telah terjadi kesalahan</string>
+    <string name="error_empty_home_submain">Coba cek koneksi jaringan anda dan coba muat lagi</string>
+    <string name="main_refresh">Muat Ulang</string>
+
+
 </resources>

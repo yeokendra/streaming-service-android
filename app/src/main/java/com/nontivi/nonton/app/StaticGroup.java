@@ -13,7 +13,9 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.PowerManager;
 import android.provider.Telephony;
+import android.text.SpannableString;
 import android.text.TextUtils;
+import android.text.style.AbsoluteSizeSpan;
 import android.util.Log;
 import android.webkit.CookieManager;
 import android.webkit.CookieSyncManager;
@@ -30,6 +32,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
+
+import static android.text.Spanned.SPAN_INCLUSIVE_INCLUSIVE;
 
 
 /**
@@ -703,6 +707,15 @@ public class StaticGroup {
 //        }
 //    }
 
+    public static CharSequence combineString(String text1, String text2, int textSize1, int textSize2){
+        SpannableString span1 = new SpannableString(text1);
+        span1.setSpan(new AbsoluteSizeSpan(textSize1), 0, text1.length(), SPAN_INCLUSIVE_INCLUSIVE);
+
+        SpannableString span2 = new SpannableString(text2);
+        span2.setSpan(new AbsoluteSizeSpan(textSize2), 0, text2.length(), SPAN_INCLUSIVE_INCLUSIVE);
+        CharSequence finalText = TextUtils.concat(span1, "\n\n", span2);
+        return finalText;
+    }
 
 
     public static String getDate(String mDate) {

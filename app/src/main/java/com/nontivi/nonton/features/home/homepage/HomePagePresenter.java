@@ -36,7 +36,7 @@ public class HomePagePresenter extends BasePresenter<HomePageMvpView> {
                         },
                         throwable -> {
                             getView().showProgress(false);
-                            getView().showError(throwable);
+                            getView().showChannelError(throwable);
                         });
     }
 
@@ -53,7 +53,7 @@ public class HomePagePresenter extends BasePresenter<HomePageMvpView> {
                         },
                         throwable -> {
                             getView().showProgress(false);
-                            getView().showError(throwable);
+                            getView().showGenreError(throwable);
                         });
     }
 }

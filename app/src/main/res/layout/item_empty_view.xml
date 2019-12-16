@@ -24,12 +24,14 @@
 
         <TextView
             android:id="@+id/tv_empty_view"
-            android:text="no data found"
+            android:text="@string/error_empty"
             android:textColor="@color/material_grey_8080"
             android:textSize="@dimen/text_medium"
             android:textStyle="bold"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:paddingLeft="64dp"
+            android:paddingRight="64dp"
             android:layout_marginTop="@dimen/padding_main"/>
     </LinearLayout>
 

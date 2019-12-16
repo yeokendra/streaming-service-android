@@ -7,6 +7,7 @@ import android.util.Log;
 import com.facebook.stetho.Stetho;
 import com.nontivi.nonton.app.ConstantGroup;
 import com.nontivi.nonton.app.StaticGroup;
+import com.nontivi.nonton.realm.MyMigration;
 import com.singhajit.sherlock.core.Sherlock;
 import com.squareup.leakcanary.LeakCanary;
 import com.tspoon.traceur.Traceur;
@@ -52,12 +53,7 @@ public class MvpStarterApplication extends Application {
         RealmConfiguration configuration = new RealmConfiguration.Builder()
                 .name("streamingaja.db")
                 .schemaVersion(10)
-                .migration(new RealmMigration() {
-                    @Override
-                    public void migrate(DynamicRealm realm, long oldVersion, long newVersion) {
-
-                    }
-                })
+                .migration(new MyMigration())
                 .build();
         Realm.setDefaultConfiguration(configuration);
 

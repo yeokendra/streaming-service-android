@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.nontivi.nonton.R;
+import com.nontivi.nonton.app.StaticGroup;
 import com.nontivi.nonton.data.model.Channel;
 import com.nontivi.nonton.data.model.Genre;
 import com.nontivi.nonton.data.response.HomeFeedResponse;
@@ -30,11 +31,13 @@ import com.nontivi.nonton.features.main.MainPresenter;
 import com.nontivi.nonton.features.main.PokemonAdapter;
 import com.nontivi.nonton.features.streaming.StreamActivity;
 import com.nontivi.nonton.injection.component.ActivityComponent;
+import com.nontivi.nonton.util.ClickUtil;
 import com.nontivi.nonton.util.NetworkUtil;
 import com.nontivi.nonton.util.RxBus;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import javax.inject.Inject;
 
@@ -73,6 +76,7 @@ public class SearchActivity extends BaseActivity implements SearchMvpView, Error
     private BaseRecyclerAdapter<Channel> mAdapter;
 
     ArrayList<Channel> channelList;
+    String mSearch;
 
     Realm mRealm;
 
@@ -93,8 +97,8 @@ public class SearchActivity extends BaseActivity implements SearchMvpView, Error
         layoutListManager.setItemPrefetchEnabled(false);
 
         Bundle bundle = getIntent().getExtras();
-        String search = bundle.getString(KEY_SEARCH_STRING,"");
-        String searchTitle = "Search result for \""+search+"\"";
+        mSearch = bundle.getString(KEY_SEARCH_STRING,"");
+        String searchTitle = "Search result for \""+mSearch+"\"";
         mTvSearchTitle.setText(searchTitle);
 
         channelList = new ArrayList<>();
@@ -103,7 +107,7 @@ public class SearchActivity extends BaseActivity implements SearchMvpView, Error
         mRealm.executeTransaction(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
-                RealmResults<Channel> channels = realm.where(Channel.class).equalTo("channelContainer.id", ID_CHANNEL_ALL).contains("title",search, Case.INSENSITIVE).findAll();
+                RealmResults<Channel> channels = realm.where(Channel.class).equalTo("channelContainer.id", ID_CHANNEL_ALL).contains("title",mSearch, Case.INSENSITIVE).findAll();
                 channelList.addAll(channels);
                 loadData();
             }
@@ -141,6 +145,7 @@ public class SearchActivity extends BaseActivity implements SearchMvpView, Error
                     holder.setOnClickListener(R.id.rl_trending, new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
+                            if(ClickUtil.isFastDoubleClick()) return;
                             RxBus.get().post(RxBus.KEY_CHANNEL_CLICKED, item.getId());
                             Intent myIntent1 = new Intent(SearchActivity.this, StreamActivity.class);
                             myIntent1.putExtra(KEY_CHANNEL_ID, item.getId());
@@ -169,6 +174,13 @@ public class SearchActivity extends BaseActivity implements SearchMvpView, Error
             mRvSearch.setVisibility(View.VISIBLE);
             mRlEmptyView.setVisibility(View.GONE);
         }else{
+            int textSize1 = getResources().getDimensionPixelSize(R.dimen.text_medium);
+            int textSize2 = getResources().getDimensionPixelSize(R.dimen.text_small);
+
+            String emptyMain = String.format(getString(R.string.error_empty_search_main),mSearch);
+            String emptySubMain = getString(R.string.error_empty_search_submain);
+
+            ((TextView)mRlEmptyView.findViewById(R.id.tv_empty_view)).setText(StaticGroup.combineString(emptyMain,emptySubMain,textSize1,textSize2));
             mRvSearch.setVisibility(View.GONE);
             mRlEmptyView.setVisibility(View.VISIBLE);
         }

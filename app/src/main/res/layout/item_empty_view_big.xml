@@ -3,7 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/rl_empty_view"
     android:layout_width="match_parent"
-    android:layout_height="400dp"
+    android:layout_height="600dp"
     android:visibility="gone">
 
     <LinearLayout
@@ -21,10 +21,13 @@
 
         <TextView
             android:id="@+id/tv_empty_view"
-            android:text="no data found"
+            android:text="@string/error_empty"
             android:textColor="@color/material_grey_8080"
             android:textSize="@dimen/text_medium"
             android:textStyle="bold"
+            android:textAlignment="center"
+            android:paddingLeft="64dp"
+            android:paddingRight="64dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/padding_main"/>

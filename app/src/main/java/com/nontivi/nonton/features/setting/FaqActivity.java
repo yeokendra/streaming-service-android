@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import com.ms.square.android.expandabletextview.ExpandableTextView;
 import com.nontivi.nonton.R;
+import com.nontivi.nonton.app.StaticGroup;
 import com.nontivi.nonton.features.base.BaseActivity;
 import com.nontivi.nonton.injection.component.ActivityComponent;
 import com.nontivi.nonton.util.ClickUtil;
@@ -62,22 +63,10 @@ public class FaqActivity extends BaseActivity {
         String faq2Body = getString(R.string.faq_2_body);
         String faq3Body = getString(R.string.faq_3_body);
 
+        mTvFaq1.setText(StaticGroup.combineString(faq1Header,faq1Body,textSize1,textSize2));
+        mTvFaq2.setText(StaticGroup.combineString(faq2Header,faq2Body,textSize1,textSize2));
+        mTvFaq3.setText(StaticGroup.combineString(faq3Header,faq3Body,textSize1,textSize2));
 
-
-        mTvFaq1.setText(combineString(faq1Header,faq1Body,textSize1,textSize2));
-        mTvFaq2.setText(combineString(faq2Header,faq2Body,textSize1,textSize2));
-        mTvFaq3.setText(combineString(faq3Header,faq3Body,textSize1,textSize2));
-
-    }
-
-    private CharSequence combineString(String text1, String text2, int textSize1, int textSize2){
-        SpannableString span1 = new SpannableString(text1);
-        span1.setSpan(new AbsoluteSizeSpan(textSize1), 0, text1.length(), SPAN_INCLUSIVE_INCLUSIVE);
-
-        SpannableString span2 = new SpannableString(text2);
-        span2.setSpan(new AbsoluteSizeSpan(textSize2), 0, text2.length(), SPAN_INCLUSIVE_INCLUSIVE);
-        CharSequence finalText = TextUtils.concat(span1, "\n\n", span2);
-        return finalText;
     }
 
     @Override

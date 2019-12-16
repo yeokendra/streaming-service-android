@@ -23,6 +23,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.nontivi.nonton.BuildConfig;
 import com.nontivi.nonton.R;
+import com.nontivi.nonton.app.StaticGroup;
 import com.nontivi.nonton.data.model.Appdata;
 import com.nontivi.nonton.data.model.Option;
 import com.nontivi.nonton.data.model.Setting;
@@ -40,12 +41,14 @@ import com.nontivi.nonton.widget.dialog.DialogAction;
 import com.nontivi.nonton.widget.dialog.DialogOptionType;
 
 import java.util.ArrayList;
+import java.util.Locale;
 
 import butterknife.BindView;
 import io.realm.Realm;
 import io.realm.RealmResults;
 
 import static com.nontivi.nonton.app.ConstantGroup.LOG_TAG;
+import static com.nontivi.nonton.app.ConstantGroup.SUPPORT_EMAIL;
 
 
 public class SettingFragment extends BaseFragment {
@@ -171,6 +174,7 @@ public class SettingFragment extends BaseFragment {
                         holder.setOnClickListener(R.id.rl_setting, new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
+                                if(ClickUtil.isFastDoubleClick()) return;
                                 onMobileDataWarningChanged(switchSetting);
                             }
                         });
@@ -201,6 +205,7 @@ public class SettingFragment extends BaseFragment {
                         holder.setOnClickListener(R.id.rl_setting, new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
+                                if(ClickUtil.isFastDoubleClick()) return;
 //                                View viewLang = View.inflate(getActivity(), R.layout.include_choose_language, null);
 //                                final CustomDialog customDialog = new CustomDialog.Builder(getActivity())
 //                                        .optionType(DialogOptionType.NONE)
@@ -220,10 +225,24 @@ public class SettingFragment extends BaseFragment {
                         holder.setOnClickListener(R.id.rl_setting, new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
+                                if(ClickUtil.isFastDoubleClick()) return;
                                 Intent intent = new Intent(getActivity(), FaqActivity.class);
                                 getActivity().startActivity(intent);
                             }
                         });
+                        break;
+                    case ID_FEEDBACK:
+                        holder.setOnClickListener(R.id.rl_setting, new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                if(ClickUtil.isFastDoubleClick()) return;
+                                String subject = "[FEEDBACK STREAMINGAJA]";
+                                String message = "Hello!\nI've feedback with ...";
+                                StaticGroup.shareWithEmail(getActivity(), SUPPORT_EMAIL, subject, message);
+                            }
+                        });
+
+
                         break;
                 }
 

@@ -55,7 +55,7 @@
                 android:layout_alignParentTop="true"/>
 
             <include
-                layout="@layout/item_empty_view_full"/>
+                layout="@layout/item_empty_view_big"/>
 
         </RelativeLayout>
 

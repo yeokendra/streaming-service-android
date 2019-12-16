@@ -18,6 +18,7 @@ import rx.subjects.Subject;
 
 public class RxBus {
     public static final String KEY_CHANNEL_CLICKED = "key_channel_clicked";
+    public static final String KEY_ADS_LOADED = "key_ads_loaded";
 
     private volatile static RxBus sInstance;
     private ConcurrentMap<Object, List<Subject>> mSubjectMapper = new ConcurrentHashMap<>();

@@ -18,6 +18,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.initialization.InitializationStatus;
+import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.nontivi.nonton.BuildConfig;
 import com.nontivi.nonton.R;
@@ -79,6 +81,7 @@ public class HomeActivity extends BaseActivity implements HomeMvpView, ErrorView
     private FirebaseAnalytics mFirebaseAnalytics;
 
     private Observable<Integer> mChannelClickedObservable;
+    private Observable<String> mAdsLoadedObervable;
 
     private ArrayList<Setting> mSettings;
 
@@ -108,6 +111,22 @@ public class HomeActivity extends BaseActivity implements HomeMvpView, ErrorView
                 bundle.putInt("channel_id_clicked", id);
                 mFirebaseAnalytics.logEvent("channel_clicked",bundle);
             }
+        });
+
+        mAdsLoadedObervable = RxBus.get().register(RxBus.KEY_ADS_LOADED, String.class);
+        mAdsLoadedObervable.subscribe(new Action1<String>() {
+            @Override
+            public void call(String s) {
+
+            }
+//            @Override
+//            public void call(String ads) {
+//                Log.v(LOG_TAG,"Ads "+ads+" loaded");
+//
+//                Bundle bundle = new Bundle();
+//                bundle.putString("ads_loaded_name", ads);
+//                mFirebaseAnalytics.logEvent("ads_loaded",bundle);
+//            }
         });
 
         setToolbar();
@@ -170,7 +189,7 @@ public class HomeActivity extends BaseActivity implements HomeMvpView, ErrorView
                             @Override
                             public void onClick(View view) {
                                 if (ClickUtil.isFastDoubleClick()) return;
-                                String subject = "[URGENT]";
+                                String subject = "[URGENT STREAMINGAJA]";
                                 String message = "Hello Support!\nI have a problem with...";
                                 StaticGroup.shareWithEmail(HomeActivity.this,SUPPORT_EMAIL,subject,message);
 
@@ -274,7 +293,7 @@ public class HomeActivity extends BaseActivity implements HomeMvpView, ErrorView
 
     @Override
     public void showError(Throwable error) {
-        Toast.makeText(this, "error", Toast.LENGTH_SHORT).show();
+        //Toast.makeText(this, "error", Toast.LENGTH_SHORT).show();
     }
 
     public void setToolbar() {
@@ -319,7 +338,6 @@ public class HomeActivity extends BaseActivity implements HomeMvpView, ErrorView
 
             @Override
             public void onPageSelected(int position) {
-                Log.e(LOG_TAG, "Page position : " + position);
                 mCustomTabBarView.onPageSelected(position);
                 setFragmentToolbar(position);
                 Fragment fragment = mainScreenPagerAdapter.getRegisteredFragment(position);

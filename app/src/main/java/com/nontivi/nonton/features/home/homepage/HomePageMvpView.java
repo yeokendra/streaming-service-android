@@ -14,5 +14,6 @@ public interface HomePageMvpView extends MvpView {
 
     void showProgress(boolean show);
 
-    void showError(Throwable error);
+    void showChannelError(Throwable error);
+    void showGenreError(Throwable error);
 }

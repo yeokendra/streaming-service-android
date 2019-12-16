@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/shape_main_bg">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <ImageView
+            android:id="@+id/iv_main_logo"
+            android:layout_width="128dp"
+            android:layout_height="128dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ic_streamingaja_logomark_white" />
+
+    </LinearLayout>
+
+<!--    <TextView-->
+<!--        android:id="@+id/tv_main_copyright"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_alignParentBottom="true"-->
+<!--        android:layout_centerHorizontal="true"-->
+<!--        android:layout_marginBottom="@dimen/margin_splash"-->
+<!--        android:tag="light"-->
+<!--        android:textAlignment="center"-->
+<!--        android:textColor="@color/material_white"-->
+<!--        android:textSize="@dimen/text_tiny" />-->
+
+<!--    <include layout="@layout/include_need_update" />-->
+
+<!--    <include layout="@layout/include_maintainance" />-->
+
+<!--    <include layout="@layout/include_loading_view_bottom" />-->
+
+</RelativeLayout>

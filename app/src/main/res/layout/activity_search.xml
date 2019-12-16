@@ -67,7 +67,7 @@
                 android:layout_below="@id/tv_search_title"/>
 
             <include
-                layout="@layout/item_empty_view_full"/>
+                layout="@layout/item_empty_view_big"/>
 
         </RelativeLayout>
 

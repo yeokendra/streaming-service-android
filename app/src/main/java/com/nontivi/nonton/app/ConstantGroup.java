@@ -6,7 +6,7 @@ package com.nontivi.nonton.app;
 
 public class ConstantGroup {
     public static final String LOG_TAG ="StreamingAjaLog";
-    public static final String SUPPORT_EMAIL = "support@hatolabs.com";
+    public static final String SUPPORT_EMAIL = "dev@hatolabs.com";
     static final int ID_LOCAL_PUSH = 412;
 
     public static final String KEY_SEARCH_STRING = "key_search_string";

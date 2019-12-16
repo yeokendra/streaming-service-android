@@ -256,14 +256,27 @@
                 android:paddingEnd="@dimen/padding_main"
                 android:layout_below="@id/rv_schedule_day"/>
 
+            <TextView
+                android:id="@+id/tv_schedule_note"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="@dimen/text_shortcut"
+                android:textStyle="italic"
+                android:text="@string/warning_schedule"
+                android:paddingStart="@dimen/padding_main"
+                android:paddingEnd="@dimen/padding_main"
+                android:layout_marginBottom="@dimen/interval_main"
+                android:textColor="@color/material_grey_400"
+                android:layout_below="@id/rv_schedule_detail"/>
+
             <FrameLayout
                 android:id="@+id/rl_empty_view_container"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/tv_schedule_title">
 
                 <include
-                    layout="@layout/item_empty_view_full"/>
+                    layout="@layout/item_empty_view"/>
 
             </FrameLayout>
 
