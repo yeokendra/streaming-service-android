@@ -9,6 +9,7 @@ public class ScheduleDay implements Serializable {
 
     private int id;
     private String title;
+    private String subtitle;
     private ArrayList<Schedule> schedules = new ArrayList<>();
     private boolean isSelected = false;
 
@@ -27,6 +28,14 @@ public class ScheduleDay implements Serializable {
 
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    public String getSubtitle() {
+        return subtitle;
+    }
+
+    public void setSubtitle(String subtitle) {
+        this.subtitle = subtitle;
     }
 
     public ArrayList<Schedule> getSchedules() {

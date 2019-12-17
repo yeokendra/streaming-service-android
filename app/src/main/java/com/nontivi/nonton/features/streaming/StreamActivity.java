@@ -3,8 +3,13 @@ package com.nontivi.nonton.features.streaming;
 import android.content.Context;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
+import android.graphics.Typeface;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.text.Html;
+import android.text.Spannable;
+import android.text.Spanned;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -56,6 +61,7 @@ import com.nontivi.nonton.features.base.BaseRecyclerViewHolder;
 import com.nontivi.nonton.features.home.HomeActivity;
 import com.nontivi.nonton.injection.component.ActivityComponent;
 import com.nontivi.nonton.util.ClickUtil;
+import com.nontivi.nonton.util.LocaleUtil;
 import com.nontivi.nonton.util.NetworkUtil;
 import com.nontivi.nonton.util.ViewUtil;
 import com.nontivi.nonton.widget.dialog.CustomDialog;
@@ -68,6 +74,7 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Locale;
+import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
@@ -404,17 +411,24 @@ public class StreamActivity extends BaseActivity implements StreamMvpView {
     private void initScheduleDayList(){
         scheduleDayList = new ArrayList<>();
 
+        int offset = TimeZone.getDefault().getRawOffset() + TimeZone.getDefault().getDSTSavings();
+        long currentTimeStamp = (System.currentTimeMillis() + offset)/1000;
+        String currentDate = getDateFromTimestamp(currentTimeStamp);
         for(Schedule schedule: scheduleList){
             ScheduleDay day = getDayFromTimestamp(schedule.getTimestamp());
+            day.setSubtitle(getDateFromTimestamp(schedule.getTimestamp()));
             if(scheduleDayList.size() > 0) {
 
                 for (int i = 0; i < scheduleDayList.size(); i++) {
-                    if(scheduleDayList.get(i).getTitle().equals(day.getTitle())){
+                    if(scheduleDayList.get(i).getSubtitle().equals(day.getSubtitle())){
                         scheduleDayList.get(i).addSchedule(schedule);
                         break;
                     }else{
                         if( i == scheduleDayList.size()-1){
                             day.addSchedule(schedule);
+                            if(day.getSubtitle().equals(currentDate)){
+                                lastSelectedItem = scheduleDayList.size();
+                            }
                             scheduleDayList.add(day);
                             break;
                         }
@@ -422,6 +436,9 @@ public class StreamActivity extends BaseActivity implements StreamMvpView {
                 }
             }else{
                 day.addSchedule(schedule);
+                if(getDateFromTimestamp(schedule.getTimestamp()).equals(currentDate)){
+                    lastSelectedItem = scheduleDayList.size();
+                }
                 scheduleDayList.add(day);
             }
         }
@@ -488,9 +505,9 @@ public class StreamActivity extends BaseActivity implements StreamMvpView {
 
                 }
             };
-
             mSCheduleDayAdapter.setHasStableIds(true);
             rvScheduleDayList.setAdapter(mSCheduleDayAdapter);
+            rvScheduleDayList.scrollToPosition(lastSelectedItem);
         }else{
             findViewById(R.id.tv_schedule_note).setVisibility(View.GONE);
             ((TextView)mRlEmptyView.findViewById(R.id.tv_empty_view)).setText(getString(R.string.error_empty_schedule_main));
@@ -539,9 +556,43 @@ public class StreamActivity extends BaseActivity implements StreamMvpView {
                     } else {
                         holder.getView(R.id.v_line_bottom).setVisibility(View.GONE);
                     }
-                    holder.setText(R.id.tv_schedule_show_title, item.getTitle());
-                    holder.setText(R.id.tv_schedule_show_subtitle, item.getSubtitle());
-                    holder.setText(R.id.tv_time, getHourByTimestamp(item.getTimestamp()));
+
+
+                    holder.getTextView(R.id.tv_schedule_show_title).setTypeface(holder.getTextView(R.id.tv_schedule_show_title).getTypeface(), Typeface.NORMAL);
+                    if(item.getTitle()!=null) {
+                        String title = Html.fromHtml(item.getTitle()).toString();
+                        holder.setText(R.id.tv_schedule_show_title, title);
+                    }else{
+                        holder.setText(R.id.tv_schedule_show_title, "Null");
+                    }
+
+                    String hour = getHourByTimestamp(item.getTimestamp());
+                    int offset = TimeZone.getDefault().getRawOffset() + TimeZone.getDefault().getDSTSavings();
+                    long currentTimeStamp = (System.currentTimeMillis() + offset)/1000;
+                    //long currentTimeStamp = System.currentTimeMillis()/1000;
+                    String currentDate = getDateFromTimestamp(currentTimeStamp);
+
+                    if(scheduleDayList.get(lastSelectedItem).getSubtitle().equals(currentDate)){
+
+                        if(currentTimeStamp >= item.getTimestamp()){
+                            if(mData.size()-1 == position){
+                                holder.getTextView(R.id.tv_schedule_show_title).setTypeface(holder.getTextView(R.id.tv_schedule_show_title).getTypeface(), Typeface.BOLD);
+                            }else{
+                                Log.e(LOG_TAG,"adapter position "+position);
+                                if(mData.get(position+1).getTimestamp() > currentTimeStamp){
+                                    Log.e(LOG_TAG,"adapter position bold "+position);
+                                    holder.getTextView(R.id.tv_schedule_show_title).setTypeface(holder.getTextView(R.id.tv_schedule_show_title).getTypeface(), Typeface.BOLD);
+                                }
+                            }
+                        }
+                    }
+
+                    if(item.getSubtitle()!=null) {
+                        holder.setText(R.id.tv_schedule_show_subtitle, Html.fromHtml(item.getSubtitle()));
+                    }else{
+                        holder.setText(R.id.tv_schedule_show_subtitle, "null");
+                    }
+                    holder.setText(R.id.tv_time, hour);
 
                 }
             };
@@ -787,6 +838,12 @@ public class StreamActivity extends BaseActivity implements StreamMvpView {
                 }
             });
         }
+
+//        long currentTimestamp = System.currentTimeMillis()/1000;
+//        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+//            scheduleList.removeIf(s -> s.getTimestamp() <= currentTimestamp);
+//        }
+
         initScheduleDayList();
     }
 
@@ -811,12 +868,27 @@ public class StreamActivity extends BaseActivity implements StreamMvpView {
         }
     }
 
+    private String getDateFromTimestamp(long timestamp){
+        long l = TimeUnit.SECONDS.toMillis(timestamp);
+        Calendar c = Calendar.getInstance();
+        c.setTimeInMillis(l);
+
+        //SimpleDateFormat dayFormat = new SimpleDateFormat("EEEE", getResources().getConfiguration().locale);
+        SimpleDateFormat dayFormat = new SimpleDateFormat("d MMMM yyyy", getResources().getConfiguration().locale);
+        dayFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+        String day = dayFormat.format(c.getTime());
+
+        return day;
+    }
+
     private ScheduleDay getDayFromTimestamp(long timestamp){
         long l = TimeUnit.SECONDS.toMillis(timestamp);
         Calendar c = Calendar.getInstance();
         c.setTimeInMillis(l);
 
-        SimpleDateFormat dayFormat = new SimpleDateFormat("EEEE", Locale.getDefault());
+        SimpleDateFormat dayFormat = new SimpleDateFormat("EEEE", getResources().getConfiguration().locale);
+        //SimpleDateFormat dayFormat = new SimpleDateFormat("d MMMM yyyy", getResources().getConfiguration().locale);
+        dayFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
         String day = dayFormat.format(c.getTime());
 
         ScheduleDay scheduleDay = new ScheduleDay();
@@ -831,7 +903,9 @@ public class StreamActivity extends BaseActivity implements StreamMvpView {
         Calendar c = Calendar.getInstance();
         c.setTimeInMillis(l);
 
-        SimpleDateFormat dayFormat = new SimpleDateFormat("HH:mm", Locale.getDefault());
+        //SimpleDateFormat dayFormat = new SimpleDateFormat("HH:mm", getResources().getConfiguration().locale);
+        SimpleDateFormat dayFormat = new SimpleDateFormat("HH:mm", getResources().getConfiguration().locale);
+        dayFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
         String hour = dayFormat.format(c.getTime());
         return hour;
     }
