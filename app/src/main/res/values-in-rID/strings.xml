@@ -30,7 +30,7 @@
     <string name="error_empty_subscibe_main">Belum ada yang tersimpan</string>
     <string name="error_empty_subscibe_submain">Tekan tombol \"Simpan\" untuk mendaftarkan saluran ke halaman ini</string>
     <string name="error_empty_genre_main">Belum ada tayangan dengan genre \"%s\"</string>
-    <string name="error_empty_search_main">Tidak bisa menemukan hasil pencarian untuk \"%s\"</string>
+    <string name="error_empty_search_main">Tidak menemukan hasil pencarian untuk \"%s\"</string>
     <string name="error_empty_search_submain">Periksa ejaan atau coba cari dengan kata kunci lain</string>
     <string name="error_empty_schedule_main">Tidak ada jadwal untuk tayangan ini</string>
     <string name="error_player">Tidak bisa memutar video. Coba sesaat lagi.</string>

@@ -10,7 +10,6 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="32dp"
-        android:layout_marginTop="@dimen/padding_content"
         android:background="@drawable/shape_ripple_transparent"
         android:paddingEnd="@dimen/interval_main"
         android:paddingLeft="@dimen/interval_main"

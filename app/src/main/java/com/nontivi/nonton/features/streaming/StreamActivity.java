@@ -578,9 +578,7 @@ public class StreamActivity extends BaseActivity implements StreamMvpView {
                             if(mData.size()-1 == position){
                                 holder.getTextView(R.id.tv_schedule_show_title).setTypeface(holder.getTextView(R.id.tv_schedule_show_title).getTypeface(), Typeface.BOLD);
                             }else{
-                                Log.e(LOG_TAG,"adapter position "+position);
                                 if(mData.get(position+1).getTimestamp() > currentTimeStamp){
-                                    Log.e(LOG_TAG,"adapter position bold "+position);
                                     holder.getTextView(R.id.tv_schedule_show_title).setTypeface(holder.getTextView(R.id.tv_schedule_show_title).getTypeface(), Typeface.BOLD);
                                 }
                             }

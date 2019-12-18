@@ -12,23 +12,27 @@
 
         <androidx.cardview.widget.CardView
             android:id="@+id/cv_preview"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="@dimen/trending_image_width"
+            android:layout_height="@dimen/trending_image_height"
             card_view:cardCornerRadius="8dp"
-            card_view:cardUseCompatPadding="true">
+            card_view:cardUseCompatPadding="true"
+            card_view:cardBackgroundColor="@color/white">
 
-                <FrameLayout
+                <RelativeLayout
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:gravity="center">
 
                         <ImageView
                             android:id="@+id/iv_preview"
-                            android:layout_width="wrap_content"
-                            android:layout_height="@dimen/trending_image_height"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:padding="@dimen/interval_medium"
                             android:contentDescription="@string/image_content_description"
-                            android:scaleType="centerInside" />
+                            android:scaleType="centerInside"
+                            android:layout_centerInParent="true"/>
 
-                </FrameLayout>
+                </RelativeLayout>
 
 
 
@@ -66,6 +70,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="@dimen/text_shortcut"
+            android:visibility="gone"
             android:textColor="@color/material_grey_400"
             android:layout_below="@id/tv_title">
 

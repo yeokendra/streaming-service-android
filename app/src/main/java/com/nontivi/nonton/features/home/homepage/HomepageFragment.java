@@ -438,6 +438,7 @@ public class HomepageFragment extends BaseFragment implements HomePageMvpView{
         }
         rvTrending.setOverScrollMode(View.OVER_SCROLL_NEVER);
         rvTrending.setItemViewCacheSize(30);
+        rvTrending.setNestedScrollingEnabled(false);
 
         if(channels.size() > 0) {
             rvTrending.setVisibility(View.VISIBLE);
@@ -500,6 +501,7 @@ public class HomepageFragment extends BaseFragment implements HomePageMvpView{
         }
         rvGenre.setOverScrollMode(View.OVER_SCROLL_NEVER);
         rvGenre.setItemViewCacheSize(30);
+        rvGenre.setNestedScrollingEnabled(false);
 
         if(genres.size() > 0){
             rvGenre.setVisibility(View.VISIBLE);
