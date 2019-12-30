@@ -40,8 +40,10 @@ import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
 import com.google.android.exoplayer2.ui.PlayerView;
 
 import com.google.android.exoplayer2.source.hls.HlsMediaSource;
+import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSource;
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory;
+import com.google.android.exoplayer2.util.Util;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdSize;
@@ -90,8 +92,6 @@ import static com.nontivi.nonton.app.ConstantGroup.SUPPORT_EMAIL;
 import static com.nontivi.nonton.data.model.ChannelContainer.ID_CHANNEL_FAVORITES;
 
 public class StreamActivity extends BaseActivity implements StreamMvpView {
-
-//    private final String STREAM_1 = "http://45.126.83.51/session/7b78becc-fbb2-11e9-b358-9e05a09d9a91/dr9445/h/h02/01.m3u8";
 
     @Inject
     StreamPresenter streamPresenter;
@@ -361,9 +361,6 @@ public class StreamActivity extends BaseActivity implements StreamMvpView {
     @Override
     protected void onStart() {
         super.onStart();
-        if(mChannel !=null) {
-            initializePlayer(mChannel.getStreamingUrl());
-        }
     }
 
     @Override
@@ -670,14 +667,20 @@ public class StreamActivity extends BaseActivity implements StreamMvpView {
 
         // Default parameters, except allowCrossProtocolRedirects is true
         DefaultHttpDataSourceFactory httpDataSourceFactory = new DefaultHttpDataSourceFactory(
-                "Streaming Aja",
+                Util.getUserAgent(context,"Streaming Aja"),
                 null /* listener */,
                 DefaultHttpDataSource.DEFAULT_CONNECT_TIMEOUT_MILLIS,
                 DefaultHttpDataSource.DEFAULT_READ_TIMEOUT_MILLIS,
-                true /* allowCrossProtocolRedirects */
+                true
         );
 
-        MediaSource videoSource = new HlsMediaSource.Factory(httpDataSourceFactory)
+        DefaultDataSourceFactory dataSourceFactory = new DefaultDataSourceFactory(
+                context,
+                null /* listener */,
+                httpDataSourceFactory
+        );
+
+        MediaSource videoSource = new HlsMediaSource.Factory(dataSourceFactory)
                     .createMediaSource(Uri.parse(url));
 // Prepare the player with the source.
         player.prepare(videoSource, true, false);
