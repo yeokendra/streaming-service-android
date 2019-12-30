@@ -542,7 +542,7 @@ public class StaticGroup {
 
     public static void openGooglePlay(Context context) {
         //String storeUrl = "https://play.google.com/store/apps/details?id=com.vexanium.vexgift";
-        String storeUrl = "https://play.google.com/";
+        String storeUrl = "https://play.google.com/store/apps/details?id=com.hato.streamingaja";
         StaticGroup.openGooglePlay(context, storeUrl);
     }
 

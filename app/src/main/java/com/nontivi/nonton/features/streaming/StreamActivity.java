@@ -40,6 +40,7 @@ import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
 import com.google.android.exoplayer2.ui.PlayerView;
 
 import com.google.android.exoplayer2.source.hls.HlsMediaSource;
+import com.google.android.exoplayer2.upstream.DefaultHttpDataSource;
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
@@ -286,7 +287,7 @@ public class StreamActivity extends BaseActivity implements StreamMvpView {
             public void onClick(View view) {
                 if(ClickUtil.isFastDoubleClick()) return;
                 String deepUrl;
-                String storeUrl = "https://play.google.com/";
+                String storeUrl = "https://play.google.com/store/apps/details?id=com.hato.streamingaja";
                 deepUrl = "Hi! I've found a new way to watch TV show!\nClick the link below to download!\n"+storeUrl;
                 StaticGroup.shareWithShareDialog(StreamActivity.this, deepUrl, "Streaming Aja");
             }
@@ -667,7 +668,16 @@ public class StreamActivity extends BaseActivity implements StreamMvpView {
 //        DataSource.Factory dataSourceFactory = new DefaultDataSourceFactory(context,
 //        Util.getUserAgent(context, "Streaming Aja"));
 
-        MediaSource videoSource = new HlsMediaSource.Factory(new DefaultHttpDataSourceFactory("Streaming Aja"))
+        // Default parameters, except allowCrossProtocolRedirects is true
+        DefaultHttpDataSourceFactory httpDataSourceFactory = new DefaultHttpDataSourceFactory(
+                "Streaming Aja",
+                null /* listener */,
+                DefaultHttpDataSource.DEFAULT_CONNECT_TIMEOUT_MILLIS,
+                DefaultHttpDataSource.DEFAULT_READ_TIMEOUT_MILLIS,
+                true /* allowCrossProtocolRedirects */
+        );
+
+        MediaSource videoSource = new HlsMediaSource.Factory(httpDataSourceFactory)
                     .createMediaSource(Uri.parse(url));
 // Prepare the player with the source.
         player.prepare(videoSource, true, false);

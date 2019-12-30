@@ -133,6 +133,11 @@ public class HomeActivity extends BaseActivity implements HomeMvpView, ErrorView
         setCustomTabs();
         setPagerListener();
         //setSupportActionBar(toolbar);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
         homePresenter.getData();
     }
 
@@ -203,7 +208,7 @@ public class HomeActivity extends BaseActivity implements HomeMvpView, ErrorView
                         });
                         final CustomDialog customDialog = new CustomDialog.Builder(HomeActivity.this)
                                 .optionType(DialogOptionType.NONE)
-                                .title(R.string.appversion_need_update_title)
+                                .title(R.string.maintenance_title)
                                 .addCustomView(viewMaintenance)
                                 .autoDismiss(false)
                                 .cancelable(false)
